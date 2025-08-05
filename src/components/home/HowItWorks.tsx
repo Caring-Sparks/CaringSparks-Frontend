@@ -55,7 +55,7 @@ const HowItWorks = () => {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [selectedFilter, allSteps]);
+  }, [selectedFilter]);
 
   useEffect(() => {
     setVisibleSteps(new Set());
@@ -101,7 +101,7 @@ const HowItWorks = () => {
             </span>
           </h2>
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-            From profile creation to getting paid, we've streamlined every step
+            From profile creation to getting paid, we have streamlined every step
             of the influencer-brand collaboration process
           </p>
         </div>

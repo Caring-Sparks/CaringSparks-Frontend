@@ -7,7 +7,7 @@ import {
   TwitterLogo,
 } from "phosphor-react";
 import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 const Footer = () => {
   return (

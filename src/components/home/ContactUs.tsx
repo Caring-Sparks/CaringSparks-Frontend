@@ -31,7 +31,6 @@ const ContactUs: React.FC = () => {
     values: ContactFormValues,
     { resetForm }: FormikHelpers<ContactFormValues>
   ) => {
-    // In a real app, you'd send this data to an API endpoint.
     console.log("Form submitted with values:", values);
     alert("Thank you for your message! We'll get back to you soon.");
     resetForm();

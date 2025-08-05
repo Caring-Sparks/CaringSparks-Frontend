@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 const CTA = () => {
@@ -24,10 +25,12 @@ const CTA = () => {
 
           {/* IMAGE SECTION */}
           <div className="animate-fade-in-up delay-700">
-            <img
-              src="/images/campaign_image.png" // Replace with your image
+            <Image
+              src="/images/campaign_image.png"
               alt="Campaign process"
-              className="w-84 place-self-end"
+              width={500}
+              height={400}
+              className="w-84 place-self-end object-contain"
             />
           </div>
         </div>
