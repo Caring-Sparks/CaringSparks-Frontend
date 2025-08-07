@@ -1,9 +1,27 @@
 export const navLinks = [
-  { name: "Home", href: "#home" },
-  { name: "About Us", href: "#about" },
-  { name: "How It Works", href: "#how-it-works" },
+  {
+    name: "For Promotion",
+    subLinks: [
+      { name: "Promote a Product or Service", href: "#promote-product" },
+      { name: "Promote an Individual", href: "#promote-individual" },
+      { name: "Promote a Brand", href: "#promote-brand" },
+      { name: "Promote an Event", href: "#promote-event" },
+    ],
+  },
+  {
+    name: "For Influencers",
+    subLinks: [{ name: "Join as an Influencer", href: "#join-influencer" }],
+  },
+  {
+    name: "How It Works?",
+    subLinks: [
+      { name: "Overview: Matching Brands & Influencers", href: "#overview" },
+      { name: "The Process", href: "#process" },
+      { name: "Our Values & Mission", href: "#values-mission" },
+      { name: "Contact Us", href: "#contact" },
+    ],
+  },
   { name: "Why Us?", href: "#why-us" },
-  { name: "Contact Us", href: "#contact" },
 ];
 
 export const features = [

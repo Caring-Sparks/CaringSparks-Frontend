@@ -10,7 +10,6 @@ export default function Home() {
     <>
       <Hero />
       <main>
-        <AboutUs />
         <HowItWorks />
         <WhyUs />
         <CTA />

@@ -42,12 +42,13 @@ const Hero = () => {
         ))}
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 mt-20 flex items-center justify-center min-h-screen">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 mt-5 flex items-center justify-center min-h-screen">
         <div className="text-center max-w-5xl">
           {/* Main heading with animated text */}
           <div className="mb-8">
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 leading-tight mb-8">
-              Connect Brands with{" "}
+              Connect Brands
+               with{" "}
               <span className="relative inline-block lg:whitespace-nowrap">
                 {textArray.map((text, index) => (
                   <span
@@ -77,7 +78,7 @@ const Hero = () => {
           </div>
 
           {/* Stats section */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 animate-fade-in-up delay-700 px-4 sm:px-0">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 animate-fade-in-up delay-700 px-4 sm:px-0">
             <div className="bg-white/70 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-lg">
               <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
                 10K+
@@ -102,7 +103,7 @@ const Hero = () => {
                 Campaigns Value
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* CTA buttons */}
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4 lg:space-x-6 animate-fade-in-up delay-1000 px-4 sm:px-0">
@@ -120,7 +121,7 @@ const Hero = () => {
           </div>
 
           {/* Trust indicators */}
-          <div className="mt-12 sm:mt-16 animate-fade-in-up delay-1200 px-4 sm:px-0">
+          {/* <div className="mt-12 sm:mt-16 animate-fade-in-up delay-1200 px-4 sm:px-0">
             <p className="text-gray-500 text-xs sm:text-sm mb-4 sm:mb-6">
               Trusted by leading brands worldwide
             </p>
@@ -138,7 +139,7 @@ const Hero = () => {
                 Apple
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

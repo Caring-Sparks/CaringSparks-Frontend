@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { List, X } from "phosphor-react";
+import { List, X, CaretDown, CaretRight } from "phosphor-react";
 import { navLinks } from "../../../constants";
 
 const Navbar = () => {
@@ -20,9 +20,7 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed w-full top-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "backdrop-blur-xl bg-white/90 shadow-lg"
-          : "bg-white/5 backdrop-blur-sm"
+        scrolled && "bg-white/5 backdrop-blur-xl"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,17 +62,47 @@ const Navbar = () => {
                 transition={{ duration: 0.5, delay: 0.1 * index }}
                 className="relative group"
               >
-                <a
-                  href={link.href || "#"}
-                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                    scrolled
-                      ? "text-gray-700 hover:text-green-600 hover:bg-blue-50"
-                      : "text-black hover:bg-white/10"
-                  }`}
-                >
-                  {link.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-green-300 to-green-600 transition-all duration-300 group-hover:w-full"></span>
-                </a>
+                {!link.subLinks ? (
+                  <a
+                    href={link.href || "#"}
+                    className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                      scrolled
+                        ? "text-gray-700 hover:text-green-600 hover:bg-blue-50"
+                        : "text-black hover:bg-white/10"
+                    }`}
+                  >
+                    {link.name}
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-green-300 to-green-600 transition-all duration-300 group-hover:w-full"></span>
+                  </a>
+                ) : (
+                  <div className="relative">
+                    <button
+                      className={`flex items-center gap-1 relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                        scrolled
+                          ? "text-gray-700 hover:text-green-600 hover:bg-blue-50"
+                          : "text-black hover:bg-white/10"
+                      }`}
+                    >
+                      {link.name}
+                      <CaretDown size={14} className="mt-[1px]" />
+                    </button>
+
+                    <div className="absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 transition-all duration-300 z-50">
+                      <ul className="py-2">
+                        {link.subLinks.map((sub, i) => (
+                          <li key={i}>
+                            <a
+                              href={sub.href}
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
+                            >
+                              {sub.name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             ))}
           </motion.div>
@@ -141,14 +169,36 @@ const Navbar = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 * index }}
                 >
-                  <a
-                    href={link.href || "#"}
-                    className="flex items-center justify-between py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-blue-50 rounded-lg transition-all duration-300 group"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="font-medium">{link.name}</span>
-                    <div className="w-2 h-2 bg-green-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </a>
+                  {!link.subLinks ? (
+                    <a
+                      href={link.href || "#"}
+                      className="flex items-center justify-between py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-blue-50 rounded-lg transition-all duration-300 group"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <span className="font-medium">{link.name}</span>
+                      <div className="w-2 h-2 bg-green-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </a>
+                  ) : (
+                    <div className="space-y-1">
+                      <div className="py-2 px-4 flex items-center justify-between text-gray-900 font-semibold">
+                        {link.name}
+                        <CaretRight size={16} />
+                      </div>
+
+                      <div className="pl-4">
+                        {link.subLinks.map((sub, i) => (
+                          <a
+                            key={i}
+                            href={sub.href}
+                            className="block py-2 px-4 text-gray-700 hover:text-green-600 hover:bg-blue-50 rounded-lg transition-all duration-300"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            {sub.name}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               ))}
 
