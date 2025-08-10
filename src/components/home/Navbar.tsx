@@ -8,6 +8,24 @@ import { navLinks } from "../../../constants";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
+    null
+  );
+  // New state to manage the desktop dropdown visibility
+  const [desktopDropdownOpen, setDesktopDropdownOpen] = useState<number | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,12 +78,12 @@ const Navbar = () => {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 * index }}
-                className="relative group"
+                // Use a standard div instead of 'group' to remove the parent-hover effect
               >
                 {!link.subLinks ? (
                   <a
                     href={link.href || "#"}
-                    className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                    className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 group ${
                       scrolled
                         ? "text-gray-700 hover:text-green-600 hover:bg-blue-50"
                         : "text-black hover:bg-white/10"
@@ -75,7 +93,12 @@ const Navbar = () => {
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-green-300 to-green-600 transition-all duration-300 group-hover:w-full"></span>
                   </a>
                 ) : (
-                  <div className="relative">
+                  // Attach onMouseEnter and onMouseLeave to the div that contains both the button and the dropdown menu
+                  <div
+                    className="relative"
+                    onMouseEnter={() => setDesktopDropdownOpen(index)}
+                    onMouseLeave={() => setDesktopDropdownOpen(null)}
+                  >
                     <button
                       className={`flex items-center gap-1 relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 ${
                         scrolled
@@ -87,20 +110,23 @@ const Navbar = () => {
                       <CaretDown size={14} className="mt-[1px]" />
                     </button>
 
-                    <div className="absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 transition-all duration-300 z-50">
-                      <ul className="py-2">
-                        {link.subLinks.map((sub, i) => (
-                          <li key={i}>
-                            <a
-                              href={sub.href}
-                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
-                            >
-                              {sub.name}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    {/* Use a conditional render with the new state to show/hide the dropdown */}
+                    {desktopDropdownOpen === index && (
+                      <div className="absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-lg opacity-100 translate-y-0 transition-all duration-300 z-50">
+                        <ul className="py-2">
+                          {link.subLinks.map((sub, i) => (
+                            <li key={i}>
+                              <a
+                                href={sub.href}
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
+                              >
+                                {sub.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
               </motion.div>
@@ -159,7 +185,7 @@ const Navbar = () => {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden overflow-hidden backdrop-blur-xl bg-white/95 border-t border-gray-200/50 shadow-lg"
+            className="md:hidden overflow-hidden bg-white/5 backdrop-blur-xl border-t border-gray-200/50 shadow-lg"
           >
             <div className="px-4 py-6 space-y-4">
               {navLinks.map((link, index) => (
@@ -179,24 +205,47 @@ const Navbar = () => {
                       <div className="w-2 h-2 bg-green-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </a>
                   ) : (
-                    <div className="space-y-1">
-                      <div className="py-2 px-4 flex items-center justify-between text-gray-900 font-semibold">
+                    <div>
+                      <button
+                        className="w-full py-3 px-4 flex items-center justify-between text-gray-900 font-semibold hover:bg-blue-50 rounded-lg transition"
+                        onClick={() =>
+                          setOpenDropdownIndex(
+                            openDropdownIndex === index ? null : index
+                          )
+                        }
+                      >
                         {link.name}
-                        <CaretRight size={16} />
-                      </div>
+                        <CaretRight
+                          size={16}
+                          className={`transition-transform ${
+                            openDropdownIndex === index
+                              ? "rotate-90 text-green-600"
+                              : ""
+                          }`}
+                        />
+                      </button>
 
-                      <div className="pl-4">
-                        {link.subLinks.map((sub, i) => (
-                          <a
-                            key={i}
-                            href={sub.href}
-                            className="block py-2 px-4 text-gray-700 hover:text-green-600 hover:bg-blue-50 rounded-lg transition-all duration-300"
-                            onClick={() => setIsMobileMenuOpen(false)}
+                      <AnimatePresence>
+                        {openDropdownIndex === index && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="pl-4 overflow-hidden"
                           >
-                            {sub.name}
-                          </a>
-                        ))}
-                      </div>
+                            {link.subLinks.map((sub, i) => (
+                              <a
+                                key={i}
+                                href={sub.href}
+                                className="block py-2 px-4 text-gray-700 hover:text-green-600 hover:bg-blue-50 rounded-lg transition-all duration-300"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                              >
+                                {sub.name}
+                              </a>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   )}
                 </motion.div>

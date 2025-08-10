@@ -1,5 +1,6 @@
 import React from "react";
 import { features } from "../../../constants";
+import Image from "next/image";
 
 const WhyUs = () => {
   return (
@@ -23,7 +24,13 @@ const WhyUs = () => {
               key={idx}
               className="bg-gray-50 hover:bg-white transition duration-300 shadow-md rounded-xl p-6 text-left"
             >
-              <div className="text-4xl mb-4">{feature.icon}</div>
+              <Image
+                alt={feature.title}
+                width={40}
+                height={40}
+                className="text-4xl mb-4"
+                src={feature.icon}
+              />
               <h3 className="text-xl font-semibold text-gray-900">
                 {feature.title}
               </h3>

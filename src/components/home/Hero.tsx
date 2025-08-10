@@ -49,7 +49,7 @@ const Hero = () => {
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 leading-tight mb-8">
               Connect Brands
                with{" "}
-              <span className="relative inline-block lg:whitespace-nowrap">
+              <span className="relative inline-block lg:whitespace-nowrap lg:mb-0 my-8">
                 {textArray.map((text, index) => (
                   <span
                     key={index}

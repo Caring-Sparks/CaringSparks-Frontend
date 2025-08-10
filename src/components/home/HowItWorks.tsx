@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { allSteps } from "../../../constants";
+import Image from "next/image";
 
 interface Step {
   id: number;
@@ -101,8 +102,8 @@ const HowItWorks = () => {
             </span>
           </h2>
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-            From profile creation to getting paid, we have streamlined every step
-            of the influencer-brand collaboration process
+            From profile creation to getting paid, we have streamlined every
+            step of the influencer-brand collaboration process
           </p>
         </div>
 
@@ -181,9 +182,15 @@ const HowItWorks = () => {
                     {/* Icon */}
                     <div className="flex items-center mb-4">
                       <div
-                        className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${step.color} flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                        className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${step.color} flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}
                       >
-                        {step.icon}
+                        <Image
+                          src={step.icon}
+                          alt={step.title}
+                          width={40}
+                          height={40}
+                          className="w-8"
+                        />
                       </div>
                       <div className="ml-4">
                         <span className="text-sm font-medium text-gray-500">
