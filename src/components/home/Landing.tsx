@@ -21,25 +21,24 @@ export default function LandingPage() {
     },
   };
 
-const mobileMenuVariants: Variants = {
-  closed: {
-    opacity: 0,
-    height: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeInOut",
+  const mobileMenuVariants: Variants = {
+    closed: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut",
+      },
     },
-  },
-  open: {
-    opacity: 1,
-    height: "auto",
-    transition: {
-      duration: 0.3,
-      ease: "easeInOut",
+    open: {
+      opacity: 1,
+      height: "auto",
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut",
+      },
     },
-  },
-};
-
+  };
 
   const menuItemVariants = {
     closed: { opacity: 0, x: -20 },
@@ -211,7 +210,7 @@ const mobileMenuVariants: Variants = {
 
           <motion.div variants={fadeInUp} className="relative">
             <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-8">
-              Then let's make you trend{" "}
+              Then let&apos;s make you trend{" "}
               <span className="relative">
                 overnight
                 <motion.div
@@ -272,7 +271,7 @@ const mobileMenuVariants: Variants = {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              Whether you're a
+              Whether you&apos;re a
             </motion.h3>
             <motion.div
               className="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto"
@@ -343,7 +342,7 @@ const mobileMenuVariants: Variants = {
               },
             ].map((item, index) => (
               <motion.div
-                key={item.title}
+                key={index}
                 variants={fadeInUp}
                 className="group cursor-pointer"
                 whileHover={{ y: -8 }}
