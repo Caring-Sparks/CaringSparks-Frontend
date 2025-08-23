@@ -89,7 +89,7 @@ export default function ForgotPassword({
                     Forgot Password?
                   </h2>
                   <p className="text-gray-500 text-sm text-center">
-                    Enter your email address and we'll send you a link to reset
+                    Enter your email address and we&apos;ll send you a link to reset
                     your password
                   </p>
                 </div>
@@ -165,7 +165,7 @@ export default function ForgotPassword({
                   Check Your Email
                 </h2>
                 <p className="text-gray-500 text-sm mb-6">
-                  We've sent a password reset link to{" "}
+                  We&apos;ve sent a password reset link to{" "}
                   <span className="font-semibold text-gray-700">
                     {submittedEmail}
                   </span>
@@ -189,7 +189,7 @@ export default function ForgotPassword({
                 </motion.button>
 
                 <p className="text-gray-500 text-xs">
-                  Didn't receive the email?{" "}
+                  Didn&apos;t receive the email?{" "}
                   <button
                     onClick={() => setIsSubmitted(false)}
                     className="text-indigo-600 font-medium hover:underline"

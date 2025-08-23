@@ -87,7 +87,6 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
             }}
             login={login}
             type="brand"
-            onNewSubmission={() => {}}
           />
         ) : (
           <>

@@ -28,11 +28,6 @@ interface ForgotPasswordResponse {
   message: string;
 }
 
-interface ResetPasswordResponse {
-  success: boolean;
-  message: string;
-}
-
 export function useAuth() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [loading, setLoading] = useState(false);

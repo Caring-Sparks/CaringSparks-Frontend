@@ -168,7 +168,7 @@ export default function ResetPasswordForm() {
                     <ul className="text-blue-700 text-xs space-y-1">
                       <li>• At least 6 characters long</li>
                       <li>• Different from your previous password</li>
-                      <li>• Keep it secure and don't share it</li>
+                      <li>• Keep it secure and don&apos;t share it</li>
                     </ul>
                   </div>
 
@@ -201,7 +201,7 @@ export default function ResetPasswordForm() {
               Password Reset!
             </h2>
             <p className="text-gray-500 text-sm mb-6">
-              Your password has been successfully updated. You'll be redirected
+              Your password has been successfully updated. You&apos;ll be redirected
               to the login page shortly.
             </p>
 

@@ -11,7 +11,6 @@ import {
   WhatsappLogo,
   CheckCircle,
   ArrowLeft,
-  Plus,
   TiktokLogo,
   YoutubeLogo,
   User,
@@ -34,7 +33,6 @@ interface CampaignSummaryProps {
   data: BrandData | InfluencerData;
   type: "brand" | "influencer";
   onBack: () => void;
-  onNewSubmission?: () => void;
   login: () => void;
 }
 
@@ -50,9 +48,8 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
   type,
   onBack,
   login,
-  onNewSubmission,
 }) => {
-  const isBrandData = (data: any): data is BrandData => type === "brand";
+  const isBrandData = (data: object): data is BrandData => type === "brand";
 
   const quotation = isBrandData(data) ? calculateBrandQuotation(data) : null;
   const earnings = !isBrandData(data)
@@ -272,7 +269,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                   </div>
 
                   <div className="text-sm text-gray-600 bg-white rounded-lg p-4">
-                    <p className="font-medium mb-2">What's included:</p>
+                    <p className="font-medium mb-2">What&apos;s included:</p>
                     <ul className="space-y-1">
                       <li>• Influencer matching and outreach</li>
                       <li>• Campaign management and monitoring</li>
@@ -520,16 +517,16 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
             <div className="space-y-2 text-blue-800">
               <p>• Our team will review your campaign requirements</p>
               <p>
-                • We'll match you with suitable influencers within 24-48 hours
+                • We&apos;ll match you with suitable influencers within 24-48 hours
               </p>
-              <p>• You'll receive influencer profiles for approval</p>
+              <p>• You&apos;ll receive influencer profiles for approval</p>
               <p>• Campaign launch after final confirmation and payment</p>
             </div>
           ) : (
             <div className="space-y-2 text-blue-800">
               <p>• Our team will review your application within 24-48 hours</p>
-              <p>• We'll verify your social media accounts and audience data</p>
-              <p>• You'll receive an email confirmation once approved</p>
+              <p>• We&apos;ll verify your social media accounts and audience data</p>
+              <p>• You&apos;ll receive an email confirmation once approved</p>
               <p>
                 • Start receiving campaign opportunities that match your profile
               </p>

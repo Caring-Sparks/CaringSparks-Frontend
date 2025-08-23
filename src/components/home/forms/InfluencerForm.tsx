@@ -3,7 +3,6 @@
 import type React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useToast } from "@/utils/ToastNotification";
 import {
   ArrowLeft,
   Camera,
@@ -25,10 +24,7 @@ import {
 import { useState, useMemo, useCallback } from "react";
 import CampaignSummary from "../extras/CampaignSummary";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  calculateInfluencerEarnings,
-  type InfluencerData,
-} from "@/utils/calculations";
+import { calculateInfluencerEarnings } from "@/utils/calculations";
 
 // Define a type for a social media platform's data
 type PlatformData = {
@@ -89,7 +85,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
       audienceProof: formValues?.audienceProof || null,
     };
 
-    const coreSchemaFields: Record<string, any> = {
+    const coreSchemaFields: Record<string, Yup.AnySchema> = {
       name: Yup.string().required("Full name is required"),
       email: Yup.string()
         .email("Invalid email format")
@@ -187,7 +183,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
           }}
           login={login}
           type="influencer"
-          onNewSubmission={() => {}}
         />
       ) : (
         <div className="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200">
@@ -283,9 +278,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
           >
             {({ values, setFieldValue, errors, touched }) => {
               const progress = calculateProgress(values);
-              const isFormValid =
-                Object.keys(errors).length === 0 &&
-                Object.keys(touched).length > 0;
 
               return (
                 <>

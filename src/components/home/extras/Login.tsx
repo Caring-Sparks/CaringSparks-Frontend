@@ -162,7 +162,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                         className="text-center text-gray-500 text-sm mt-1 cursor-pointer"
                       >
                         <span className="text-indigo-600 font-medium hover:underline">
-                          Don't remember your password?
+                          Don&apos;t remember your password?
                         </span>
                       </p>
                     </Form>

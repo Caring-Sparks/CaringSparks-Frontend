@@ -1,7 +1,8 @@
-import React, { useState, MouseEvent, FormEvent, useEffect } from "react";
+import React, { useState, MouseEvent, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import BrandForm from "../forms/BrandForm";
 import InfluencerForm from "../forms/InfluencerForm";
+import Image from "next/image";
 
 type Option = {
   label: string;
@@ -9,21 +10,6 @@ type Option = {
   description: string;
   color: string;
   endpoint: string;
-};
-
-type FormData = {
-  role?: string;
-  platforms?: string[];
-  influencersMin?: number;
-  influencersMax?: number;
-  followersRange?: string;
-  location?: string;
-  locations?: string[];
-  postFrequency?: string;
-  postDuration?: string;
-  brandName?: string;
-  brandEmail?: string;
-  brandPhone?: string;
 };
 
 type GetStartedProps = {
@@ -107,9 +93,11 @@ const GetStarted: React.FC<GetStartedProps> = ({ onClose, login }) => {
                     onClick={() => setSelected(opt.label)}
                   >
                     <div className="mb-4">
-                      <img
+                      <Image
                         src={opt.img}
                         alt={opt.label}
+                        width={200}
+                        height={200}
                         className="w-12 h-12 object-contain"
                       />
                     </div>
