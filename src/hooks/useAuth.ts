@@ -29,7 +29,7 @@ interface ForgotPasswordResponse {
 }
 
 export function useAuth() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; //add development as well
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
