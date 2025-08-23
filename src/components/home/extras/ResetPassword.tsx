@@ -49,7 +49,7 @@ export default function ResetPasswordForm() {
     if (success) {
       setIsSuccess(true);
       setTimeout(() => {
-        router.push("/login");
+        router.push("/");
       }, 3000);
     }
   };
