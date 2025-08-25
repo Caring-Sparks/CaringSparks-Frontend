@@ -2,13 +2,22 @@
 
 import { useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useToast } from "../utils/ToastNotification";
 
 interface LoginResponse {
-  _id: string;
-  email: string;
-  token: string;
-  data: string;
+  success: boolean;
+  data: {
+    user: {
+      _id: string;
+      role: string;
+      status?: string;
+      companyName?: string;
+      permissions?: string[];
+    };
+    token: string;
+  };
+  message?: string;
 }
 
 interface RegisterBrand {
@@ -32,17 +41,21 @@ export function useAuth() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL; //add development as well
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
+  const router = useRouter();
 
   const login = async (
     email: string,
-    password: string
+    password: string,
+    role: string
   ): Promise<LoginResponse | null> => {
     setLoading(true);
     try {
       const res = await axios.post<LoginResponse>(`${apiUrl}/api/auth/login`, {
         email,
         password,
+        role,
       });
+
       localStorage.setItem("user", JSON.stringify(res.data));
 
       showToast({
@@ -50,6 +63,26 @@ export function useAuth() {
         title: "Login Successful",
         message: "Welcome back! You have been logged in successfully.",
       });
+
+      // Get the user role safely
+      const userRole = res.data?.data?.user?.role;
+
+      // Role-based redirect with fallback
+      setTimeout(() => {
+        switch (userRole) {
+          case "admin":
+            router.push("/admin");
+            break;
+          case "brand":
+            router.push("/brand");
+            break;
+          case "influencer":
+            router.push("/influencer");
+            break;
+          default:
+            router.push("/"); // fallback redirect
+        }
+      }, 1000); // Small delay to ensure toast is shown
 
       return res.data;
     } catch (err: any) {

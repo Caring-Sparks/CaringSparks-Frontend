@@ -89,8 +89,8 @@ export default function ForgotPassword({
                     Forgot Password?
                   </h2>
                   <p className="text-gray-500 text-sm text-center">
-                    Enter your email address and we&apos;ll send you a link to reset
-                    your password
+                    Enter your email address and we&apos;ll send you a link to
+                    reset your password
                   </p>
                 </div>
 
@@ -128,7 +128,25 @@ export default function ForgotPassword({
                         disabled={isSubmitting || loading}
                         className="bg-indigo-600 text-white rounded-full py-3 text-lg font-bold shadow-lg shadow-indigo-600/30 transition-all duration-300 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none disabled:opacity-50 disabled:shadow-none"
                       >
-                        {loading ? "Sending..." : "Send Reset Link"}
+                        {loading ? (
+                          <button
+                            disabled
+                            className="w-full flex justify-center px-4 py-2 bg-indigo-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
+                          >
+                            <div className="loader">
+                              <span className="bar"></span>
+                              <span className="bar"></span>
+                              <span className="bar"></span>
+                            </div>
+                          </button>
+                        ) : (
+                          <button
+                            type="submit"
+                            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                          >
+                            Send reset link
+                          </button>
+                        )}
                       </motion.button>
 
                       {/* Back to login */}
