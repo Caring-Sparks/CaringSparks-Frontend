@@ -225,7 +225,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
 
                       {/* Signup link */}
                       <p className="text-center text-gray-500 text-sm mt-1">
-                        Don't have an account?{" "}
+                        Don&poas;t have an account?{" "}
                         <span className="text-indigo-600 font-medium hover:underline">
                           Sign up
                         </span>
