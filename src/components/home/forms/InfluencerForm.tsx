@@ -20,11 +20,15 @@ import {
   TiktokLogo,
   YoutubeLogo,
   FacebookLogo,
+  LinkedinLogo,
+  DiscordLogo,
+  SnapchatLogo,
 } from "phosphor-react";
 import { useState, useMemo, useCallback } from "react";
 import CampaignSummary from "../extras/CampaignSummary";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateInfluencerEarnings } from "@/utils/calculations";
+import { BsThreads } from "react-icons/bs";
 
 // Define a type for a social media platform's data
 type PlatformData = {
@@ -69,6 +73,10 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
     { name: "Twitter / X", icon: TwitterLogo, key: "twitter" },
     { name: "TikTok", icon: TiktokLogo, key: "tiktok" },
     { name: "YouTube", icon: YoutubeLogo, key: "youtube" },
+    { name: "LinkedIn", icon: LinkedinLogo, key: "linkedin" },
+    { name: "Discord", icon: DiscordLogo, key: "discord" },
+    { name: "Snapchat", icon: SnapchatLogo, key: "snapchat" },
+    { name: "Threads", icon: BsThreads, key: "threads" },
   ];
 
   const { initialValues, validationSchema } = useMemo(() => {
@@ -173,6 +181,36 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
     return (totalFilled / totalRequired) * 100;
   };
 
+  const getFollowersLabel = (platformKey: string) => {
+    switch (platformKey) {
+      case "facebook":
+        return "Followers/Likes count *";
+      case "discord":
+        return "Server members count *";
+      case "linkedin":
+        return "Connections/Followers count *";
+      default:
+        return "Followers count *";
+    }
+  };
+
+  const getUrlPlaceholder = (platformKey: string) => {
+    switch (platformKey) {
+      case "facebook":
+        return "https://facebook.com/username";
+      case "linkedin":
+        return "https://linkedin.com/in/username";
+      case "discord":
+        return "https://discord.gg/serverinvite";
+      case "threads":
+        return "https://threads.net/@username";
+      case "snapchat":
+        return "https://snapchat.com/add/username";
+      default:
+        return `https://${platformKey}.com/username`;
+    }
+  };
+
   return (
     <>
       {submittedData ? (
@@ -247,26 +285,34 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                 formData.append("audienceProof", values.audienceProof);
               }
 
-              // Append platform data dynamically - Updated to include Facebook
-              ["instagram", "facebook", "twitter", "tiktok", "youtube"].forEach(
-                (platform) => {
-                  if (values[platform]) {
-                    const platformData = values[platform] as PlatformData;
-                    formData.append(
-                      `${platform}[followers]`,
-                      platformData.followers
-                    );
-                    formData.append(`${platform}[url]`, platformData.url);
-                    formData.append(
-                      `${platform}[impressions]`,
-                      platformData.impressions
-                    );
-                    if (platformData.proof) {
-                      formData.append(`${platform}[proof]`, platformData.proof);
-                    }
+              // Append platform data dynamically - Updated to include all platforms
+              [
+                "instagram",
+                "facebook",
+                "twitter",
+                "tiktok",
+                "youtube",
+                "linkedin",
+                "discord",
+                "snapchat",
+                "threads",
+              ].forEach((platform) => {
+                if (values[platform]) {
+                  const platformData = values[platform] as PlatformData;
+                  formData.append(
+                    `${platform}[followers]`,
+                    platformData.followers
+                  );
+                  formData.append(`${platform}[url]`, platformData.url);
+                  formData.append(
+                    `${platform}[impressions]`,
+                    platformData.impressions
+                  );
+                  if (platformData.proof) {
+                    formData.append(`${platform}[proof]`, platformData.proof);
                   }
                 }
-              );
+              });
               const res = await registerInfluencer(formData);
 
               if (res) {
@@ -330,7 +376,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         <p className="text-gray-500 text-sm">
                           Which social media accounts do you have?
                         </p>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                           {allPlatforms.map(({ name, icon: Icon, key }) => (
                             <button
                               key={key}
@@ -371,9 +417,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-2">
                                 <label className="text-sm font-medium text-gray-700">
-                                  {platformKey === "facebook"
-                                    ? "Followers/Likes count *"
-                                    : "Followers count *"}
+                                  {getFollowersLabel(platformKey)}
                                 </label>
                                 <Field
                                   name={`${platformKey}.followers`}
@@ -395,11 +439,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                 <Field
                                   name={`${platformKey}.url`}
                                   type="url"
-                                  placeholder={
-                                    platformKey === "facebook"
-                                      ? `https://facebook.com/username`
-                                      : `https://${platformKey}.com/username`
-                                  }
+                                  placeholder={getUrlPlaceholder(platformKey)}
                                   className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 />
                                 <ErrorMessage
@@ -411,13 +451,19 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-medium text-gray-700">
-                                Last 30 days impressions *
+                                {platformKey === "discord"
+                                  ? "Last 30 days message interactions *"
+                                  : "Last 30 days impressions *"}
                               </label>
                               <Field
                                 name={`${platformKey}.impressions`}
                                 type="number"
                                 min="0"
-                                placeholder="Total impressions in the last 30 days"
+                                placeholder={
+                                  platformKey === "discord"
+                                    ? "Total message interactions in the last 30 days"
+                                    : "Total impressions in the last 30 days"
+                                }
                                 className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                               />
                               <ErrorMessage
@@ -429,7 +475,9 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             <div className="space-y-2">
                               <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                                 <Upload className="w-4 h-4" />
-                                Proof of last 30 days impressions *
+                                {platformKey === "discord"
+                                  ? "Proof of last 30 days message interactions *"
+                                  : "Proof of last 30 days impressions *"}
                               </label>
                               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-400 transition-colors">
                                 <input
@@ -705,7 +753,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               name="whatsapp"
                               type="tel"
                               placeholder="Enter WhatsApp number"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo
                                 errors.whatsapp && touched.whatsapp
                                   ? "border-red-500"
                                   : "border-gray-300"
