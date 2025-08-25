@@ -321,177 +321,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                   <div className="p-4">
                     <Form className="space-y-8">
-                      {/* Contact Information */}
-                      <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                          <User className="w-5 h-5" />
-                          Contact Information
-                        </h3>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">
-                              Full name *
-                            </label>
-                            <Field
-                              name="name"
-                              type="text"
-                              placeholder="Enter your full name"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                                errors.name && touched.name
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              }`}
-                            />
-                            <ErrorMessage
-                              name="name"
-                              component="p"
-                              className="text-sm text-red-600"
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                              <Envelope className="w-4 h-4" />
-                              Email address *
-                            </label>
-                            <Field
-                              name="email"
-                              type="email"
-                              placeholder="Enter your email"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                                errors.email && touched.email
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              }`}
-                            />
-                            <ErrorMessage
-                              name="email"
-                              component="p"
-                              className="text-sm text-red-600"
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                              <WhatsappLogo className="w-4 h-4" />
-                              WhatsApp number *
-                            </label>
-                            <Field
-                              name="whatsapp"
-                              type="tel"
-                              placeholder="Enter WhatsApp number"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                                errors.whatsapp && touched.whatsapp
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              }`}
-                            />
-                            <ErrorMessage
-                              name="whatsapp"
-                              component="p"
-                              className="text-sm text-red-600"
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                              <Phone className="w-4 h-4" />
-                              Phone number *
-                            </label>
-                            <Field
-                              name="phone"
-                              type="tel"
-                              placeholder="Enter phone number"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                                errors.phone && touched.phone
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              }`}
-                            />
-                            <ErrorMessage
-                              name="phone"
-                              component="p"
-                              className="text-sm text-red-600"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Location */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                          <MapPin className="w-4 h-4" />
-                          My location: *
-                        </label>
-                        <Field
-                          name="location"
-                          type="text"
-                          placeholder="City, State, Country"
-                          className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                            errors.location && touched.location
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                        />
-                        <ErrorMessage
-                          name="location"
-                          component="p"
-                          className="text-sm text-red-600"
-                        />
-                      </div>
-
-                      {/* Content Niche */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-slate-500" />I post
-                          content about:
-                        </label>
-                        <Field
-                          as="select"
-                          name="niches"
-                          multiple
-                          className="w-full px-4 py-2 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white hover:border-indigo-400"
-                          onChange={(
-                            e: React.ChangeEvent<HTMLSelectElement>
-                          ) => {
-                            const selectedOptions = Array.from(
-                              e.target.selectedOptions,
-                              (option) => option.value
-                            );
-                            setFieldValue("niches", selectedOptions);
-                          }}
-                        >
-                          {niches.map((niche) => (
-                            <option
-                              key={niche}
-                              value={niche}
-                              className="py-1 px-2 hover:bg-indigo-50 cursor-pointer"
-                            >
-                              {niche}
-                            </option>
-                          ))}
-                        </Field>
-
-                        <p className="text-xs text-gray-500">
-                          Hold{" "}
-                          <kbd className="px-1 py-0.5 bg-gray-200 rounded">
-                            Ctrl
-                          </kbd>{" "}
-                          (or{" "}
-                          <kbd className="px-1 py-0.5 bg-gray-200 rounded">
-                            Cmd
-                          </kbd>{" "}
-                          on Mac) to select multiple.
-                        </p>
-
-                        <ErrorMessage
-                          name="niches"
-                          component="p"
-                          className="text-sm text-red-600"
-                        />
-                      </div>
-
                       {/* Social Media Accounts Selection */}
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -649,6 +478,80 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         );
                       })}
 
+                      {/* Content Niche */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-slate-500" />I post
+                          content about:
+                        </label>
+                        <Field
+                          as="select"
+                          name="niches"
+                          multiple
+                          className="w-full px-4 py-2 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white hover:border-indigo-400"
+                          onChange={(
+                            e: React.ChangeEvent<HTMLSelectElement>
+                          ) => {
+                            const selectedOptions = Array.from(
+                              e.target.selectedOptions,
+                              (option) => option.value
+                            );
+                            setFieldValue("niches", selectedOptions);
+                          }}
+                        >
+                          {niches.map((niche) => (
+                            <option
+                              key={niche}
+                              value={niche}
+                              className="py-1 px-2 hover:bg-indigo-50 cursor-pointer"
+                            >
+                              {niche}
+                            </option>
+                          ))}
+                        </Field>
+
+                        <p className="text-xs text-gray-500">
+                          Hold{" "}
+                          <kbd className="px-1 py-0.5 bg-gray-200 rounded">
+                            Ctrl
+                          </kbd>{" "}
+                          (or{" "}
+                          <kbd className="px-1 py-0.5 bg-gray-200 rounded">
+                            Cmd
+                          </kbd>{" "}
+                          on Mac) to select multiple.
+                        </p>
+
+                        <ErrorMessage
+                          name="niches"
+                          component="p"
+                          className="text-sm text-red-600"
+                        />
+                      </div>
+
+                      {/* Location */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          My location: *
+                        </label>
+                        <Field
+                          name="location"
+                          type="text"
+                          placeholder="City, State, Country"
+                          className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                            errors.location && touched.location
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
+                        <ErrorMessage
+                          name="location"
+                          component="p"
+                          className="text-sm text-red-600"
+                        />
+                      </div>
+
                       {/* Audience Demographics */}
                       <div className="space-y-6">
                         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -739,6 +642,103 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               File uploaded: {values.audienceProof.name}
                             </div>
                           )}
+                        </div>
+                      </div>
+
+                      {/* Contact Information */}
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                          <User className="w-5 h-5" />
+                          Contact Information
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">
+                              Full name *
+                            </label>
+                            <Field
+                              name="name"
+                              type="text"
+                              placeholder="Enter your full name"
+                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                                errors.name && touched.name
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              }`}
+                            />
+                            <ErrorMessage
+                              name="name"
+                              component="p"
+                              className="text-sm text-red-600"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                              <Envelope className="w-4 h-4" />
+                              Email address *
+                            </label>
+                            <Field
+                              name="email"
+                              type="email"
+                              placeholder="Enter your email"
+                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                                errors.email && touched.email
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              }`}
+                            />
+                            <ErrorMessage
+                              name="email"
+                              component="p"
+                              className="text-sm text-red-600"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                              <WhatsappLogo className="w-4 h-4" />
+                              WhatsApp number *
+                            </label>
+                            <Field
+                              name="whatsapp"
+                              type="tel"
+                              placeholder="Enter WhatsApp number"
+                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                                errors.whatsapp && touched.whatsapp
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              }`}
+                            />
+                            <ErrorMessage
+                              name="whatsapp"
+                              component="p"
+                              className="text-sm text-red-600"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                              <Phone className="w-4 h-4" />
+                              Phone number *
+                            </label>
+                            <Field
+                              name="phone"
+                              type="tel"
+                              placeholder="Enter phone number"
+                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                                errors.phone && touched.phone
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              }`}
+                            />
+                            <ErrorMessage
+                              name="phone"
+                              component="p"
+                              className="text-sm text-red-600"
+                            />
+                          </div>
                         </div>
                       </div>
 
