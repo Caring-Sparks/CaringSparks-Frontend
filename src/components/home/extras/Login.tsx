@@ -4,13 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAuth } from "@/hooks/useAuth";
-import { Lock, User, X } from "phosphor-react";
+import { Eye, EyeClosed, Lock, User, X, UserCircle } from "phosphor-react";
 import { useEffect, useState } from "react";
 import ForgotPassword from "./ForgotPassword";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
   password: Yup.string().min(6, "At least 6 characters").required("Required"),
+  role: Yup.string()
+    .oneOf(["influencer", "brand", "admin"], "Invalid role")
+    .required("Required"),
 });
 
 interface LoginPopupProps {
@@ -21,6 +24,7 @@ interface LoginPopupProps {
 export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
   const { login, loading } = useAuth();
   const [resetPassword, setResetPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -84,10 +88,14 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
 
                 {/* Form */}
                 <Formik
-                  initialValues={{ email: "", password: "" }}
+                  initialValues={{ email: "", password: "", role: "" }}
                   validationSchema={LoginSchema}
                   onSubmit={async (values, { resetForm }) => {
-                    const res = await login(values.email, values.password);
+                    const res = await login(
+                      values.email,
+                      values.password,
+                      values.role
+                    );
                     if (res) {
                       resetForm();
                       onClose();
@@ -119,14 +127,61 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                         <div className="relative">
                           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                           <Field
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             name="password"
                             className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all"
                             placeholder="Password"
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                          >
+                            {showPassword ? <Eye /> : <EyeClosed />}
+                          </button>
                         </div>
                         <ErrorMessage
                           name="password"
+                          component="p"
+                          className="text-red-500 text-xs mt-1 ml-2"
+                        />
+                      </div>
+
+                      {/* Role Selection */}
+                      <div>
+                        <div className="relative">
+                          <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                          <Field
+                            as="select"
+                            name="role"
+                            className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                          >
+                            <option value="" disabled className="text-gray-400">
+                              Select your role
+                            </option>
+                            <option value="influencer">Influencer</option>
+                            <option value="brand">Brand</option>
+                            <option value="admin">Admin</option>
+                          </Field>
+                          {/* Custom dropdown arrow */}
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <svg
+                              className="w-5 h-5 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        <ErrorMessage
+                          name="role"
                           component="p"
                           className="text-red-500 text-xs mt-1 ml-2"
                         />
@@ -138,9 +193,26 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         disabled={isSubmitting || loading}
-                        className="bg-indigo-600 text-white rounded-full py-3 text-lg font-bold shadow-lg shadow-indigo-600/30 transition-all duration-300 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none disabled:opacity-50 disabled:shadow-none"
                       >
-                        {loading ? "Logging in..." : "Login"}
+                        {loading ? (
+                          <button
+                            disabled
+                            className="w-full flex justify-center px-4 py-2 bg-indigo-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
+                          >
+                            <div className="loader">
+                              <span className="bar"></span>
+                              <span className="bar"></span>
+                              <span className="bar"></span>
+                            </div>
+                          </button>
+                        ) : (
+                          <button
+                            type="submit"
+                            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                          >
+                            Login
+                          </button>
+                        )}
                       </motion.button>
 
                       {/* Divider */}
@@ -152,7 +224,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
 
                       {/* Signup link */}
                       <p className="text-center text-gray-500 text-sm mt-1">
-                        Don’t have an account?{" "}
+                        Don&poas;t have an account?{" "}
                         <span className="text-indigo-600 font-medium hover:underline">
                           Sign up
                         </span>
