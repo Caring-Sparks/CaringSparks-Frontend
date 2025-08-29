@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { ToastProvider } from "@/utils/ToastNotification";
+import AdminLayout from "@/components/admin/AdminLayout";
+import ProtectedRoute from "@/utils/ProtectedRoute";
 
 export const metadata: Metadata = {
   title: "Caring Sparks – Admin",
@@ -11,10 +13,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ToastProvider>
-      <html lang="en">
-        <body>{children}</body>
-      </html>
-    </ToastProvider>
+    <html lang="en">
+      <body>
+        <ProtectedRoute>
+          <ToastProvider>
+            <AdminLayout>{children}</AdminLayout>
+          </ToastProvider>
+        </ProtectedRoute>
+      </body>
+    </html>
   );
 }

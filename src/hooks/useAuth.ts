@@ -164,12 +164,12 @@ export function useAuth() {
     }
   };
 
-  const forgotPassword = async (email: string): Promise<boolean> => {
+  const forgotPassword = async (email: string, role: string): Promise<boolean> => {
     try {
       setLoading(true);
       const response = await axios.post<ForgotPasswordResponse>(
         `${apiUrl}/api/auth/forgot-password`,
-        { email }
+        { email, role }
       );
       const data = response.data;
       if (data.success) {

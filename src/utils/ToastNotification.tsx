@@ -106,7 +106,7 @@ const ToastNotification: React.FC<{
   return (
     <div
       className={`
-        transform transition-all duration-300 ease-in-out
+        transform transition-all duration-300 ease-in-out z-[99999]
         ${
           isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
         }
