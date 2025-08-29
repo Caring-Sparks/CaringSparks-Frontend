@@ -4,11 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAuth } from "@/hooks/useAuth";
-import { EnvelopeSimple, X, ArrowLeft } from "phosphor-react";
+import { EnvelopeSimple, X, ArrowLeft, UserCircle } from "phosphor-react";
 import { useState } from "react";
 
 const ForgotPasswordSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
+  role: Yup.string()
+    .oneOf(["influencer", "brand", "admin"], "Invalid role")
+    .required("Required"),
 });
 
 interface ForgotPasswordPopupProps {
@@ -26,8 +29,8 @@ export default function ForgotPassword({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
 
-  const handleSubmit = async (values: { email: string }) => {
-    const success = await forgotPassword(values.email);
+  const handleSubmit = async (values: { email: string, role: string }) => {
+    const success = await forgotPassword(values.email, values.role);
     if (success) {
       setSubmittedEmail(values.email);
       setIsSubmitted(true);
@@ -96,29 +99,75 @@ export default function ForgotPassword({
 
                 {/* Form */}
                 <Formik
-                  initialValues={{ email: "" }}
+                  initialValues={{ email: "", role: "" }}
                   validationSchema={ForgotPasswordSchema}
                   onSubmit={handleSubmit}
                 >
                   {({ isSubmitting }) => (
                     <Form className="flex flex-col gap-5">
-                      {/* Email */}
-                      <div>
-                        <div className="relative">
-                          <EnvelopeSimple className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                          <Field
-                            type="email"
+                      <>
+                        {/* Email */}
+                        <div>
+                          <div className="relative">
+                            <EnvelopeSimple className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Field
+                              type="email"
+                              name="email"
+                              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all"
+                              placeholder="Enter your email address"
+                            />
+                          </div>
+                          <ErrorMessage
                             name="email"
-                            className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all"
-                            placeholder="Enter your email address"
+                            component="p"
+                            className="text-red-500 text-xs mt-1 ml-2"
                           />
                         </div>
-                        <ErrorMessage
-                          name="email"
-                          component="p"
-                          className="text-red-500 text-xs mt-1 ml-2"
-                        />
-                      </div>
+
+                        {/* Role Selection */}
+                        <div>
+                          <div className="relative">
+                            <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Field
+                              as="select"
+                              name="role"
+                              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                            >
+                              <option
+                                value=""
+                                disabled
+                                className="text-gray-400"
+                              >
+                                Select your role
+                              </option>
+                              <option value="influencer">Influencer</option>
+                              <option value="brand">Brand</option>
+                              <option value="admin">Admin</option>
+                            </Field>
+                            {/* Custom dropdown arrow */}
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <svg
+                                className="w-5 h-5 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                          <ErrorMessage
+                            name="role"
+                            component="p"
+                            className="text-red-500 text-xs mt-1 ml-2"
+                          />
+                        </div>
+                      </>
 
                       {/* CTA */}
                       <motion.button
