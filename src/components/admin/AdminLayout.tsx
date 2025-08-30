@@ -22,7 +22,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     fetchData();
     fetchAdmins();
     fetchUser();
-  }, [fetchData, fetchAdmins, fetchUser]);
+  }, []);
 
   if (loading) {
     return (
@@ -41,7 +41,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <div className="w-full lg:ml-64">
           <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
-          <main className="p-6">{children}</main>
+          <main className="">{children}</main>
         </div>
       </div>
     </div>
