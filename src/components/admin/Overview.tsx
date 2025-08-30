@@ -63,7 +63,7 @@ const Overview = () => {
   };
 
   return (
-    <div className="space-y-8 mt-8">
+    <div className="space-y-8 mt-8 p-6">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">

@@ -559,7 +559,7 @@ const CampaignManagement: React.FC = () => {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6 w-fit">
+      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6 overflow-hidden overflow-scroll">
         {[
           { key: "all", label: "All Campaigns" },
           { key: "active", label: "Active" },

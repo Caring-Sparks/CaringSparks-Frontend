@@ -189,7 +189,7 @@ const Managers: React.FC = () => {
       )}
 
       {/* header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-4">
         <span className="flex flex-col justify-start">
           <h2 className="text-2xl font-bold text-gray-900">Your Managers</h2>
           <p>All Managers: {totaladmins}</p>
@@ -199,7 +199,7 @@ const Managers: React.FC = () => {
           className="px-6 flex items-center gap-3 cursor-pointer hover:bg-indigo-700 transition-all ease-in duration-300 py-2 rounded-md bg-indigo-600 text-white border border-slate-200"
         >
           <UserPlus />
-          Add Manager
+          Add
         </button>
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

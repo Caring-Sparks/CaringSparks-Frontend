@@ -25,6 +25,8 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationOffset, setNotificationOffset] = useState(0);
+  const NOTIFICATIONS_PER_PAGE = 10;
 
   // NEW: track unseen/seen using timestamps
   const [hasNewNotifications, setHasNewNotifications] = useState(false);
@@ -64,6 +66,55 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
 
   const hasNoActivity =
     influencers.length === 0 && brands.length === 0 && newPayments.length === 0;
+
+  // Combine and sort all notifications by creation date
+  const allNotifications = useMemo(() => {
+    const notifications: any[] = [];
+
+    // Add influencers
+    influencers.forEach((influencer: any) => {
+      notifications.push({
+        id: influencer.id,
+        type: "influencer",
+        data: influencer,
+        createdAt: influencer.createdAt,
+        timestamp: new Date(influencer.createdAt).getTime(),
+      });
+    });
+
+    // Add brands
+    brands.forEach((brand: any) => {
+      notifications.push({
+        id: brand._id,
+        type: "brand",
+        data: brand,
+        createdAt: brand.createdAt,
+        timestamp: new Date(brand.createdAt).getTime(),
+      });
+    });
+
+    // Add payments
+    newPayments.forEach((payment: any) => {
+      notifications.push({
+        id: payment._id,
+        type: "payment",
+        data: payment,
+        createdAt: payment.createdAt,
+        timestamp: new Date(payment.createdAt).getTime(),
+      });
+    });
+
+    // Sort by newest first
+    return notifications.sort((a, b) => b.timestamp - a.timestamp);
+  }, [influencers, brands, newPayments]);
+
+  // Get current page of notifications
+  const currentNotifications = allNotifications.slice(
+    notificationOffset,
+    notificationOffset + NOTIFICATIONS_PER_PAGE
+  );
+  const hasMoreNotifications =
+    notificationOffset + NOTIFICATIONS_PER_PAGE < allNotifications.length;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -169,14 +220,92 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const handleNotificationClick = () => {
     setShowNotifications((prev) => !prev);
 
-    // Mark as seen when opening the panel
+    // Mark as seen when opening the panel and reset offset
     if (!showNotifications) {
       const seen = Date.now();
       setLastSeen(seen);
       setHasNewNotifications(false);
+      setNotificationOffset(0); // Reset to show latest notifications
       if (typeof window !== "undefined") {
         localStorage.setItem("notif_last_seen", String(seen));
       }
+    }
+  };
+
+  const loadPreviousNotifications = () => {
+    setNotificationOffset((prev) => prev + NOTIFICATIONS_PER_PAGE);
+  };
+
+  const renderNotificationItem = (notification: any) => {
+    switch (notification.type) {
+      case "influencer":
+        return (
+          <Link
+            href="/admin/influencers"
+            key={notification.id}
+            className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100"
+          >
+            <BiUserCheck className="text-blue-600" size={20} />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900">
+                New influencer joined!
+              </p>
+              <p className="text-xs text-gray-600">
+                {notification.data.name} joined as an influencer
+              </p>
+              <span className="text-xs text-gray-500">
+                {formatDate(notification.createdAt)}
+              </span>
+            </div>
+          </Link>
+        );
+
+      case "brand":
+        return (
+          <Link
+            href="/admin/brands"
+            key={notification.id}
+            className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg hover:bg-purple-100"
+          >
+            <BiTrendingUp className="text-purple-600" size={20} />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900">
+                New brand registered!
+              </p>
+              <p className="text-xs text-gray-600">
+                {notification.data.brandName} created an account
+              </p>
+              <span className="text-xs text-gray-500">
+                {formatDate(notification.createdAt)}
+              </span>
+            </div>
+          </Link>
+        );
+
+      case "payment":
+        return (
+          <Link
+            href="/admin/brands"
+            key={notification.id}
+            className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100"
+          >
+            <FaDollarSign className="text-green-600" size={20} />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900">
+                Campaign payment processed!
+              </p>
+              <p className="text-xs text-gray-600">
+                ${notification.data.totalCost} has been paid for a campaign
+              </p>
+              <span className="text-xs text-gray-500">
+                {formatDate(notification.createdAt)}
+              </span>
+            </div>
+          </Link>
+        );
+
+      default:
+        return null;
     }
   };
 
@@ -218,8 +347,18 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                 transition={{ duration: 0.2 }}
                 className="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded-lg border border-gray-200 z-50"
               >
-                <div className="p-3 border-b font-semibold text-gray-700">
-                  Notifications
+                <div className="p-3 bg-slate-200/50 font-semibold text-gray-700 flex items-center justify-between">
+                  <span>Notifications</span>
+                  {allNotifications.length > 0 && (
+                    <span className="text-xs text-gray-500">
+                      Showing{" "}
+                      {Math.min(
+                        notificationOffset + NOTIFICATIONS_PER_PAGE,
+                        allNotifications.length
+                      )}{" "}
+                      of {allNotifications.length}
+                    </span>
+                  )}
                 </div>
 
                 {hasNoActivity ? (
@@ -235,69 +374,29 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                     </p>
                   </div>
                 ) : (
-                  <div className="max-h-80 overflow-y-auto p-3 space-y-3">
-                    {influencers.map((influencer: any) => (
-                      <Link
-                        href="/admin/influencers"
-                        key={influencer.id}
-                        className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100"
-                      >
-                        <BiUserCheck className="text-blue-600" size={20} />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">
-                            New influencer joined!
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {influencer.name} joined as an influencer
-                          </p>
-                          <span className="text-xs text-gray-500">
-                            {formatDate(influencer.createdAt)}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
+                  <div className="max-h-80 overflow-y-auto">
+                    <div className="p-3 space-y-3">
+                      {currentNotifications.map((notification) =>
+                        renderNotificationItem(notification)
+                      )}
+                    </div>
 
-                    {brands.map((brand: any) => (
-                      <Link
-                        href="/admin/brands"
-                        key={brand._id}
-                        className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg hover:bg-purple-100"
-                      >
-                        <BiTrendingUp className="text-purple-600" size={20} />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">
-                            New brand registered!
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {brand.brandName} created an account
-                          </p>
-                          <span className="text-xs text-gray-500">
-                            {formatDate(brand.createdAt)}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
-
-                    {newPayments.map((payment: any) => (
-                      <Link
-                        href="/admin/brands"
-                        key={payment._id}
-                        className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100"
-                      >
-                        <FaDollarSign className="text-green-600" size={20} />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">
-                            Campaign payment processed!
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            ${payment.totalCost} has been paid for a campaign
-                          </p>
-                          <span className="text-xs text-gray-500">
-                            {formatDate(payment.createdAt)}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
+                    {hasMoreNotifications && (
+                      <div className="p-3 pt-0">
+                        <button
+                          onClick={loadPreviousNotifications}
+                          className="w-full py-2 px-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200"
+                        >
+                          Load Previous (
+                          {Math.min(
+                            NOTIFICATIONS_PER_PAGE,
+                            allNotifications.length -
+                              (notificationOffset + NOTIFICATIONS_PER_PAGE)
+                          )}
+                          )
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </motion.div>
@@ -322,7 +421,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
             onClick={() => setShowLogoutPopup(false)}
           >
             <motion.div
