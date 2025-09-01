@@ -224,14 +224,16 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                         {quotation.avgInfluencers}
                       </div>
                       <div className="text-sm text-gray-600">
-                        Average Influencers
+                        Recommended no of Influencers
                       </div>
                     </div>
                     <div className="bg-white rounded-lg p-4">
                       <div className="text-2xl font-bold text-indigo-600">
                         {quotation.postCount}
                       </div>
-                      <div className="text-sm text-gray-600">Total Posts</div>
+                      <div className="text-sm text-gray-600">
+                        Posts / Influencer
+                      </div>
                     </div>
                     <div className="bg-white rounded-lg p-4">
                       <div className="text-2xl font-bold text-indigo-600">
@@ -244,8 +246,14 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                   </div>
 
                   <div className="bg-white rounded-lg p-4 space-y-3">
+                    <span className="text-gray-600">Base Campaign Cost: </span>
                     <div className="grid md:grid-cols-2 gap-2">
-                      <span className="text-gray-600">Base Campaign Cost:</span>
+                      <small className="font-medium text-sm lg:whitespace-nowrap">
+                        {quotation.avgInfluencers} influencers x{" "}
+                        {quotation.postCount} posts / influencer x ₦
+                        {quotation.costPerInfluencerPerPost.toLocaleString()}{" "}
+                        per influencer / post:
+                      </small>
                       <span className="font-medium grid md:place-items-end">
                         ₦{quotation.totalBaseCost.toLocaleString()}
                       </span>
@@ -517,7 +525,8 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
             <div className="space-y-2 text-blue-800">
               <p>• Our team will review your campaign requirements</p>
               <p>
-                • We&apos;ll match you with suitable influencers within 24-48 hours
+                • We&apos;ll match you with suitable influencers within 24-48
+                hours
               </p>
               <p>• You&apos;ll receive influencer profiles for approval</p>
               <p>• Campaign launch after final confirmation and payment</p>
@@ -525,7 +534,9 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
           ) : (
             <div className="space-y-2 text-blue-800">
               <p>• Our team will review your application within 24-48 hours</p>
-              <p>• We&apos;ll verify your social media accounts and audience data</p>
+              <p>
+                • We&apos;ll verify your social media accounts and audience data
+              </p>
               <p>• You&apos;ll receive an email confirmation once approved</p>
               <p>
                 • Start receiving campaign opportunities that match your profile

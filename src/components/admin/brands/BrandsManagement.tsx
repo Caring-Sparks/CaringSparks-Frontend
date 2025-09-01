@@ -1,6 +1,13 @@
 "use client";
 
-import { BiEdit, BiSearch, BiCalendar, BiRefresh } from "react-icons/bi";
+import {
+  BiEdit,
+  BiSearch,
+  BiCalendar,
+  BiRefresh,
+  BiChevronLeft,
+  BiChevronRight,
+} from "react-icons/bi";
 import { useEffect, useState, useMemo } from "react";
 import {
   useAdminBrands,
@@ -11,9 +18,8 @@ import { Eye, Trash } from "phosphor-react";
 import BrandDetails from "./BrandDetails";
 
 // Define the expected structure of brand data
-// Define the expected structure of brand data
 interface BrandData {
-  _id: string; // Changed from 'id'
+  _id: string;
   role?: string;
   platforms?: string[];
   brandName?: string;
@@ -39,7 +45,7 @@ interface BrandData {
 }
 
 interface Brand {
-  _id: string; // Changed from 'id'
+  _id: string;
   role?: string;
   platforms?: string[];
   brandName?: string;
@@ -75,6 +81,8 @@ interface StatusCounts {
   unvalidated: number;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 const BrandsManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
@@ -85,6 +93,10 @@ const BrandsManagement: React.FC = () => {
   const [customDateTo, setCustomDateTo] = useState<string>("");
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
   const { fetchData } = useInitializeAdminData();
 
   // Get data from store
@@ -97,6 +109,18 @@ const BrandsManagement: React.FC = () => {
       fetchData();
     }
   }, [fetchData, hasInitialized, loading]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    searchTerm,
+    paymentFilter,
+    validationFilter,
+    dateFilter,
+    customDateFrom,
+    customDateTo,
+  ]);
 
   // Enhanced filtering with all filters
   const filteredBrands = useMemo(() => {
@@ -128,7 +152,7 @@ const BrandsManagement: React.FC = () => {
 
     return brands.filter((brand: Brand) => {
       // Get brand data (could be nested in data property or at root level)
-      const brandData = brand;
+      const brandData: BrandData = brand || {};
       if (!brandData) return false;
 
       const searchLower = searchTerm.toLowerCase();
@@ -169,6 +193,29 @@ const BrandsManagement: React.FC = () => {
     customDateTo,
     dateFilter,
   ]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredBrands.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentBrands = filteredBrands.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const handlePageChange = (page: number): void => {
+    setCurrentPage(page);
+  };
+
+  const handlePreviousPage = (): void => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = (): void => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   // Calculate status counts
   const statusCounts = useMemo<StatusCounts>(() => {
@@ -224,6 +271,31 @@ const BrandsManagement: React.FC = () => {
 
   const handleRetry = (): void => {
     fetchData();
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = (): number[] => {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
   };
 
   if (loading && brands.length === 0) {
@@ -305,6 +377,17 @@ const BrandsManagement: React.FC = () => {
             <option value="unpaid">Unpaid</option>
           </select>
           <select
+            value={validationFilter}
+            onChange={(e) =>
+              setValidationFilter(e.target.value as ValidationFilter)
+            }
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="all">All Validation</option>
+            <option value="validated">Validated</option>
+            <option value="unvalidated">Unvalidated</option>
+          </select>
+          <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value as DateFilter)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
@@ -339,7 +422,7 @@ const BrandsManagement: React.FC = () => {
       )}
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="text-2xl font-bold text-gray-900">{totalBrands}</div>
           <div className="text-sm text-gray-500">Total Brands</div>
@@ -356,10 +439,28 @@ const BrandsManagement: React.FC = () => {
           </div>
           <div className="text-sm text-gray-500">Unpaid</div>
         </div>
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <div className="text-2xl font-bold text-blue-600">
+            {statusCounts.validated}
+          </div>
+          <div className="text-sm text-gray-500">Validated</div>
+        </div>
+      </div>
+
+      {/* Results info */}
+      <div className="flex justify-between items-center text-sm text-gray-600">
+        <div>
+          Showing {startIndex + 1} to{" "}
+          {Math.min(endIndex, filteredBrands.length)} of {filteredBrands.length}{" "}
+          results
+        </div>
+        <div>
+          Page {currentPage} of {totalPages}
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        {filteredBrands.length === 0 ? (
+        {currentBrands.length === 0 ? (
           <div className="p-8 text-center">
             <div className="text-gray-500">
               {searchTerm || paymentFilter !== "all" || dateFilter !== "all"
@@ -374,6 +475,7 @@ const BrandsManagement: React.FC = () => {
                 onClick={() => {
                   setSearchTerm("");
                   setPaymentFilter("all");
+                  setValidationFilter("all");
                   setDateFilter("all");
                   setCustomDateFrom("");
                   setCustomDateTo("");
@@ -402,6 +504,9 @@ const BrandsManagement: React.FC = () => {
                     Payment Status
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Validation Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Join Date
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -410,7 +515,7 @@ const BrandsManagement: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredBrands.map((brand: Brand) => {
+                {currentBrands.map((brand: Brand) => {
                   const brandData: BrandData = brand || {};
                   return (
                     <tr
@@ -453,11 +558,25 @@ const BrandsManagement: React.FC = () => {
                           {brandData.hasPaid ? "Paid" : "Unpaid"}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                            brandData.isValidated
+                              ? "bg-blue-100 text-blue-800 border-blue-200"
+                              : "bg-gray-100 text-gray-800 border-gray-200"
+                          }`}
+                        >
+                          {brandData.isValidated ? "Validated" : "Unvalidated"}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(brandData.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
+                        <div
+                          className="flex space-x-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <button
                             type="button"
                             className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition-colors"
@@ -465,6 +584,7 @@ const BrandsManagement: React.FC = () => {
                             aria-label={`View details for ${
                               brandData.brandName || "brand"
                             }`}
+                            onClick={() => handleRowClick(brand)}
                           >
                             <Eye size={16} />
                           </button>
@@ -477,7 +597,53 @@ const BrandsManagement: React.FC = () => {
             </table>
           </div>
         )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <BiChevronLeft size={16} />
+                </button>
+
+                <div className="flex space-x-1">
+                  {getPageNumbers().map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        currentPage === pageNum
+                          ? "bg-blue-600 text-white"
+                          : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <BiChevronRight size={16} />
+                </button>
+              </div>
+
+              <div className="text-sm text-gray-600">
+                Total: {filteredBrands.length} brands
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
       {/* Modal - Conditionally rendered */}
       {showDetailsModal && (
         <BrandDetails
