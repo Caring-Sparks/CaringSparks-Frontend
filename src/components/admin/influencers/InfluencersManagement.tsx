@@ -15,6 +15,8 @@ import {
   BiUserX,
   BiCalendar,
   BiX,
+  BiChevronLeft,
+  BiChevronRight,
 } from "react-icons/bi";
 import Image from "next/image";
 import InfluencerDetails from "./InfluencerDetails";
@@ -76,16 +78,20 @@ interface StatusCounts {
   rejected: number;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 const InfluencersManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
   const [customDateFrom, setCustomDateFrom] = useState<string>("");
   const [customDateTo, setCustomDateTo] = useState<string>("");
-  // Remove the local hasInitiallyLoaded state since we're now using the store's hasInitialized
   const [selectedInfluencer, setSelectedInfluencer] =
     useState<ProcessedInfluencer | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   // Get data from Zustand store
   const { influencers, updateInfluencer, removeInfluencer } =
@@ -103,6 +109,11 @@ const InfluencersManagement: React.FC = () => {
       fetchData();
     }
   }, [fetchData, hasInitialized, loading]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, dateFilter, customDateFrom, customDateTo]);
 
   // Extract influencer data from the store format
   const processedInfluencers = useMemo<ProcessedInfluencer[]>(() => {
@@ -204,6 +215,29 @@ const InfluencersManagement: React.FC = () => {
     dateFilter,
   ]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredInfluencers.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentInfluencers = filteredInfluencers.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const handlePageChange = (page: number): void => {
+    setCurrentPage(page);
+  };
+
+  const handlePreviousPage = (): void => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = (): void => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
   // Handle row click to show details
   const handleRowClick = (influencer: ProcessedInfluencer): void => {
     setSelectedInfluencer(influencer);
@@ -274,6 +308,31 @@ const InfluencersManagement: React.FC = () => {
 
     return { approved, pending, rejected };
   }, [processedInfluencers]);
+
+  // Generate page numbers for pagination
+  const getPageNumbers = (): number[] => {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
 
   // Show loading only if we haven't initialized AND we're loading
   if (loading && !hasInitialized) {
@@ -409,6 +468,18 @@ const InfluencersManagement: React.FC = () => {
         </div>
       </div>
 
+      {/* Results info */}
+      <div className="flex justify-between items-center text-sm text-gray-600">
+        <div>
+          Showing {startIndex + 1} to{" "}
+          {Math.min(endIndex, filteredInfluencers.length)} of{" "}
+          {filteredInfluencers.length} results
+        </div>
+        <div>
+          Page {currentPage} of {totalPages}
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -432,8 +503,8 @@ const InfluencersManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredInfluencers.length > 0 ? (
-                filteredInfluencers.map((influencer) => (
+              {currentInfluencers.length > 0 ? (
+                currentInfluencers.map((influencer) => (
                   <tr
                     key={influencer.id}
                     className="hover:bg-gray-50 transition-colors cursor-pointer"
@@ -519,6 +590,51 @@ const InfluencersManagement: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <BiChevronLeft size={16} />
+                </button>
+
+                <div className="flex space-x-1">
+                  {getPageNumbers().map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        currentPage === pageNum
+                          ? "bg-blue-600 text-white"
+                          : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <BiChevronRight size={16} />
+                </button>
+              </div>
+
+              <div className="text-sm text-gray-600">
+                Total: {filteredInfluencers.length} influencers
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modal - Conditionally rendered */}
