@@ -9,7 +9,7 @@ interface Toast {
   id: string;
   type: ToastType;
   title: string;
-  message?: string;
+  message?: string | any;
   duration?: number;
 }
 

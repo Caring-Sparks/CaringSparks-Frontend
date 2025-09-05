@@ -4,7 +4,7 @@ export interface BrandData {
   role: string;
   platforms: string[];
   brandName: string;
-  email: string;
+  email?: string;
   brandPhone: string;
   influencersMin: number;
   influencersMax: number;
