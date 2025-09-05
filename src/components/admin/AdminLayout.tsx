@@ -22,7 +22,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     fetchData();
     fetchAdmins();
     fetchUser();
-  }, []);
+  }, [fetchData, fetchAdmins, fetchUser]);
 
   if (loading) {
     return (
