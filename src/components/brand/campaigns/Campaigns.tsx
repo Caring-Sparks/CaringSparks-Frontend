@@ -134,16 +134,6 @@ const Campaigns: React.FC = () => {
     return "Pending";
   };
 
-  const getPlatformIcon = (platforms: string[]) => {
-    if (platforms.includes("Instagram")) return "📷";
-    if (platforms.includes("Facebook")) return "📘";
-    if (platforms.includes("TikTok")) return "🎵";
-    if (platforms.includes("YouTube")) return "📺";
-    if (platforms.includes("X")) return "🐦";
-    if (platforms.includes("LinkedIn")) return "💼";
-    return "📱";
-  };
-
   const handleDeleteCampaign = async (id: string) => {
     setIsDeleting(true);
     try {
@@ -422,9 +412,6 @@ const Campaigns: React.FC = () => {
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <span className="text-2xl">
-                            {getPlatformIcon(campaign.platforms)}
-                          </span>
                           <h3 className="text-xl font-semibold text-gray-900">
                             {campaign.brandName}
                           </h3>
@@ -521,7 +508,7 @@ const Campaigns: React.FC = () => {
                           }}
                           className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
                         >
-                          Edit Campaign
+                          View/Edit Campaign
                         </button>
                         <button
                           onClick={() => {

@@ -94,7 +94,7 @@ const Account: React.FC = () => {
         newPassword: "",
         confirmPassword: "",
       });
-      fetchCampaignsByEmail(user.email)
+      fetchCampaignsByEmail(user.email);
     }
   }, [user, fetchCampaignsByEmail]);
 
@@ -541,9 +541,17 @@ const Account: React.FC = () => {
               {activeTab === "profile" && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Profile Information
-                    </h3>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        Profile Information
+                      </h3>
+                      <p className="text-xs">
+                        To change your email address, please contact support{" "}
+                        <span className="text-blue-400 underline">
+                          support@caringsparks.com
+                        </span>
+                      </p>
+                    </div>
                     <button
                       onClick={() => setIsEditing(!isEditing)}
                       className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-700"
@@ -583,7 +591,7 @@ const Account: React.FC = () => {
                           name="role"
                           value={formData.role}
                           onChange={handleInputChange}
-                          disabled={!isEditing}
+                          disabled
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                         >
                           <option value="">Select Role</option>
@@ -610,7 +618,7 @@ const Account: React.FC = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            disabled={!isEditing}
+                            disabled
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                           />
                         </div>

@@ -95,7 +95,17 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
     postDuration: campaignData.postDuration || "",
   };
 
-  const platforms = ["Instagram", "X", "TikTok"];
+  const platforms = [
+    "Instagram",
+    "X",
+    "TikTok",
+    "Youtube",
+    "Facebook",
+    "Linkedin",
+    "Threads",
+    "Discord",
+    "Snapchat",
+  ];
   const roles = ["Brand", "Business", "Person", "Movie", "Music", "Other"];
   const followerRanges = [
     "1k-3k",
