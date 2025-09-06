@@ -10,6 +10,33 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/utils/ToastNotification";
 import EditCampaign from "./EditCampaign";
 
+// Flutterwave types
+interface FlutterwaveConfig {
+  public_key: string;
+  tx_ref: string;
+  amount: number;
+  currency: string;
+  payment_options: string;
+  customer: {
+    email: string;
+    phone_number: string;
+    name: string;
+  };
+  customizations: {
+    title: string;
+    description: string;
+    logo: string;
+  };
+  callback: (response: any) => void;
+  onclose: () => void;
+}
+
+declare global {
+  interface Window {
+    FlutterwaveCheckout: (config: FlutterwaveConfig) => void;
+  }
+}
+
 // Updated Campaign interface to match the brand store
 interface Campaign {
   _id?: string;
@@ -38,7 +65,7 @@ interface Campaign {
   platformFee?: number;
   totalCost?: number;
   hasPaid?: boolean;
-  isValidated?: boolean;
+  status: "pending" | "approved" | "rejected";
   createdAt?: string;
   updatedAt?: string;
 }
@@ -53,11 +80,12 @@ const Campaigns: React.FC = () => {
     fetchCampaigns,
     fetchCampaignsByEmail,
     deleteCampaign,
+    updateCampaign,
     clearErrors,
   } = useBrandStore();
 
   const [filter, setFilter] = useState<
-    "all" | "paid" | "unpaid" | "approved" | "rejected"
+    "all" | "paid" | "unpaid" | "approved" | "rejected" | "pending"
   >("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [newCampaign, setNewCampaign] = useState<boolean>(false);
@@ -68,7 +96,28 @@ const Campaigns: React.FC = () => {
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [payingCampaign, setPayingCampaign] = useState<string>("");
+  const [isProcessingPayment, setIsProcessingPayment] =
+    useState<boolean>(false);
   const { showToast } = useToast();
+
+  // Load Flutterwave script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.flutterwave.com/v3.js";
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script if needed
+      const existingScript = document.querySelector(
+        'script[src="https://checkout.flutterwave.com/v3.js"]'
+      );
+      if (existingScript) {
+        document.head.removeChild(existingScript);
+      }
+    };
+  }, []);
 
   // Fetch campaigns on component mount
   useEffect(() => {
@@ -84,6 +133,161 @@ const Campaigns: React.FC = () => {
     return () => clearErrors();
   }, [user?.email, fetchCampaigns, fetchCampaignsByEmail, clearErrors]);
 
+  // Flutterwave payment handler
+  const handlePayment = (campaign: Campaign) => {
+    if (!campaign.totalCost || campaign.totalCost <= 0) {
+      showToast({
+        type: "error",
+        title: "Payment Error",
+        message: "Invalid campaign cost. Please contact support.",
+        duration: 6000,
+      });
+      return;
+    }
+
+    if (!user) {
+      showToast({
+        type: "error",
+        title: "Authentication Error",
+        message: "Please log in to make payment.",
+        duration: 6000,
+      });
+      return;
+    }
+
+    setPayingCampaign(campaign._id || "");
+    setIsProcessingPayment(true);
+
+    const config: FlutterwaveConfig = {
+      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "", // Add your Flutterwave public key to env
+      tx_ref: `campaign_${campaign._id}_${Date.now()}`, // Unique transaction reference
+      amount: campaign.totalCost,
+      currency: "NGN",
+      payment_options: "card,mobilemoney,ussd,banktransfer",
+      customer: {
+        email: user.email || campaign.email,
+        phone_number: campaign.brandPhone || "",
+        name: campaign.brandName,
+      },
+      customizations: {
+        title: "Campaign Payment",
+        description: `Payment for ${campaign.brandName} campaign`,
+        logo: "/logo.png",
+      },
+      callback: (response: any) => {
+        handlePaymentCallback(response, campaign);
+      },
+      onclose: () => {
+        setIsProcessingPayment(false);
+        setPayingCampaign("");
+        showToast({
+          type: "info",
+          title: "Payment Cancelled",
+          message: "Payment was cancelled. You can try again anytime.",
+          duration: 4000,
+        });
+      },
+    };
+
+    if (window.FlutterwaveCheckout) {
+      window.FlutterwaveCheckout(config);
+    } else {
+      setIsProcessingPayment(false);
+      setPayingCampaign("");
+      showToast({
+        type: "error",
+        title: "Payment Error",
+        message: "Payment system is not available. Please try again later.",
+        duration: 6000,
+      });
+    }
+  };
+
+  // Handle payment callback
+  const handlePaymentCallback = async (response: any, campaign: Campaign) => {
+    try {
+      if (response.status === "successful") {
+        // Verify payment on your backend (recommended)
+        const verificationResult = await verifyPayment(response.transaction_id);
+
+        if (verificationResult.success) {
+          const updatedCampaign: any = {
+            ...campaign,
+            hasPaid: true,
+            paymentReference: response.transaction_id,
+            paymentDate: new Date().toISOString(),
+          };
+
+          await updateCampaign(campaign._id!, updatedCampaign);
+
+          showToast({
+            type: "success",
+            title: "Payment Successful!",
+            message: "Your campaign payment has been processed successfully.",
+            duration: 8000,
+          });
+
+          // Refresh campaigns list
+          if (user?.email) {
+            await fetchCampaignsByEmail(user.email);
+          } else {
+            await fetchCampaigns();
+          }
+        } else {
+          throw new Error("Payment verification failed");
+        }
+      } else {
+        throw new Error("Payment was not successful");
+      }
+    } catch (error) {
+      showToast({
+        type: "error",
+        title: "Payment Error",
+        message:
+          "There was an issue processing your payment. Please contact support if you were charged.",
+        duration: 10000,
+      });
+    } finally {
+      setIsProcessingPayment(false);
+      setPayingCampaign("");
+    }
+  };
+
+  const getAuthToken = () => {
+    if (typeof window !== "undefined") {
+      try {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          return user?.data?.token || user?.token || null;
+        }
+      } catch (err) {
+        console.error("Error parsing user token:", err);
+      }
+    }
+    return null;
+  };
+  const token = getAuthToken();
+
+  // Verify payment on backend (you'll need to implement this endpoint)
+  const verifyPayment = async (transactionId: string) => {
+    try {
+      const response = await fetch("/api/verify-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Assuming you have user token
+        },
+        body: JSON.stringify({ transactionId }),
+      });
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      return { success: false };
+    }
+  };
+
   // Filter campaigns based on current filters
   const filteredCampaigns = campaigns.filter((campaign) => {
     // Status filter
@@ -91,9 +295,11 @@ const Campaigns: React.FC = () => {
     if (filter === "paid") matchesFilter = campaign.hasPaid === true;
     else if (filter === "unpaid") matchesFilter = campaign.hasPaid !== true;
     else if (filter === "approved")
-      matchesFilter = campaign.isValidated === true;
+      matchesFilter = campaign.status === "approved";
     else if (filter === "rejected")
-      matchesFilter = campaign.isValidated === null;
+      matchesFilter = campaign.status === "rejected";
+    else if (filter === "pending")
+      matchesFilter = campaign.status === "pending";
 
     // Search filter
     const matchesSearch =
@@ -115,23 +321,43 @@ const Campaigns: React.FC = () => {
   });
 
   const getStatusColor = (campaign: Campaign) => {
-    if (campaign.hasPaid && campaign.isValidated) {
-      return "bg-green-100 text-green-800";
-    } else if (campaign.hasPaid && !campaign.isValidated) {
-      return "bg-blue-100 text-blue-800";
-    } else if (!campaign.hasPaid && campaign.isValidated) {
-      return "bg-yellow-100 text-yellow-800";
-    } else {
-      return "bg-gray-100 text-gray-800";
+    switch (campaign.status) {
+      case "approved":
+        if (campaign.hasPaid) {
+          return "bg-green-100 text-green-800"; // Active (Approved & Paid)
+        } else {
+          return "bg-blue-100 text-blue-800"; // Approved but Unpaid
+        }
+      case "rejected":
+        return "bg-red-100 text-red-800"; // Rejected
+      case "pending":
+      default:
+        if (campaign.hasPaid) {
+          return "bg-yellow-100 text-yellow-800"; // Paid but Pending Approval
+        } else {
+          return "bg-gray-100 text-gray-800"; // Pending & Unpaid
+        }
     }
   };
 
   const getStatusText = (campaign: Campaign) => {
-    if (campaign.hasPaid && campaign.isValidated) return "Active";
-    if (campaign.hasPaid && !campaign.isValidated)
-      return "Paid - Pending Approval";
-    if (!campaign.hasPaid && campaign.isValidated) return "Approved - Unpaid";
-    return "Pending";
+    switch (campaign.status) {
+      case "approved":
+        if (campaign.hasPaid) {
+          return "Active"; // Approved & Paid
+        } else {
+          return "Approved - Payment Required"; // Approved but not paid
+        }
+      case "rejected":
+        return "Rejected";
+      case "pending":
+      default:
+        if (campaign.hasPaid) {
+          return "Paid - Pending Approval"; // Paid but waiting for approval
+        } else {
+          return "Pending"; // Not paid and not approved
+        }
+    }
   };
 
   const handleDeleteCampaign = async (id: string) => {
@@ -147,7 +373,6 @@ const Campaigns: React.FC = () => {
       setIsDeleting(false);
       setShowDeleteModal(false);
     } catch (error) {
-      console.error("Failed to delete campaign:", error);
       showToast({
         type: "error",
         title: "Sorry!",
@@ -161,9 +386,9 @@ const Campaigns: React.FC = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-NG", {
       style: "currency",
-      currency: "USD",
+      currency: "NGN",
     }).format(amount);
   };
 
@@ -305,21 +530,26 @@ const Campaigns: React.FC = () => {
               {/* Filter buttons */}
               <div className="flex flex-wrap gap-2">
                 {/* Status filters */}
-                {["all", "paid", "unpaid", "approved", "rejected"].map(
-                  (status) => (
-                    <button
-                      key={status}
-                      onClick={() => setFilter(status as typeof filter)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                        filter === status
-                          ? "bg-indigo-600 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      {status.charAt(0).toUpperCase() + status.slice(1)}
-                    </button>
-                  )
-                )}
+                {[
+                  "all",
+                  "paid",
+                  "unpaid",
+                  "pending",
+                  "approved",
+                  "rejected",
+                ].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setFilter(status as typeof filter)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                      filter === status
+                        ? "bg-indigo-600 text-white"
+                        : "bg-white text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </button>
+                ))}
               </div>
 
               {/* Additional filters */}
@@ -352,6 +582,9 @@ const Campaigns: React.FC = () => {
                   <option value="youtube">YouTube</option>
                   <option value="x">X</option>
                   <option value="linkedin">LinkedIn</option>
+                  <option value="threads">Threads</option>
+                  <option value="discord">Discord</option>
+                  <option value="snapchat">Snapchat</option>
                 </select>
               </div>
             </div>
@@ -372,17 +605,13 @@ const Campaigns: React.FC = () => {
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(
-                    campaigns
-                      .filter((c) => c.hasPaid)
-                      .reduce((sum, c) => sum + (c.totalCost || 0), 0)
-                  )}
+                  {campaigns.filter((c) => c.status === "pending").length}
                 </div>
-                <div className="text-gray-600">Total Spent</div>
+                <div className="text-gray-600">Pending Approval</div>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="text-2xl font-bold text-gray-900">
-                  {campaigns.filter((c) => c.isValidated).length}
+                  {campaigns.filter((c) => c.status === "approved").length}
                 </div>
                 <div className="text-gray-600">Approved Campaigns</div>
               </div>
@@ -411,7 +640,7 @@ const Campaigns: React.FC = () => {
                   <div className="p-6">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex items-center gap-3 flex-wrap mb-2">
                           <h3 className="text-xl font-semibold text-gray-900">
                             {campaign.brandName}
                           </h3>
@@ -519,9 +748,21 @@ const Campaigns: React.FC = () => {
                         >
                           Delete
                         </button>
-                        <button className="bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                          Make Payment
-                        </button>
+                        {!campaign.hasPaid && (
+                          <button
+                            onClick={() => handlePayment(campaign)}
+                            disabled={
+                              isProcessingPayment &&
+                              payingCampaign === campaign._id
+                            }
+                            className="bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isProcessingPayment &&
+                            payingCampaign === campaign._id
+                              ? "Processing..."
+                              : "Make Payment"}
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

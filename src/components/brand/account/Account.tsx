@@ -385,9 +385,9 @@ const Account: React.FC = () => {
   const { totalCampaigns, paidCampaigns, totalSpent } = calculateAccountStats();
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-NG", {
       style: "currency",
-      currency: "USD",
+      currency: "NGN",
     }).format(amount);
   };
 
@@ -456,7 +456,7 @@ const Account: React.FC = () => {
         )}
       </AnimatePresence>
       <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
@@ -513,11 +513,11 @@ const Account: React.FC = () => {
           {/* Tab Navigation */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="border-b border-gray-200">
-              <nav className="flex">
+              <nav className="flex overflow-scroll no-scrollbar">
                 {[
                   { key: "profile", label: "Profile", icon: User },
                   { key: "security", label: "Security", icon: Shield },
-                  { key: "notifications", label: "Notifications", icon: Bell },
+                  // { key: "notifications", label: "Notifications", icon: Bell },
                   { key: "billing", label: "Billing", icon: CreditCard },
                 ].map(({ key, label, icon: Icon }) => (
                   <button
@@ -541,17 +541,9 @@ const Account: React.FC = () => {
               {activeTab === "profile" && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        Profile Information
-                      </h3>
-                      <p className="text-xs">
-                        To change your email address, please contact support{" "}
-                        <span className="text-blue-400 underline">
-                          support@caringsparks.com
-                        </span>
-                      </p>
-                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Profile Information
+                    </h3>
                     <button
                       onClick={() => setIsEditing(!isEditing)}
                       className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-700"
@@ -618,7 +610,7 @@ const Account: React.FC = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            disabled
+                            disabled={!isEditing}
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                           />
                         </div>

@@ -7,57 +7,65 @@ import { TbPercentage } from "react-icons/tb";
 import StatCard from "./StatsCard";
 import { useAdminStats, useAdminStore } from "@/stores/adminStore";
 import { IoReload } from "react-icons/io5";
+import { FaNairaSign } from "react-icons/fa6";
 
 const Stats = () => {
   const { totalBrands, totalInfluencers, loading, error } = useAdminStats();
-  const { brands, influencers } = useAdminStore();
+  const { brands, influencers, campaigns } = useAdminStore();
   const refreshData = useAdminStore((state) => state.refreshData);
 
-  const activeBrands = brands.filter(
-    (brand: any) => brand.hasPaid === true
+  const activeBrands = campaigns.filter(
+    (campaign: any) => campaign.hasPaid === true
   ).length;
 
   const verifiedInfluencers = influencers.filter(
     (influencer: any) => influencer.status === "approved"
   ).length;
 
+  const approvedPaidCampaigns = campaigns.filter(
+    (campaign: any) => campaign.status === "approved" && campaign.hasPaid === true
+  ).length;
+
   const calculateRevenue = () => {
-    if (!brands || brands.length === 0) return 0;
-    const totalRevenue = brands.reduce(
-      (acc: number, brand: any) => acc + (brand.totalCost || 0),
-      0
-    );
+    if (!campaigns || campaigns.length === 0) return 0;
+    
+    const totalRevenue = campaigns
+      .filter((campaign: any) => campaign.hasPaid === true)
+      .reduce((acc: number, campaign: any) => acc + (campaign.totalCost || 0), 0);
 
     return totalRevenue;
   };
 
   const calculateGrowthPercentage = () => {
     const totalUsers = totalBrands + totalInfluencers;
-    const growthRate = (totalUsers / 100) * 94.3;
+    if (totalUsers === 0) return 0;
+    // This seems like a placeholder calculation - you may want to adjust this
+    const growthRate = Math.min((totalUsers / 100) * 94.3, 100);
     return growthRate;
   };
 
   const calculateChange = (current: number, previous: number) => {
-    if (previous === 0) return 0;
+    if (previous === 0) return current > 0 ? 100 : 0;
     return ((current - previous) / previous) * 100;
   };
 
+  // These would typically come from historical data or previous period stats
   const previousStats = {
-    totalInfluencers: totalInfluencers,
-    totalBrands: totalBrands,
-    activeBrands: activeBrands,
-    verifiedInfluencers: verifiedInfluencers,
-    revenue: 0,
-    growthRate: 0,
+    totalInfluencers: Math.max(0, totalInfluencers - Math.floor(totalInfluencers * 0.1)), // Mock 10% less
+    totalBrands: Math.max(0, totalBrands - Math.floor(totalBrands * 0.1)), // Mock 10% less
+    activeBrands: Math.max(0, activeBrands - Math.floor(activeBrands * 0.05)), // Mock 5% less
+    verifiedInfluencers: Math.max(0, verifiedInfluencers - Math.floor(verifiedInfluencers * 0.08)), // Mock 8% less
+    revenue: Math.max(0, calculateRevenue() - (calculateRevenue() * 0.15)), // Mock 15% less
+    growthRate: Math.max(0, calculateGrowthPercentage() - 5), // Mock 5% less
   };
 
   function formatRevenue(value: number): string {
     if (value >= 1_000_000) {
-      return `$${(value / 1_000_000).toFixed(1)}M`;
+      return `₦${(value / 1_000_000).toFixed(1)}M`;
     } else if (value >= 1_000) {
-      return `$${(value / 1_000).toFixed(1)}K`;
+      return `₦${(value / 1_000).toFixed(1)}K`;
     } else {
-      return `$${value.toFixed(0)}`;
+      return `₦${value.toLocaleString()}`;
     }
   }
 
@@ -77,9 +85,9 @@ const Stats = () => {
       color: "bg-gradient-to-r from-purple-500 to-purple-600",
     },
     {
-      title: "Active Brands",
-      value: loading ? "Loading..." : activeBrands.toString(),
-      change: calculateChange(activeBrands, previousStats.activeBrands),
+      title: "Active Campaigns",
+      value: loading ? "Loading..." : approvedPaidCampaigns.toString(),
+      change: calculateChange(approvedPaidCampaigns, previousStats.activeBrands),
       icon: BiTrendingUp,
       color: "bg-gradient-to-r from-green-500 to-green-600",
     },
@@ -97,15 +105,14 @@ const Stats = () => {
       title: "Total Revenue",
       value: loading ? "Loading..." : formatRevenue(calculateRevenue()),
       change: calculateChange(calculateRevenue(), previousStats.revenue),
-      icon: FaDollarSign,
+      icon: FaNairaSign,
       color: "bg-gradient-to-r from-emerald-500 to-emerald-600",
     },
-
     {
       title: "Growth Rate",
       value: loading
         ? "Loading..."
-        : `${Math.min(calculateGrowthPercentage(), 100).toFixed(1)}%`,
+        : `${calculateGrowthPercentage().toFixed(1)}%`,
       change: calculateChange(
         calculateGrowthPercentage(),
         previousStats.growthRate

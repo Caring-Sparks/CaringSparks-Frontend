@@ -1,626 +1,773 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useBrandStore } from "@/stores/brandStore";
+import { FaPlus } from "react-icons/fa";
+import { AnimatePresence, motion } from "framer-motion";
+import { useToast } from "@/utils/ToastNotification";
 
-// Define a type for the performance metrics of a campaign
-interface CampaignPerformance {
-  clicks: number;
-  conversions: number;
-  ctr: number;
-  roi: number;
-}
-
-// Define the main type for a campaign
+// Updated Campaign interface to match the brand store
 interface Campaign {
-  id: number;
-  name: string;
-  brand: string;
-  status: "active" | "completed" | "draft" | "paused";
-  budget: number;
-  spent: number;
-  reach: number;
-  engagement: number;
-  influencers: number;
-  startDate: string;
-  endDate: string;
-  platform: string[];
-  category: string;
-  performance: CampaignPerformance;
-}
-
-// Props for the CampaignCard component
-interface CampaignCardProps {
-  campaign: Campaign;
-  onClick: () => void;
-}
-
-// Props for the CampaignModal component
-interface CampaignModalProps {
-  campaign: Campaign;
-  onClose: () => void;
+  _id?: string;
+  role: "Brand" | "Business" | "Person" | "Movie" | "Music" | "Other";
+  platforms: string[];
+  brandName: string;
+  email: string;
+  brandPhone: string;
+  influencersMin: number;
+  influencersMax: number;
+  followersRange?:
+    | ""
+    | "1k-3k"
+    | "3k-10k"
+    | "10k-20k"
+    | "20k-50k"
+    | "50k & above";
+  location: string;
+  additionalLocations?: string[];
+  postFrequency?: string;
+  postDuration?: string;
+  avgInfluencers?: number;
+  postCount?: number;
+  costPerInfluencerPerPost?: number;
+  totalBaseCost?: number;
+  platformFee?: number;
+  totalCost?: number;
+  hasPaid?: boolean;
+  status: "pending" | "approved" | "rejected";
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 const CampaignManagement: React.FC = () => {
-  // State to manage the selected campaign filter tab, with explicit typing
-  const [selectedTab, setSelectedTab] = useState<
-    "all" | "active" | "completed" | "paused" | "draft"
+  const router = useRouter();
+  const {
+    campaigns,
+    user,
+    campaignsLoading,
+    campaignsError,
+    fetchCampaigns,
+    deleteCampaign,
+    clearErrors,
+  } = useBrandStore();
+
+  const [filter, setFilter] = useState<
+    "all" | "paid" | "unpaid" | "approved" | "rejected" | "pending"
   >("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [newCampaign, setNewCampaign] = useState<boolean>(false);
+  const [editCampaign, setEditCampaign] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showRejectModal, setShowRejectModal] = useState<boolean>(false);
+  const [showApproveModal, setShowApproveModal] = useState<boolean>(false);
+  const [deletingID, setDeletingID] = useState<string>("");
+  const [actioningID, setActioningID] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isApproving, setIsApproving] = useState<boolean>(false);
+  const [isRejecting, setIsRejecting] = useState<boolean>(false);
+  const [platformFilter, setPlatformFilter] = useState<string>("all");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const { showToast } = useToast();
 
-  // State for the currently selected campaign to display in the modal
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(
-    null
-  );
+  // Fetch campaigns on component mount
+  useEffect(() => {
+    const loadCampaigns = async () => {
+      await fetchCampaigns();
+    };
 
-  // Dummy data typed as an array of Campaign objects
-  const campaigns: Campaign[] = [
-    {
-      id: 1,
-      name: "Summer Fashion Collection 2025",
-      brand: "StyleHub",
-      status: "active",
-      budget: 25000,
-      spent: 18500,
-      reach: 2500000,
-      engagement: 156000,
-      influencers: 12,
-      startDate: "2025-08-01",
-      endDate: "2025-09-30",
-      platform: ["Instagram", "TikTok"],
-      category: "Fashion",
-      performance: {
-        clicks: 45600,
-        conversions: 1280,
-        ctr: 1.82,
-        roi: 340,
-      },
-    },
-    {
-      id: 2,
-      name: "Tech Gadget Launch",
-      brand: "InnovateTech",
-      status: "completed",
-      budget: 50000,
-      spent: 48200,
-      reach: 4200000,
-      engagement: 320000,
-      influencers: 8,
-      startDate: "2025-07-15",
-      endDate: "2025-08-15",
-      platform: ["YouTube", "Twitter"],
-      category: "Technology",
-      performance: {
-        clicks: 89200,
-        conversions: 2840,
-        ctr: 2.12,
-        roi: 425,
-      },
-    },
-    {
-      id: 3,
-      name: "Wellness & Fitness Challenge",
-      brand: "FitLife",
-      status: "draft",
-      budget: 15000,
-      spent: 0,
-      reach: 0,
-      engagement: 0,
-      influencers: 15,
-      startDate: "2025-09-01",
-      endDate: "2025-10-31",
-      platform: ["Instagram", "YouTube"],
-      category: "Health & Fitness",
-      performance: {
-        clicks: 0,
-        conversions: 0,
-        ctr: 0,
-        roi: 0,
-      },
-    },
-    {
-      id: 4,
-      name: "Beauty Product Reviews",
-      brand: "GlowUp Cosmetics",
-      status: "paused",
-      budget: 30000,
-      spent: 12800,
-      reach: 1800000,
-      engagement: 98000,
-      influencers: 20,
-      startDate: "2025-08-10",
-      endDate: "2025-09-20",
-      platform: ["Instagram", "TikTok", "YouTube"],
-      category: "Beauty",
-      performance: {
-        clicks: 32400,
-        conversions: 890,
-        ctr: 1.8,
-        roi: 275,
-      },
-    },
-    {
-      id: 5,
-      name: "Food & Recipe Content",
-      brand: "TasteMakers",
-      status: "active",
-      budget: 20000,
-      spent: 8900,
-      reach: 1200000,
-      engagement: 145000,
-      influencers: 10,
-      startDate: "2025-08-20",
-      endDate: "2025-10-15",
-      platform: ["Instagram", "TikTok"],
-      category: "Food & Beverage",
-      performance: {
-        clicks: 28900,
-        conversions: 1150,
-        ctr: 2.41,
-        roi: 298,
-      },
-    },
-  ];
+    loadCampaigns();
+    return () => clearErrors();
+  }, [fetchCampaigns, clearErrors]);
 
-  // Helper function to get status-based Tailwind classes
-  const getStatusColor = (status: Campaign["status"]): string => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "completed":
-        return "bg-blue-100 text-blue-800";
-      case "paused":
-        return "bg-yellow-100 text-yellow-800";
-      case "draft":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+  // API call to approve campaign
+  const handleApproveCampaign = async (campaignId: string) => {
+    setIsApproving(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/${campaignId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: "approved",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to approve campaign");
+      }
+
+      const data = await response.json();
+
+      // Refresh campaigns list
+      await fetchCampaigns();
+
+      showToast({
+        type: "success",
+        title: "Campaign Approved!",
+        message:
+          "The campaign has been successfully approved and is now active.",
+        duration: 6000,
+      });
+
+      setShowApproveModal(false);
+      setIsApproving(false);
+    } catch (error) {
+      console.error("Failed to approve campaign:", error);
+      showToast({
+        type: "error",
+        title: "Approval Failed",
+        message: "We couldn't approve the campaign. Please try again later.",
+        duration: 6000,
+      });
+      setIsApproving(false);
     }
   };
 
-  // Filter campaigns based on the selected tab
-  const filteredCampaigns: Campaign[] =
-    selectedTab === "all"
-      ? campaigns
-      : campaigns.filter((campaign) => campaign.status === selectedTab);
+  // API call to reject campaign
+  const handleRejectCampaign = async (campaignId: string) => {
+    setIsRejecting(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/${campaignId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: "rejected",
+          }),
+        }
+      );
 
-  // Helper function for currency formatting
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat("en-US", {
+      if (!response.ok) {
+        throw new Error("Failed to reject campaign");
+      }
+
+      const data = await response.json();
+
+      // Refresh campaigns list
+      await fetchCampaigns();
+
+      showToast({
+        type: "success",
+        title: "Campaign Rejected",
+        message:
+          "The campaign has been rejected and the client has been notified.",
+        duration: 6000,
+      });
+
+      setShowRejectModal(false);
+      setIsRejecting(false);
+    } catch (error) {
+      console.error("Failed to reject campaign:", error);
+      showToast({
+        type: "error",
+        title: "Rejection Failed",
+        message: "We couldn't reject the campaign. Please try again later.",
+        duration: 6000,
+      });
+      setIsRejecting(false);
+    }
+  };
+
+  // Filter campaigns based on current filters
+  const filteredCampaigns = campaigns.filter((campaign) => {
+    // Status filter
+    let matchesFilter = true;
+    if (filter === "paid") matchesFilter = campaign.hasPaid === true;
+    else if (filter === "unpaid") matchesFilter = campaign.hasPaid !== true;
+    else if (filter === "approved")
+      matchesFilter = campaign.status === "approved";
+    else if (filter === "rejected")
+      matchesFilter = campaign.status === "rejected";
+    else if (filter === "pending")
+      matchesFilter = campaign.status === "pending";
+
+    // Search filter
+    const matchesSearch =
+      campaign.brandName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      campaign.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      campaign.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Platform filter
+    const matchesPlatform =
+      platformFilter === "all" ||
+      campaign.platforms.some(
+        (p) => p.toLowerCase() === platformFilter.toLowerCase()
+      );
+
+    // Role filter
+    const matchesRole = roleFilter === "all" || campaign.role === roleFilter;
+
+    return matchesFilter && matchesSearch && matchesPlatform && matchesRole;
+  });
+
+  const getStatusColor = (campaign: Campaign) => {
+    switch (campaign.status) {
+      case "approved":
+        if (campaign.hasPaid) {
+          return "bg-green-100 text-green-800"; // Active (Approved & Paid)
+        } else {
+          return "bg-blue-100 text-blue-800"; // Approved but Unpaid
+        }
+      case "rejected":
+        return "bg-red-100 text-red-800"; // Rejected
+      case "pending":
+      default:
+        if (campaign.hasPaid) {
+          return "bg-yellow-100 text-yellow-800"; // Paid but Pending Approval
+        } else {
+          return "bg-gray-100 text-gray-800"; // Pending & Unpaid
+        }
+    }
+  };
+
+  const getStatusText = (campaign: Campaign) => {
+    switch (campaign.status) {
+      case "approved":
+        if (campaign.hasPaid) {
+          return "Active"; // Approved & Paid
+        } else {
+          return "Approved - Payment Required"; // Approved but not paid
+        }
+      case "rejected":
+        return "Rejected";
+      case "pending":
+      default:
+        if (campaign.hasPaid) {
+          return "Paid - Pending Approval"; // Paid but waiting for approval
+        } else {
+          return "Pending"; // Not paid and not approved
+        }
+    }
+  };
+
+  const handleDeleteCampaign = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      const res = await deleteCampaign(id);
+      showToast({
+        type: "success",
+        title: "Success!",
+        message: "Your campaign has been deleted!",
+        duration: 6000,
+      });
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Failed to delete campaign:", error);
+      showToast({
+        type: "error",
+        title: "Sorry!",
+        message:
+          "We were not able to delete your campaign, please try again later.",
+        duration: 6000,
+      });
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-NG", {
       style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
+      currency: "NGN",
     }).format(amount);
   };
 
-  // Helper function for number formatting
-  const formatNumber = (num: number): string => {
-    return new Intl.NumberFormat("en-US").format(num);
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString();
   };
 
-  // CampaignCard sub-component, now with typed props
-  const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onClick }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all cursor-pointer"
-      onClick={onClick}
-    >
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">
-            {campaign.name}
-          </h3>
-          <p className="text-sm text-gray-600">{campaign.brand}</p>
-        </div>
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-            campaign.status
-          )}`}
-        >
-          {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <p className="text-xs text-gray-500 mb-1">Budget</p>
-          <p className="text-sm font-medium">
-            {formatCurrency(campaign.budget)}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500 mb-1">Spent</p>
-          <p className="text-sm font-medium">
-            {formatCurrency(campaign.spent)}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500 mb-1">Reach</p>
-          <p className="text-sm font-medium">{formatNumber(campaign.reach)}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500 mb-1">Influencers</p>
-          <p className="text-sm font-medium">{campaign.influencers}</p>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-1 mb-4">
-        {campaign.platform.map((platform, index) => (
-          <span
-            key={index}
-            className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md"
-          >
-            {platform}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex justify-between items-center">
-        <div className="text-xs text-gray-500">
-          {new Date(campaign.startDate).toLocaleDateString()} -{" "}
-          {new Date(campaign.endDate).toLocaleDateString()}
-        </div>
-        <div className="text-xs font-medium text-green-600">
-          ROI: {campaign.performance.roi}%
-        </div>
-      </div>
-    </motion.div>
-  );
-
-  // CampaignModal sub-component, now with typed props
-  const CampaignModal: React.FC<CampaignModalProps> = ({
-    campaign,
-    onClose,
-  }) => (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-slate-200/20 backdrop-blur-md flex items-center justify-center p-4 z-50"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-white rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {campaign.name}
-            </h2>
-            <p className="text-gray-600">{campaign.brand}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
-          >
-            ×
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="text-sm font-medium text-blue-800 mb-1">
-              Total Reach
-            </h4>
-            <p className="text-2xl font-bold text-blue-900">
-              {formatNumber(campaign.reach)}
-            </p>
-          </div>
-          <div className="bg-green-50 p-4 rounded-lg">
-            <h4 className="text-sm font-medium text-green-800 mb-1">
-              Engagement
-            </h4>
-            <p className="text-2xl font-bold text-green-900">
-              {formatNumber(campaign.engagement)}
-            </p>
-          </div>
-          <div className="bg-purple-50 p-4 rounded-lg">
-            <h4 className="text-sm font-medium text-purple-800 mb-1">Clicks</h4>
-            <p className="text-2xl font-bold text-purple-900">
-              {formatNumber(campaign.performance.clicks)}
-            </p>
-          </div>
-          <div className="bg-orange-50 p-4 rounded-lg">
-            <h4 className="text-sm font-medium text-orange-800 mb-1">
-              Conversions
-            </h4>
-            <p className="text-2xl font-bold text-orange-900">
-              {formatNumber(campaign.performance.conversions)}
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Campaign Details</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Category:</span>
-                <span className="font-medium">{campaign.category}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Status:</span>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs ${getStatusColor(
-                    campaign.status
-                  )}`}
-                >
-                  {campaign.status.charAt(0).toUpperCase() +
-                    campaign.status.slice(1)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Duration:</span>
-                <span className="font-medium">
-                  {new Date(campaign.startDate).toLocaleDateString()} -{" "}
-                  {new Date(campaign.endDate).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Platforms:</span>
-                <div className="flex gap-1">
-                  {campaign.platform.map((platform, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
-                    >
-                      {platform}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Performance Metrics</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">CTR:</span>
-                <span className="font-medium">
-                  {campaign.performance.ctr.toFixed(2)}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">ROI:</span>
-                <span className="font-medium text-green-600">
-                  {campaign.performance.roi}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Budget Utilized:</span>
-                <span className="font-medium">
-                  {((campaign.spent / campaign.budget) * 100).toFixed(1)}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Engagement Rate:</span>
-                <span className="font-medium">
-                  {((campaign.engagement / campaign.reach) * 100).toFixed(2)}%
-                </span>
-              </div>
+  if (campaignsLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded"></div>
+              ))}
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
 
-        <div className="flex gap-3 mt-8 pt-6 border-t">
-          <button className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
-            Edit Campaign
-          </button>
-          <button className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition">
-            View Analytics
-          </button>
-          {campaign.status === "active" && (
-            <button className="flex-1 bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 transition">
-              Pause Campaign
+  if (campaignsError) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <div className="text-red-600 text-lg font-medium mb-2">
+              Error Loading Campaigns
+            </div>
+            <p className="text-red-600 mb-4">{campaignsError}</p>
+            <button
+              onClick={() => fetchCampaigns()}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+            >
+              Retry
             </button>
-          )}
+          </div>
         </div>
-      </motion.div>
-    </motion.div>
-  );
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Campaign Management
-          </h1>
-        </div>
-      </div>
-
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Total Campaigns</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {campaigns.length}
-              </p>
-            </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <svg
-                className="w-6 h-6 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-            </div>
-          </div>
-          <div className="flex items-center mt-3">
-            <span className="text-green-600 text-sm font-medium">+12%</span>
-            <span className="text-gray-500 text-sm ml-2">vs last month</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Total Spend</p>
-              <p className="text-2xl font-bold text-gray-900">$186K</p>
-            </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <svg
-                className="w-6 h-6 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                />
-              </svg>
-            </div>
-          </div>
-          <div className="flex items-center mt-3">
-            <span className="text-green-600 text-sm font-medium">+8%</span>
-            <span className="text-gray-500 text-sm ml-2">vs last month</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Total Reach</p>
-              <p className="text-2xl font-bold text-gray-900">12.4M</p>
-            </div>
-            <div className="p-3 bg-purple-100 rounded-full">
-              <svg
-                className="w-6 h-6 text-purple-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-            </div>
-          </div>
-          <div className="flex items-center mt-3">
-            <span className="text-green-600 text-sm font-medium">+24%</span>
-            <span className="text-gray-500 text-sm ml-2">vs last month</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Avg ROI</p>
-              <p className="text-2xl font-bold text-gray-900">332%</p>
-            </div>
-            <div className="p-3 bg-orange-100 rounded-full">
-              <svg
-                className="w-6 h-6 text-orange-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                />
-              </svg>
-            </div>
-          </div>
-          <div className="flex items-center mt-3">
-            <span className="text-green-600 text-sm font-medium">+18%</span>
-            <span className="text-gray-500 text-sm ml-2">vs last month</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6 overflow-hidden overflow-scroll">
-        {[
-          { key: "all", label: "All Campaigns" },
-          { key: "active", label: "Active" },
-          { key: "completed", label: "Completed" },
-          { key: "paused", label: "Paused" },
-          { key: "draft", label: "Draft" },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() =>
-              setSelectedTab(tab.key as Campaign["status"] | "all")
-            }
-            className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-              selectedTab === tab.key
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            {tab.label}
-            <span className="ml-2 px-2 py-1 text-xs bg-gray-200 rounded-full">
-              {tab.key === "all"
-                ? campaigns.length
-                : campaigns.filter((c) => c.status === tab.key).length}
-            </span>
-          </button>
-        ))}
-      </div>
-
-      {/* Campaigns Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCampaigns.map((campaign) => (
-          <CampaignCard
-            key={campaign.id}
-            campaign={campaign}
-            onClick={() => setSelectedCampaign(campaign)}
-          />
-        ))}
-      </div>
-
-      {filteredCampaigns.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">📊</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            No campaigns found
-          </h3>
-          <p className="text-gray-600">
-            No campaigns match the selected filter.
-          </p>
-        </div>
-      )}
-
-      {/* Campaign Detail Modal */}
+    <>
       <AnimatePresence>
-        {selectedCampaign && (
-          <CampaignModal
-            campaign={selectedCampaign}
-            onClose={() => setSelectedCampaign(null)}
-          />
+        {/* Delete Modal */}
+        {showDeleteModal && (
+          <motion.div
+            key="delete-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            <motion.div
+              key="delete-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Delete Campaign
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Are you sure you want to delete this campaign? This action
+                cannot be undone.
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteCampaign(deletingID)}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 rounded-lg text-white transition"
+                >
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Approve Modal */}
+        {showApproveModal && (
+          <motion.div
+            key="approve-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            onClick={() => setShowApproveModal(false)}
+          >
+            <motion.div
+              key="approve-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Approve Campaign
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Are you sure you want to approve this campaign? The client will
+                be notified and can proceed with influencer matching.
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowApproveModal(false)}
+                  className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleApproveCampaign(actioningID)}
+                  disabled={isApproving}
+                  className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 rounded-lg text-white transition"
+                >
+                  {isApproving ? "Approving..." : "Approve"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Reject Modal */}
+        {showRejectModal && (
+          <motion.div
+            key="reject-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            onClick={() => setShowRejectModal(false)}
+          >
+            <motion.div
+              key="reject-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Reject Campaign
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Are you sure you want to reject this campaign? The client will
+                be notified and may need to revise their requirements.
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowRejectModal(false)}
+                  className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleRejectCampaign(actioningID)}
+                  disabled={isRejecting}
+                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 rounded-lg text-white transition"
+                >
+                  {isRejecting ? "Rejecting..." : "Reject"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
-    </div>
+
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex justify-between items-center gap-6 mb-6">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Campaigns</h1>
+                <p className="text-gray-600 mt-1">
+                  View what&apos;s happening with clients campaigns.
+                </p>
+              </div>
+            </div>
+
+            {/* Filters and Search */}
+            <div className="space-y-4 mb-6">
+              {/* Search */}
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder="Search by brand name, location, or email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Filter buttons */}
+              <div className="flex flex-wrap gap-2">
+                {/* Status filters */}
+                {[
+                  "all",
+                  "paid",
+                  "unpaid",
+                  "pending",
+                  "approved",
+                  "rejected",
+                ].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setFilter(status as typeof filter)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                      filter === status
+                        ? "bg-indigo-600 text-white"
+                        : "bg-white text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              {/* Additional filters */}
+              <div className="flex flex-wrap gap-4">
+                {/* Role filter */}
+                <select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  <option value="all">All Roles</option>
+                  <option value="Brand">Brand</option>
+                  <option value="Business">Business</option>
+                  <option value="Person">Person</option>
+                  <option value="Movie">Movie</option>
+                  <option value="Music">Music</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                {/* Platform filter */}
+                <select
+                  value={platformFilter}
+                  onChange={(e) => setPlatformFilter(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  <option value="all">All Platforms</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="x">X</option>
+                  <option value="linkedin">LinkedIn</option>
+                  <option value="threads">Threads</option>
+                  <option value="discord">Discord</option>
+                  <option value="snapchat">Snapchat</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Stats Overview */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-900">
+                  {campaigns.length}
+                </div>
+                <div className="text-gray-600">Total Campaigns</div>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-900">
+                  {campaigns.filter((c) => c.hasPaid).length}
+                </div>
+                <div className="text-gray-600">Paid Campaigns</div>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-900">
+                  {campaigns.filter((c) => c.status === "pending").length}
+                </div>
+                <div className="text-gray-600">Pending Approval</div>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-900">
+                  {campaigns.filter((c) => c.status === "approved").length}
+                </div>
+                <div className="text-gray-600">Approved Campaigns</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Campaigns List */}
+          <div className="space-y-4">
+            {filteredCampaigns.length === 0 ? (
+              <div className="bg-white p-12 rounded-lg shadow-sm text-center">
+                <div className="text-gray-400 text-lg mb-2">
+                  No campaigns found
+                </div>
+                <p className="text-gray-600 mb-6">
+                  {searchTerm || filter !== "all"
+                    ? "Try adjusting your search or filters"
+                    : "No campaigns available"}
+                </p>
+              </div>
+            ) : (
+              filteredCampaigns.map((campaign) => (
+                <div
+                  key={campaign._id}
+                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+                >
+                  <div className="p-6">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 flex-wrap mb-2">
+                          <h3 className="text-xl font-semibold text-gray-900">
+                            {campaign.brandName}
+                          </h3>
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                              campaign
+                            )}`}
+                          >
+                            {getStatusText(campaign)}
+                          </span>
+                          <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                            {campaign.role}
+                          </span>
+                        </div>
+
+                        <p className="text-gray-600 mb-4">
+                          {campaign.platforms.join(", ")} • {campaign.location}
+                          {campaign.additionalLocations &&
+                            campaign.additionalLocations.length > 0 &&
+                            ` + ${campaign.additionalLocations.length} more`}
+                        </p>
+
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="font-medium text-gray-700">
+                              Influencers:
+                            </span>
+                            <div className="text-gray-900">
+                              {campaign.influencersMin} -{" "}
+                              {campaign.influencersMax}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-700">
+                              Followers:
+                            </span>
+                            <div className="text-gray-900">
+                              {campaign.followersRange || "Any"}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-700">
+                              Budget:
+                            </span>
+                            <div className="text-gray-900">
+                              {campaign.totalCost
+                                ? formatCurrency(campaign.totalCost)
+                                : "TBD"}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-700">
+                              Created:
+                            </span>
+                            <div className="text-gray-900">
+                              {formatDate(campaign.createdAt)}
+                            </div>
+                          </div>
+                        </div>
+
+                        {(campaign.postFrequency || campaign.postDuration) && (
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm">
+                              {campaign.postFrequency && (
+                                <div>
+                                  <span className="font-medium text-gray-700">
+                                    Post Frequency:
+                                  </span>
+                                  <div className="text-gray-900">
+                                    {campaign.postFrequency}
+                                  </div>
+                                </div>
+                              )}
+                              {campaign.postDuration && (
+                                <div>
+                                  <span className="font-medium text-gray-700">
+                                    Duration:
+                                  </span>
+                                  <div className="text-gray-900">
+                                    {campaign.postDuration}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-2 lg:ml-6 mt-4 lg:mt-0">
+                        <button
+                          onClick={() => {
+                            setEditingCampaign(campaign);
+                            setEditCampaign(true);
+                          }}
+                          className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
+                        >
+                          Assign Influencers
+                        </button>
+
+                        {/* Show approve/reject buttons only for pending campaigns */}
+                        {campaign.status === "pending" && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setActioningID(campaign._id ?? "");
+                                setShowApproveModal(true);
+                              }}
+                              disabled={isApproving}
+                              className="bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActioningID(campaign._id ?? "");
+                                setShowRejectModal(true);
+                              }}
+                              disabled={isRejecting}
+                              className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+
+                        {/* Show re-approve button for rejected campaigns */}
+                        {campaign.status === "rejected" && (
+                          <button
+                            onClick={() => {
+                              setActioningID(campaign._id ?? "");
+                              setShowApproveModal(true);
+                            }}
+                            disabled={isApproving}
+                            className="bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
+                          >
+                            Re-approve
+                          </button>
+                        )}
+
+                        {/* Show revoke approval button for approved campaigns */}
+                        {campaign.status === "approved" && (
+                          <button
+                            onClick={() => {
+                              setActioningID(campaign._id ?? "");
+                              setShowRejectModal(true);
+                            }}
+                            disabled={isRejecting}
+                            className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
+                          >
+                            Revoke Approval
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

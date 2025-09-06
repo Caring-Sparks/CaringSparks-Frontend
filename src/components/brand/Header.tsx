@@ -11,12 +11,13 @@ import {
 } from "react-icons/bi";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAdminStore } from "@/stores/adminStore";
+import { useBrandStore } from "@/stores/brandStore"; // Import the brand store
 import Link from "next/link";
-import { FaDollarSign } from "react-icons/fa";
 import { MdOutlineNotificationsPaused } from "react-icons/md";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/utils/ToastNotification";
+import { FaNairaSign } from "react-icons/fa6";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -38,11 +39,19 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
 
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const { brands, influencers } = useAdminStore();
+
+  // Use both stores
+  const { influencers } = useAdminStore();
+  const { campaigns } = useBrandStore(); // Get campaigns from brand store
+
   const navigate = useRouter();
   const { showToast } = useToast();
 
-  const newPayments = brands.filter((brand) => brand.hasPaid === true);
+  // Filter campaigns that have been paid (these are the "brands" with payments)
+  const newPayments = campaigns.filter((campaign) => campaign.hasPaid === true);
+  // All campaigns are essentially "brands" since they represent brand registrations/activities
+  const brands = campaigns;
+
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const getAuthToken = () => {
@@ -71,32 +80,21 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const allNotifications = useMemo(() => {
     const notifications: any[] = [];
 
-    // Add influencers
-    influencers.forEach((influencer: any) => {
+    // Add brands (campaigns)
+    brands.forEach((campaign: any) => {
       notifications.push({
-        id: influencer.id,
-        type: "influencer",
-        data: influencer,
-        createdAt: influencer.createdAt,
-        timestamp: new Date(influencer.createdAt).getTime(),
-      });
-    });
-
-    // Add brands
-    brands.forEach((brand: any) => {
-      notifications.push({
-        id: brand._id,
+        id: campaign._id,
         type: "brand",
-        data: brand,
-        createdAt: brand.createdAt,
-        timestamp: new Date(brand.createdAt).getTime(),
+        data: campaign,
+        createdAt: campaign.createdAt,
+        timestamp: new Date(campaign.createdAt).getTime(),
       });
     });
 
     // Add payments
     newPayments.forEach((payment: any) => {
       notifications.push({
-        id: payment._id,
+        id: `payment-${payment._id}`, // Unique ID for payments
         type: "payment",
         data: payment,
         createdAt: payment.createdAt,
@@ -106,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
 
     // Sort by newest first
     return notifications.sort((a, b) => b.timestamp - a.timestamp);
-  }, [influencers, brands, newPayments]);
+  }, [brands, newPayments]);
 
   // Get current page of notifications
   const currentNotifications = allNotifications.slice(
@@ -196,10 +194,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   // NEW: compute latest activity timestamp across all sources
   const latestActivityTs = useMemo(() => {
     const times: number[] = [];
-
-    influencers.forEach((i: any) => {
-      if (i?.createdAt) times.push(new Date(i.createdAt).getTime());
-    });
     brands.forEach((b: any) => {
       if (b?.createdAt) times.push(new Date(b.createdAt).getTime());
     });
@@ -208,7 +202,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     });
 
     return times.length ? Math.max(...times) : 0;
-  }, [influencers, brands, newPayments]);
+  }, [brands, newPayments]);
 
   // NEW: only show the dot if there's something newer than the last time the user opened the panel
   useEffect(() => {
@@ -238,42 +232,20 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
 
   const renderNotificationItem = (notification: any) => {
     switch (notification.type) {
-      case "influencer":
-        return (
-          <Link
-            href="/admin/influencers"
-            key={notification.id}
-            className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100"
-          >
-            <BiUserCheck className="text-blue-600" size={20} />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">
-                New influencer joined!
-              </p>
-              <p className="text-xs text-gray-600">
-                {notification.data.name} joined as an influencer
-              </p>
-              <span className="text-xs text-gray-500">
-                {formatDate(notification.createdAt)}
-              </span>
-            </div>
-          </Link>
-        );
-
       case "brand":
         return (
           <Link
-            href="/admin/brands"
+            href="/brand/campaigns"
             key={notification.id}
             className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg hover:bg-purple-100"
           >
             <BiTrendingUp className="text-purple-600" size={20} />
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-900">
-                New brand registered!
+                New campaign created!
               </p>
               <p className="text-xs text-gray-600">
-                {notification.data.brandName} created an account
+                {notification.data.brandName} created a new campaign
               </p>
               <span className="text-xs text-gray-500">
                 {formatDate(notification.createdAt)}
@@ -285,17 +257,18 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       case "payment":
         return (
           <Link
-            href="/admin/brands"
+            href="/brand/campaigns"
             key={notification.id}
             className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100"
           >
-            <FaDollarSign className="text-green-600" size={20} />
+            <FaNairaSign className="text-green-600" size={20} />
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-900">
                 Campaign payment processed!
               </p>
               <p className="text-xs text-gray-600">
-                ${notification.data.totalCost} has been paid for a campaign
+                {notification.data.totalCost} has been paid for &qout;
+                {notification.data.brandName}&quot; campaign
               </p>
               <span className="text-xs text-gray-500">
                 {formatDate(notification.createdAt)}
