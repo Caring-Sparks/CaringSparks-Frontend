@@ -153,9 +153,6 @@ const BrandDetails: React.FC<BrandDetailsProps> = ({
               <p className="text-sm text-gray-600">
                 {selectedBrand.role || "N/A"}
               </p>
-              <div className="mt-2 flex gap-2">
-                {getStatusBadge(selectedBrand.hasPaid, "payment")}
-              </div>
             </div>
 
             {/* Info Sections */}

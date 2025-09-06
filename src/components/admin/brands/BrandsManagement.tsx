@@ -421,32 +421,6 @@ const BrandsManagement: React.FC = () => {
         </div>
       )}
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="text-2xl font-bold text-gray-900">{totalBrands}</div>
-          <div className="text-sm text-gray-500">Total Brands</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="text-2xl font-bold text-green-600">
-            {statusCounts.paid}
-          </div>
-          <div className="text-sm text-gray-500">Paid</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="text-2xl font-bold text-red-600">
-            {statusCounts.unpaid}
-          </div>
-          <div className="text-sm text-gray-500">Unpaid</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="text-2xl font-bold text-blue-600">
-            {statusCounts.validated}
-          </div>
-          <div className="text-sm text-gray-500">Validated</div>
-        </div>
-      </div>
-
       {/* Results info */}
       <div className="flex justify-between items-center text-sm text-gray-600">
         <div>
@@ -498,15 +472,6 @@ const BrandsManagement: React.FC = () => {
                     Role
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Campaign Cost
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Payment Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Validation Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Join Date
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -542,31 +507,6 @@ const BrandsManagement: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm text-gray-900">
                           {brandData.role || "N/A"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">
-                          {formatCurrency(brandData.totalCost)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium border ${getPaymentStatusColor(
-                            brandData.hasPaid
-                          )}`}
-                        >
-                          {brandData.hasPaid ? "Paid" : "Unpaid"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                            brandData.isValidated
-                              ? "bg-blue-100 text-blue-800 border-blue-200"
-                              : "bg-gray-100 text-gray-800 border-gray-200"
-                          }`}
-                        >
-                          {brandData.isValidated ? "Validated" : "Unvalidated"}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

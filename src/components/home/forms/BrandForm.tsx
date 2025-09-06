@@ -59,7 +59,17 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
     postDuration: "",
   };
 
-  const platforms = ["Instagram", "X", "TikTok"];
+  const platforms = [
+    "Instagram",
+    "X",
+    "TikTok",
+    "Youtube",
+    "Facebook",
+    "Linkedin",
+    "Threads",
+    "Discord",
+    "Snapchat",
+  ];
   const roles = ["Brand", "Business", "Person", "Movie", "Music", "Other"];
   const followerRanges = [
     "1k-3k",
@@ -174,7 +184,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                       <label className="text-sm font-medium text-gray-700">
                         I want to advertise & promote my brand on:
                       </label>
-                      <div className="mt-2 flex items-center gap-4">
+                      <div className="mt-2 flex flex-wrap items-center gap-4">
                         {platforms.map((platform) => (
                           <label
                             key={platform}

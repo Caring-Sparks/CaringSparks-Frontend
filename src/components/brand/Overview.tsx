@@ -12,7 +12,8 @@ import { MdOutlineNotificationsPaused } from "react-icons/md";
 import Link from "next/link";
 import { useBrandStore } from "@/stores/brandStore";
 import { GiCheckMark } from "react-icons/gi";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { FaNairaSign } from "react-icons/fa6";
 
 // Updated Campaign interface to match the store
 interface Campaign {
@@ -36,6 +37,7 @@ interface Campaign {
   platformFee?: number;
   totalCost?: number;
   hasPaid?: boolean;
+  status: "approved" | "rejected" | "pending";
   isValidated?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -54,6 +56,73 @@ const Overview: React.FC = () => {
   } = useBrandStore();
 
   const [refreshing, setRefreshing] = useState(false);
+
+  // Defensive checks with fallbacks (moved to top level)
+  const safeCampaigns: Campaign[] = campaigns || [];
+  const safeUser = user || null;
+
+  // All useMemo hooks must be at the top level, before any conditional returns
+  const newPayments = useMemo(() => {
+    return safeCampaigns.filter((campaign) => campaign.hasPaid === true);
+  }, [safeCampaigns]);
+
+  const recentPayments = useMemo(() => {
+    return newPayments
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      })
+      .slice(0, 3); // Get 3 most recent payments
+  }, [newPayments]);
+
+  // Get most recent campaign
+  const recentCampaign = useMemo((): Campaign | undefined => {
+    return [...safeCampaigns]
+      .sort((a: Campaign, b: Campaign) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      })
+      .at(0);
+  }, [safeCampaigns]);
+
+  // Calculate campaign statistics
+  const campaignStats = useMemo(() => {
+    const totalCampaigns = safeCampaigns.length;
+    const paidCampaigns = safeCampaigns.filter(
+      (c: Campaign) => c.hasPaid
+    ).length;
+    const unpaidCampaigns = safeCampaigns.filter(
+      (c: Campaign) => !c.hasPaid
+    ).length;
+    const validatedCampaigns = safeCampaigns.filter(
+      (c: Campaign) => c.status === "approved"
+    ).length;
+
+    // Calculate total spending
+    const totalSpent: number = safeCampaigns
+      .filter((c: Campaign) => c.hasPaid && c.totalCost)
+      .reduce((sum: number, c: Campaign) => sum + (c.totalCost || 0), 0);
+
+    // Calculate average campaign cost
+    const averageCampaignCost: number =
+      totalCampaigns > 0
+        ? safeCampaigns.reduce(
+            (sum: number, c: Campaign) => sum + (c.totalCost || 0),
+            0
+          ) / totalCampaigns
+        : 0;
+
+    return {
+      totalCampaigns,
+      paidCampaigns,
+      unpaidCampaigns,
+      validatedCampaigns,
+      totalSpent,
+      averageCampaignCost,
+    };
+  }, [safeCampaigns]);
 
   // Fetch campaigns on component mount
   useEffect(() => {
@@ -74,75 +143,6 @@ const Overview: React.FC = () => {
       setRefreshing(false);
     }
   };
-
-  // Show loading state
-  if (userLoading || campaignsLoading || refreshing) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent mx-auto mb-4"></div>
-          <div className="text-lg text-gray-600">Loading brand data...</div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show error state
-  if (userError || campaignsError) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="text-center">
-          <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <div className="text-lg text-red-600 mb-4">
-            Error: {userError || campaignsError}
-          </div>
-          <button
-            onClick={handleRefresh}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Defensive checks with fallbacks
-  const safeCampaigns: Campaign[] = campaigns || [];
-  const safeUser = user || null;
-
-  // Get most recent campaign
-  const recentCampaign: Campaign | undefined = [...safeCampaigns]
-    .sort((a: Campaign, b: Campaign) => {
-      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return dateB - dateA;
-    })
-    .at(0);
-
-  // Calculate campaign statistics
-  const totalCampaigns = safeCampaigns.length;
-  const paidCampaigns = safeCampaigns.filter((c: Campaign) => c.hasPaid).length;
-  const unpaidCampaigns = safeCampaigns.filter(
-    (c: Campaign) => !c.hasPaid
-  ).length;
-  const validatedCampaigns = safeCampaigns.filter(
-    (c: Campaign) => c.isValidated
-  ).length;
-
-  // Calculate total spending
-  const totalSpent: number = safeCampaigns
-    .filter((c: Campaign) => c.hasPaid && c.totalCost)
-    .reduce((sum: number, c: Campaign) => sum + (c.totalCost || 0), 0);
-
-  // Calculate average campaign cost
-  const averageCampaignCost: number =
-    totalCampaigns > 0
-      ? safeCampaigns.reduce(
-          (sum: number, c: Campaign) => sum + (c.totalCost || 0),
-          0
-        ) / totalCampaigns
-      : 0;
 
   const formatDate = (dateString?: string): string => {
     if (!dateString) return "Unknown date";
@@ -185,11 +185,54 @@ const Overview: React.FC = () => {
   };
 
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-NG", {
       style: "currency",
-      currency: "USD",
+      currency: "NGN",
     }).format(amount);
   };
+
+  // Now conditional returns come after all hooks
+  // Show loading state
+  if (userLoading || campaignsLoading || refreshing) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent mx-auto mb-4"></div>
+          <div className="text-lg text-gray-600">Loading brand data...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (userError || campaignsError) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <div className="text-lg text-red-600 mb-4">
+            Error: {userError || campaignsError}
+          </div>
+          <button
+            onClick={handleRefresh}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Destructure computed values for easier use
+  const {
+    totalCampaigns,
+    paidCampaigns,
+    unpaidCampaigns,
+    validatedCampaigns,
+    totalSpent,
+    averageCampaignCost,
+  } = campaignStats;
 
   return (
     <div className="space-y-8 mt-8 p-6">
@@ -292,61 +335,68 @@ const Overview: React.FC = () => {
             </Link>
           </div>
 
-          {!recentCampaign ? (
-            <div className="flex flex-col items-center justify-center text-gray-500 py-8">
-              <div className="p-4 rounded-full bg-gray-100 mb-3">
-                <MdOutlineNotificationsPaused className="text-2xl text-gray-400" />
+          {!recentCampaign && recentPayments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center text-gray-500 py-12">
+              <div className="p-4 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 mb-4">
+                <div className="flex items-center space-x-2">
+                  <MdOutlineNotificationsPaused className="text-2xl text-purple-500" />
+                  <FaNairaSign className="text-xl text-indigo-500" />
+                </div>
               </div>
-              <p className="text-lg font-medium">No campaigns yet</p>
-              <p className="text-sm text-gray-400 mb-4">
-                Create your first campaign to get started.
+              <p className="text-lg font-medium text-gray-700 mb-2">
+                Get Started with Your First Campaign
+              </p>
+              <p className="text-sm text-gray-500 text-center max-w-sm mb-6">
+                Create campaigns, connect with influencers, and track your
+                payments all in one place.
               </p>
               <Link href="/brand/campaigns">
-                <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                  Create Campaign
+                <button className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md">
+                  Create Your First Campaign
                 </button>
               </Link>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <Briefcase className="text-blue-600" size={24} />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">
-                    Latest Campaign
-                  </p>
-                  <p className="text-lg font-semibold text-gray-800">
-                    {recentCampaign.brandName}
-                  </p>
-                  <div className="flex items-center space-x-4 mt-2">
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      {recentCampaign.role}
-                    </span>
-                    <span
-                      className={`text-xs px-2 py-1 rounded ${
-                        recentCampaign.hasPaid
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {recentCampaign.hasPaid ? "Paid" : "Pending Payment"}
+              {recentCampaign && (
+                <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <Briefcase className="text-blue-600" size={24} />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      Latest Campaign
+                    </p>
+                    <p className="text-lg font-semibold text-gray-800">
+                      {recentCampaign.brandName}
+                    </p>
+                    <div className="flex items-center space-x-4 mt-2">
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        {recentCampaign.role}
+                      </span>
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${
+                          recentCampaign.hasPaid
+                            ? "bg-green-100 text-green-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {recentCampaign.hasPaid ? "Paid" : "Pending Payment"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-gray-900">
+                      {formatCurrency(recentCampaign.totalCost || 0)}
+                    </p>
+                    <span className="text-xs text-gray-500">
+                      {formatDate(recentCampaign.createdAt)}
                     </span>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">
-                    {formatCurrency(recentCampaign.totalCost || 0)}
-                  </p>
-                  <span className="text-xs text-gray-500">
-                    {formatDate(recentCampaign.createdAt)}
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Campaign Analytics */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Campaign Analytics

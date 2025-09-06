@@ -44,8 +44,11 @@ interface Campaign {
   // System fields
   hasPaid?: boolean;
   isValidated?: boolean;
+  status: "pending" | "approved" | "rejected";
   createdAt?: string;
   updatedAt?: string;
+  paymentReference: string;
+  paymentDate: string;
 }
 
 interface User {

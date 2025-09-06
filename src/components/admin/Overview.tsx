@@ -6,7 +6,10 @@ import { MdOutlineNotificationsPaused } from "react-icons/md";
 import Link from "next/link";
 
 const Overview = () => {
-  const { brands, influencers } = useAdminStore();
+  const { campaigns, influencers } = useAdminStore();
+
+  // ✅ Add safety checks for campaigns array
+  const safeCampaigns = campaigns && Array.isArray(campaigns) ? campaigns : [];
 
   const newInfluencer = [...influencers]
     .sort(
@@ -15,19 +18,31 @@ const Overview = () => {
     )
     .at(0);
 
-  const newBrand = [...brands]
+  // ✅ Use campaigns instead of brands
+  const newCampaign = [...safeCampaigns]
     .sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt || "").getTime() -
+        new Date(a.createdAt || "").getTime()
     )
     .at(0);
 
   const pendingApprovals = influencers.filter(
     (influencer) => influencer.status === "pending"
   );
-  const newPayment = brands.filter((brand) => brand.hasPaid === true).at(-1);
 
-  const recentActivity = newInfluencer || newBrand || newPayment;
+  // ✅ Use campaigns for payment info
+  const newPayment = safeCampaigns
+    .filter((campaign) => campaign.hasPaid === true)
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt || b.createdAt || "").getTime() -
+        new Date(a.updatedAt || a.createdAt || "").getTime()
+    )
+    .at(0);
+
+  const recentActivity = newInfluencer || newCampaign || newPayment;
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -82,7 +97,7 @@ const Overview = () => {
           ) : (
             <div className="space-y-4">
               {/* for influencer */}
-              {newInfluencer ? (
+              {newInfluencer && (
                 <Link href="/admin/influencers">
                   <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
                     <BiUserCheck className="text-blue-600" size={20} />
@@ -91,25 +106,19 @@ const Overview = () => {
                         New influencer joined!
                       </p>
                       <p className="text-xs text-gray-600">
-                        {newInfluencer
-                          ? `${newInfluencer.name} joined as an influencer`
-                          : "Loading..."}
+                        {newInfluencer.name} joined as an influencer
                       </p>
                     </div>
                     <span className="text-xs text-gray-500">
-                      {newInfluencer
-                        ? formatDate(newInfluencer.createdAt)
-                        : "Loading..."}
+                      {formatDate(newInfluencer.createdAt)}
                     </span>
                   </div>
                 </Link>
-              ) : (
-                ""
               )}
 
               {/* for payment */}
-              {newPayment ? (
-                <Link href="/admin/brands">
+              {newPayment && (
+                <Link href="/admin/campaigns">
                   <div className="flex items-center space-x-3 mt-2 p-3 bg-green-50 rounded-lg">
                     <FaDollarSign className="text-green-600" size={20} />
                     <div className="flex-1">
@@ -117,42 +126,37 @@ const Overview = () => {
                         Campaign payment processed!
                       </p>
                       <p className="text-xs text-gray-600">
-                        {newPayment ? `${newPayment.totalCost}` : "Loading..."}{" "}
-                        has been paid for the campaign
+                        ₦{newPayment.totalCost?.toLocaleString() || "0"} has
+                        been paid for {newPayment.brandName}&apos;s campaign
                       </p>
                     </div>
                     <span className="text-xs text-gray-500">
-                      {newPayment
-                        ? formatDate(newPayment.createdAt)
-                        : "Loading..."}
+                      {formatDate(
+                        newPayment.updatedAt || newPayment.createdAt || ""
+                      )}
                     </span>
                   </div>
                 </Link>
-              ) : (
-                ""
               )}
 
-              {/* for brand */}
-              {newBrand ? (
-                <Link href="/admin/brands">
+              {/* for new campaign */}
+              {newCampaign && (
+                <Link href="/admin/campaigns">
                   <div className="flex items-center space-x-3 p-3 mt-2 bg-purple-50 rounded-lg">
                     <BiTrendingUp className="text-purple-600" size={20} />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">
-                        New brand registered!
+                        New campaign created!
                       </p>
                       <p className="text-xs text-gray-600">
-                        {newBrand ? `${newBrand.brandName}` : "Loading..."}{" "}
-                        created an account
+                        {newCampaign.brandName} created a new campaign
                       </p>
                     </div>
                     <span className="text-xs text-gray-500">
-                      {newBrand ? formatDate(newBrand.createdAt) : "Loading..."}
+                      {formatDate(newCampaign.createdAt || "")}
                     </span>
                   </div>
                 </Link>
-              ) : (
-                ""
               )}
             </div>
           )}

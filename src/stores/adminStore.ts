@@ -76,6 +76,51 @@ interface Brand {
   updatedAt?: string;
 }
 
+interface Campaign {
+  _id?: string;
+  // Basic brand information
+  role: "Brand" | "Business" | "Person" | "Movie" | "Music" | "Other";
+  platforms: string[];
+  brandName: string;
+  email: string;
+  brandPhone: string;
+
+  // Campaign requirements
+  influencersMin: number;
+  influencersMax: number;
+  followersRange?:
+    | ""
+    | "1k-3k"
+    | "3k-10k"
+    | "10k-20k"
+    | "20k-50k"
+    | "50k & above";
+  location: string;
+  additionalLocations?: string[];
+  postFrequency?:
+    | ""
+    | "5 times per week for 3 weeks = 15 posts in total"
+    | "3 times per week for 4 weeks = 12 posts in total"
+    | "2 times per week for 6 weeks = 12 posts in total";
+  postDuration?: "" | "1 day" | "1 week" | "2 weeks" | "1 month";
+
+  // Calculated pricing fields (from frontend calculations)
+  avgInfluencers?: number;
+  postCount?: number;
+  costPerInfluencerPerPost?: number;
+  totalBaseCost?: number;
+  platformFee?: number;
+  totalCost?: number;
+
+  // System fields
+  hasPaid?: boolean;
+  isValidated?: boolean;
+  status: "pending" | "approved" | "rejected";
+  createdAt?: string;
+  updatedAt?: string;
+  paymentReference: string;
+  paymentDate: string;
+}
 // User interface - Add your specific user fields here
 interface User {
   id: string;
@@ -113,6 +158,7 @@ interface AdminState {
   influencers: Influencer[];
   admins: Admin[];
   user: User | null; // Add user to state
+  campaigns: Campaign[];
 
   // Error state
   error: string | null;
@@ -192,6 +238,7 @@ export const useAdminStore = create<AdminState>()(
       brands: [],
       influencers: [],
       admins: [],
+      campaigns: [],
       user: null, // Initialize user state
       error: null,
       userError: null,
@@ -209,16 +256,19 @@ export const useAdminStore = create<AdminState>()(
         set({ loading: true, error: null });
 
         try {
-          const [influencerRes, brandRes, adminRes] = await Promise.all([
-            api.get("/api/influencers/all-influencers"),
-            api.get("/api/brands/all-brands"),
-            api.get("/api/admins/all-admins"),
-          ]);
+          const [influencerRes, brandRes, adminRes, campaignRes] =
+            await Promise.all([
+              api.get("/api/influencers/all-influencers"),
+              api.get("/api/brands/all-brands"),
+              api.get("/api/admins/all-admins"),
+              api.get("/api/campaigns/"),
+            ]);
 
           set({
             influencers: influencerRes.data?.data?.influencers || [],
             brands: brandRes.data?.data?.brands || [],
             admins: adminRes.data?.data?.admins || [],
+            campaigns: campaignRes.data?.data || [],
             loading: false,
             hasInitialized: true,
           });
@@ -303,16 +353,18 @@ export const useAdminStore = create<AdminState>()(
         set({ refreshing: true, error: null });
 
         try {
-          const [influencerRes, brandRes, adminRes] = await Promise.all([
+          const [influencerRes, brandRes, adminRes, campaignRes] = await Promise.all([
             api.get("/api/influencers/all-influencers"),
             api.get("/api/brands/all-brands"),
             api.get("/api/admins/all-admins"),
+            api.get("/api/campaigns/"),
           ]);
 
           set({
             influencers: influencerRes.data?.data?.influencers || [],
             brands: brandRes.data?.data?.brands || [],
             admins: adminRes.data?.data?.admins || [],
+            campaigns: campaignRes.data?.data || [],
             refreshing: false,
           });
         } catch (error: any) {
