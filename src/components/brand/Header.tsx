@@ -5,19 +5,120 @@ import {
   BiBell,
   BiLogOut,
   BiMenu,
-  BiTrendingUp,
+  BiCheck,
   BiUserCheck,
   BiX,
 } from "react-icons/bi";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAdminStore } from "@/stores/adminStore";
-import { useBrandStore } from "@/stores/brandStore"; // Import the brand store
+import { useBrandStore } from "@/stores/brandStore";
 import Link from "next/link";
 import { MdOutlineNotificationsPaused } from "react-icons/md";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/utils/ToastNotification";
-import { FaNairaSign } from "react-icons/fa6";
+
+// Type definitions
+interface Campaign {
+  _id?: string;
+  role: "Brand" | "Business" | "Person" | "Movie" | "Music" | "Other";
+  platforms: string[];
+  brandName: string;
+  email: string;
+  brandPhone: string;
+  influencersMin: number;
+  influencersMax: number;
+  followersRange?:
+    | ""
+    | "1k-3k"
+    | "3k-10k"
+    | "10k-20k"
+    | "20k-50k"
+    | "50k & above";
+  location: string;
+  additionalLocations?: string[];
+  postFrequency?: string;
+  postDuration?: string;
+  avgInfluencers?: number;
+  postCount?: number;
+  costPerInfluencerPerPost?: number;
+  totalBaseCost?: number;
+  platformFee?: number;
+  totalCost?: number;
+  hasPaid?: boolean;
+  status: "pending" | "approved" | "rejected";
+  createdAt?: any;
+  updatedAt?: any;
+  assignedInfluencers: string[];
+}
+
+interface PlatformData {
+  followers: string;
+  url: string;
+  impressions: string;
+  proofUrl?: string;
+}
+
+interface Influencer {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  whatsapp: string;
+  location: string;
+  niches: string[];
+  audienceLocation?: string;
+  malePercentage?: string;
+  femalePercentage?: string;
+  audienceProofUrl?: string;
+
+  // Platform data
+  instagram?: PlatformData;
+  twitter?: PlatformData;
+  tiktok?: PlatformData;
+  youtube?: PlatformData;
+  facebook?: PlatformData;
+  linkedin?: PlatformData;
+  discord?: PlatformData;
+  threads?: PlatformData;
+  snapchat?: PlatformData;
+
+  // Calculated earnings
+  followerFee?: number;
+  impressionFee?: number;
+  locationFee?: number;
+  nicheFee?: number;
+  earningsPerPost?: number;
+  earningsPerPostNaira?: number;
+  maxMonthlyEarnings?: number;
+  maxMonthlyEarningsNaira?: number;
+  followersCount?: number;
+
+  // Legacy fields
+  amountPerPost?: string;
+  amountPerMonth?: string;
+
+  // Metadata
+  status: "pending" | "approved" | "rejected";
+  emailSent: boolean;
+  isValidated: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface Notification {
+  id: string;
+  type: "approval" | "assignment";
+  data: Campaign;
+  createdAt: string;
+  timestamp: number;
+}
+
+interface User {
+  data?: {
+    token?: string;
+  };
+}
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -25,41 +126,47 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notificationOffset, setNotificationOffset] = useState(0);
+  const [showNotifications, setShowNotifications] = useState<boolean>(false);
+  const [notificationOffset, setNotificationOffset] = useState<number>(0);
   const NOTIFICATIONS_PER_PAGE = 10;
 
-  // NEW: track unseen/seen using timestamps
-  const [hasNewNotifications, setHasNewNotifications] = useState(false);
+  // Track unseen/seen using timestamps
+  const [hasNewNotifications, setHasNewNotifications] =
+    useState<boolean>(false);
   const [lastSeen, setLastSeen] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
     const stored = localStorage.getItem("notif_last_seen");
     return stored ? Number(stored) : 0;
   });
 
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showLogoutPopup, setShowLogoutPopup] = useState<boolean>(false);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
 
   // Use both stores
   const { influencers } = useAdminStore();
-  const { campaigns } = useBrandStore(); // Get campaigns from brand store
+  const { campaigns } = useBrandStore();
 
-  const navigate = useRouter();
+  // Router and toast hooks
+  const router = useRouter();
   const { showToast } = useToast();
 
-  // Filter campaigns that have been paid (these are the "brands" with payments)
-  const newPayments = campaigns.filter((campaign) => campaign.hasPaid === true);
-  // All campaigns are essentially "brands" since they represent brand registrations/activities
-  const brands = campaigns;
+  // Filter campaigns for different notification types
+  const approvedCampaigns = campaigns.filter(
+    (campaign: Campaign) => campaign.status === "approved"
+  );
+  const campaignsWithInfluencers = campaigns.filter(
+    (campaign: Campaign) =>
+      campaign.assignedInfluencers && campaign.assignedInfluencers.length > 0
+  );
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const getAuthToken = () => {
+  const getAuthToken = (): string | null => {
     if (typeof window !== "undefined") {
       try {
         const userStr = localStorage.getItem("user");
         if (userStr) {
-          const user = JSON.parse(userStr);
+          const user: User = JSON.parse(userStr);
           return user?.data?.token || null;
         }
         return null;
@@ -74,37 +181,51 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const token = getAuthToken();
 
   const hasNoActivity =
-    influencers.length === 0 && brands.length === 0 && newPayments.length === 0;
+    approvedCampaigns.length === 0 && campaignsWithInfluencers.length === 0;
 
   // Combine and sort all notifications by creation date
-  const allNotifications = useMemo(() => {
-    const notifications: any[] = [];
+  const allNotifications = useMemo((): Notification[] => {
+    const notifications: Notification[] = [];
 
-    // Add brands (campaigns)
-    brands.forEach((campaign: any) => {
+    // Add approved campaigns notifications
+    approvedCampaigns.forEach((campaign: Campaign) => {
       notifications.push({
-        id: campaign._id,
-        type: "brand",
+        id: `approval-${campaign._id}`,
+        type: "approval",
         data: campaign,
-        createdAt: campaign.createdAt,
-        timestamp: new Date(campaign.createdAt).getTime(),
+        createdAt: campaign.updatedAt || campaign.createdAt,
+        timestamp: new Date(campaign.updatedAt || campaign.createdAt).getTime(),
       });
     });
 
-    // Add payments
-    newPayments.forEach((payment: any) => {
+    // Add influencer assignment notifications
+    campaignsWithInfluencers.forEach((campaign: Campaign) => {
       notifications.push({
-        id: `payment-${payment._id}`, // Unique ID for payments
-        type: "payment",
-        data: payment,
-        createdAt: payment.createdAt,
-        timestamp: new Date(payment.createdAt).getTime(),
+        id: `assignment-${campaign._id}`,
+        type: "assignment",
+        data: campaign,
+        createdAt: campaign.updatedAt || campaign.createdAt,
+        timestamp: new Date(campaign.updatedAt || campaign.createdAt).getTime(),
       });
     });
 
-    // Sort by newest first
-    return notifications.sort((a, b) => b.timestamp - a.timestamp);
-  }, [brands, newPayments]);
+    // Sort by newest first and remove duplicates
+    const uniqueNotifications = notifications.reduce(
+      (acc: Notification[], current: Notification) => {
+        const existingIndex = acc.findIndex(
+          (item: Notification) =>
+            item.data._id === current.data._id && item.type === current.type
+        );
+        if (existingIndex === -1) {
+          acc.push(current);
+        }
+        return acc;
+      },
+      []
+    );
+
+    return uniqueNotifications.sort((a, b) => b.timestamp - a.timestamp);
+  }, [approvedCampaigns, campaignsWithInfluencers]);
 
   // Get current page of notifications
   const currentNotifications = allNotifications.slice(
@@ -127,7 +248,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     setIsLoggingOut(true);
     try {
       const res = await axios.post(
@@ -135,7 +256,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         {},
         {
           headers: {
-            Authorization: `Bearer: ${token}`, // keep as-is if your API expects this
+            Authorization: `Bearer: ${token}`,
           },
         }
       );
@@ -143,7 +264,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       if (res.status === 200) {
         setIsLoggingOut(false);
         localStorage.clear();
-        navigate.push("/");
+        router.push("/");
       }
     } catch (error: any) {
       console.error("could not log out", error.message);
@@ -151,13 +272,13 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       showToast({
         type: "error",
         title: "Sorry!",
-        message: `We could not log out out, please try again later.`,
+        message: `We could not log you out, please try again later.`,
         duration: 5000,
       });
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const now = new Date();
 
@@ -191,27 +312,31 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     }
   };
 
-  // NEW: compute latest activity timestamp across all sources
-  const latestActivityTs = useMemo(() => {
+  // Compute latest activity timestamp across all sources
+  const latestActivityTs = useMemo((): number => {
     const times: number[] = [];
-    brands.forEach((b: any) => {
-      if (b?.createdAt) times.push(new Date(b.createdAt).getTime());
+    approvedCampaigns.forEach((c: Campaign) => {
+      if (c?.updatedAt || c?.createdAt) {
+        times.push(new Date(c.updatedAt || c.createdAt).getTime());
+      }
     });
-    newPayments.forEach((p: any) => {
-      if (p?.createdAt) times.push(new Date(p.createdAt).getTime());
+    campaignsWithInfluencers.forEach((c: Campaign) => {
+      if (c?.updatedAt || c?.createdAt) {
+        times.push(new Date(c.updatedAt || c.createdAt).getTime());
+      }
     });
 
     return times.length ? Math.max(...times) : 0;
-  }, [brands, newPayments]);
+  }, [approvedCampaigns, campaignsWithInfluencers]);
 
-  // NEW: only show the dot if there's something newer than the last time the user opened the panel
+  // Only show the dot if there's something newer than the last time the user opened the panel
   useEffect(() => {
     if (latestActivityTs > lastSeen) {
       setHasNewNotifications(true);
     }
   }, [latestActivityTs, lastSeen]);
 
-  const handleNotificationClick = () => {
+  const handleNotificationClick = (): void => {
     setShowNotifications((prev) => !prev);
 
     // Mark as seen when opening the panel and reset offset
@@ -226,26 +351,27 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     }
   };
 
-  const loadPreviousNotifications = () => {
+  const loadPreviousNotifications = (): void => {
     setNotificationOffset((prev) => prev + NOTIFICATIONS_PER_PAGE);
   };
 
-  const renderNotificationItem = (notification: any) => {
+  const renderNotificationItem = (notification: Notification): any | null => {
     switch (notification.type) {
-      case "brand":
+      case "approval":
         return (
           <Link
             href="/brand/campaigns"
             key={notification.id}
-            className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg hover:bg-purple-100"
+            className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100"
           >
-            <BiTrendingUp className="text-purple-600" size={20} />
+            <BiCheck className="text-green-600" size={20} />
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-900">
-                New campaign created!
+                Campaign Approved!
               </p>
               <p className="text-xs text-gray-600">
-                {notification.data.brandName} created a new campaign
+                &quot;{notification.data.brandName}&quot; campaign has been
+                approved and is now active
               </p>
               <span className="text-xs text-gray-500">
                 {formatDate(notification.createdAt)}
@@ -254,21 +380,22 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
           </Link>
         );
 
-      case "payment":
+      case "assignment":
         return (
           <Link
             href="/brand/campaigns"
             key={notification.id}
-            className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100"
+            className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100"
           >
-            <FaNairaSign className="text-green-600" size={20} />
+            <BiUserCheck className="text-blue-600" size={20} />
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-900">
-                Campaign payment processed!
+                Influencers Assigned!
               </p>
               <p className="text-xs text-gray-600">
-                {notification.data.totalCost} has been paid for &qout;
-                {notification.data.brandName}&quot; campaign
+                {notification.data.assignedInfluencers?.length || 0}{" "}
+                influencer(s) assigned to &quot;{notification.data.brandName}
+                &quot; campaign
               </p>
               <span className="text-xs text-gray-500">
                 {formatDate(notification.createdAt)}

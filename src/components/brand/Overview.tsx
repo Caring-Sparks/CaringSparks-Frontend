@@ -58,7 +58,7 @@ const Overview: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   // Defensive checks with fallbacks (moved to top level)
-  const safeCampaigns: Campaign[] = campaigns || [];
+  const safeCampaigns: Campaign[] = useMemo(() => campaigns || [], [campaigns]);
   const safeUser = user || null;
 
   // All useMemo hooks must be at the top level, before any conditional returns

@@ -120,6 +120,7 @@ interface Campaign {
   updatedAt?: string;
   paymentReference: string;
   paymentDate: string;
+  assignedInfluencers: string[];
 }
 // User interface - Add your specific user fields here
 interface User {
@@ -353,12 +354,13 @@ export const useAdminStore = create<AdminState>()(
         set({ refreshing: true, error: null });
 
         try {
-          const [influencerRes, brandRes, adminRes, campaignRes] = await Promise.all([
-            api.get("/api/influencers/all-influencers"),
-            api.get("/api/brands/all-brands"),
-            api.get("/api/admins/all-admins"),
-            api.get("/api/campaigns/"),
-          ]);
+          const [influencerRes, brandRes, adminRes, campaignRes] =
+            await Promise.all([
+              api.get("/api/influencers/all-influencers"),
+              api.get("/api/brands/all-brands"),
+              api.get("/api/admins/all-admins"),
+              api.get("/api/campaigns/"),
+            ]);
 
           set({
             influencers: influencerRes.data?.data?.influencers || [],

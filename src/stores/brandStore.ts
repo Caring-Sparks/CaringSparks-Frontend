@@ -48,6 +48,7 @@ interface Campaign {
   createdAt?: string;
   updatedAt?: string;
   paymentReference: string;
+  assignedInfluencers: string[];
   paymentDate: string;
 }
 
