@@ -4,11 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBrandStore } from "@/stores/brandStore";
-import { FaPlus } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/utils/ToastNotification";
-
-// Updated Campaign interface to match the brand store
+import axios from "axios";
 interface Campaign {
   _id?: string;
   role: "Brand" | "Business" | "Person" | "Movie" | "Music" | "Other";
@@ -39,6 +37,7 @@ interface Campaign {
   status: "pending" | "approved" | "rejected";
   createdAt?: string;
   updatedAt?: string;
+  assignedInfluencers: string[];
 }
 
 const CampaignManagement: React.FC = () => {
@@ -57,14 +56,13 @@ const CampaignManagement: React.FC = () => {
     "all" | "paid" | "unpaid" | "approved" | "rejected" | "pending"
   >("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [newCampaign, setNewCampaign] = useState<boolean>(false);
-  const [editCampaign, setEditCampaign] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [showRejectModal, setShowRejectModal] = useState<boolean>(false);
   const [showApproveModal, setShowApproveModal] = useState<boolean>(false);
   const [deletingID, setDeletingID] = useState<string>("");
   const [actioningID, setActioningID] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [assignedInf, setAssignedInf] = useState<Record<string, any[]>>({});
   const [isApproving, setIsApproving] = useState<boolean>(false);
   const [isRejecting, setIsRejecting] = useState<boolean>(false);
   const [platformFilter, setPlatformFilter] = useState<string>("all");
@@ -81,6 +79,18 @@ const CampaignManagement: React.FC = () => {
     loadCampaigns();
     return () => clearErrors();
   }, [fetchCampaigns, clearErrors]);
+
+  useEffect(() => {
+    if (campaigns.length > 0) {
+      campaigns.forEach((c) => {
+        if (c.assignedInfluencers?.length > 0) {
+          c.assignedInfluencers.forEach((infId) => {
+            fetchInfluencerById(c._id!, infId);
+          });
+        }
+      });
+    }
+  }, [campaigns]);
 
   // API call to approve campaign
   const handleApproveCampaign = async (campaignId: string) => {
@@ -175,6 +185,33 @@ const CampaignManagement: React.FC = () => {
         duration: 6000,
       });
       setIsRejecting(false);
+    }
+  };
+
+  const fetchInfluencerById = async (campaignId: string, id: string) => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/influencers/${id}`
+      );
+
+      if (res.status === 200) {
+        const influencer = res.data?.data?.influencer;
+        setAssignedInf((prev) => {
+          const existing = prev[campaignId] || [];
+          const alreadyAdded = existing.some(
+            (inf) => inf._id === influencer._id
+          );
+
+          if (alreadyAdded) return prev; // Correctly skips if already found
+
+          return {
+            ...prev,
+            [campaignId]: [...existing, influencer],
+          };
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -692,14 +729,54 @@ const CampaignManagement: React.FC = () => {
                             </div>
                           </div>
                         )}
+
+                        {campaign.assignedInfluencers?.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <h4 className="font-medium text-gray-700 mb-3">
+                              Assigned Influencers
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {assignedInf[campaign._id!]
+                                ?.slice(0, 3) // show only first 3
+                                .map((inf, idx) => (
+                                  <div
+                                    key={inf._id || idx}
+                                    className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition"
+                                  >
+                                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-semibold">
+                                      {inf.name?.charAt(0).toUpperCase() || "I"}
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="font-medium text-gray-900">
+                                        {inf.name}
+                                      </span>
+                                      <span className="text-gray-600 text-sm">
+                                        {inf.email}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+
+                              {/* Show "+N more" if influencers exceed 3 */}
+                              {assignedInf[campaign._id!] &&
+                                assignedInf[campaign._id!].length > 3 && (
+                                  <div className="flex items-center justify-center p-3 bg-gray-100 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium">
+                                    +{assignedInf[campaign._id!].length - 3}{" "}
+                                    more
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex flex-col gap-2 lg:ml-6 mt-4 lg:mt-0">
                         <button
-                          onClick={() => {
-                            setEditingCampaign(campaign);
-                            setEditCampaign(true);
-                          }}
+                          onClick={() =>
+                            router.push(
+                              `/admin/assign-influencers?campaignId=${campaign._id}`
+                            )
+                          }
                           className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
                         >
                           Assign Influencers

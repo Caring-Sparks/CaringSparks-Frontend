@@ -9,6 +9,9 @@ import NewCampaign from "./NewCampaign";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/utils/ToastNotification";
 import EditCampaign from "./EditCampaign";
+import InfluencerDetailsModal from "./InfluencerDetailsModal";
+import AllInfluencersModal from "./AllInfluencers";
+import axios from "axios";
 
 // Flutterwave types
 interface FlutterwaveConfig {
@@ -35,6 +38,62 @@ declare global {
   interface Window {
     FlutterwaveCheckout: (config: FlutterwaveConfig) => void;
   }
+}
+
+// Platform data interface matching your schema
+interface PlatformData {
+  followers: string;
+  url: string;
+  impressions: string;
+  proofUrl?: string;
+}
+
+// Influencer interface matching your schema
+interface Influencer {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  whatsapp: string;
+  location: string;
+  niches: string[];
+  audienceLocation?: string;
+  malePercentage?: string;
+  femalePercentage?: string;
+  audienceProofUrl?: string;
+
+  // Platform data
+  instagram?: PlatformData;
+  twitter?: PlatformData;
+  tiktok?: PlatformData;
+  youtube?: PlatformData;
+  facebook?: PlatformData;
+  linkedin?: PlatformData;
+  discord?: PlatformData;
+  threads?: PlatformData;
+  snapchat?: PlatformData;
+
+  // Calculated earnings
+  followerFee?: number;
+  impressionFee?: number;
+  locationFee?: number;
+  nicheFee?: number;
+  earningsPerPost?: number;
+  earningsPerPostNaira?: number;
+  maxMonthlyEarnings?: number;
+  maxMonthlyEarningsNaira?: number;
+  followersCount?: number;
+
+  // Legacy fields
+  amountPerPost?: string;
+  amountPerMonth?: string;
+
+  // Metadata
+  status: "pending" | "approved" | "rejected";
+  emailSent: boolean;
+  isValidated: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Updated Campaign interface to match the brand store
@@ -68,6 +127,7 @@ interface Campaign {
   status: "pending" | "approved" | "rejected";
   createdAt?: string;
   updatedAt?: string;
+  assignedInfluencers: string[];
 }
 
 const Campaigns: React.FC = () => {
@@ -96,9 +156,25 @@ const Campaigns: React.FC = () => {
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [assignedInf, setAssignedInf] = useState<Record<string, Influencer[]>>(
+    {}
+  );
   const [payingCampaign, setPayingCampaign] = useState<string>("");
   const [isProcessingPayment, setIsProcessingPayment] =
     useState<boolean>(false);
+
+  // Modal states
+  const [showInfluencerDetails, setShowInfluencerDetails] =
+    useState<boolean>(false);
+  const [showAllInfluencers, setShowAllInfluencers] = useState<boolean>(false);
+  const [selectedInfluencer, setSelectedInfluencer] =
+    useState<Influencer | null>(null);
+  const [selectedCampaignInfluencers, setSelectedCampaignInfluencers] =
+    useState<{
+      influencers: Influencer[];
+      campaignName: string;
+    } | null>(null);
+
   const { showToast } = useToast();
 
   // Load Flutterwave script
@@ -132,6 +208,79 @@ const Campaigns: React.FC = () => {
     loadCampaigns();
     return () => clearErrors();
   }, [user?.email, fetchCampaigns, fetchCampaignsByEmail, clearErrors]);
+
+  useEffect(() => {
+    if (campaigns.length > 0) {
+      campaigns.forEach((c) => {
+        if (c.assignedInfluencers?.length > 0) {
+          c.assignedInfluencers.forEach((infId) => {
+            fetchInfluencerById(c._id!, infId);
+          });
+        }
+      });
+    }
+  }, [campaigns]);
+
+  const fetchInfluencerById = async (campaignId: string, id: string) => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/influencers/${id}`
+      );
+
+      if (res.status === 200) {
+        const influencer = res.data?.data?.influencer;
+        setAssignedInf((prev) => {
+          const existing = prev[campaignId] || [];
+          const alreadyAdded = existing.some(
+            (inf) => inf._id === influencer._id
+          );
+
+          if (alreadyAdded) return prev; // Correctly skips if already found
+
+          return {
+            ...prev,
+            [campaignId]: [...existing, influencer],
+          };
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Handle individual influencer click
+  const handleInfluencerClick = (influencer: Influencer) => {
+    setSelectedInfluencer(influencer);
+    setShowInfluencerDetails(true);
+  };
+
+  // Handle "show all influencers" click
+  const handleShowAllInfluencers = (campaign: Campaign) => {
+    const campaignInfluencers = assignedInf[campaign._id!] || [];
+    setSelectedCampaignInfluencers({
+      influencers: campaignInfluencers,
+      campaignName: campaign.brandName,
+    });
+    setShowAllInfluencers(true);
+  };
+
+  // Handle influencer click from all influencers modal
+  const handleInfluencerClickFromModal = (influencer: Influencer) => {
+    setShowAllInfluencers(false);
+    setSelectedInfluencer(influencer);
+    setShowInfluencerDetails(true);
+  };
+
+  // Close modals
+  const closeInfluencerDetailsModal = () => {
+    setShowInfluencerDetails(false);
+    setSelectedInfluencer(null);
+  };
+
+  const closeAllInfluencersModal = () => {
+    setShowAllInfluencers(false);
+    setSelectedCampaignInfluencers(null);
+  };
 
   // Flutterwave payment handler
   const handlePayment = (campaign: Campaign) => {
@@ -442,6 +591,21 @@ const Campaigns: React.FC = () => {
 
   return (
     <>
+      {/* Modals */}
+      <InfluencerDetailsModal
+        influencer={selectedInfluencer}
+        isOpen={showInfluencerDetails}
+        onClose={closeInfluencerDetailsModal}
+      />
+
+      <AllInfluencersModal
+        influencers={selectedCampaignInfluencers?.influencers || []}
+        campaignName={selectedCampaignInfluencers?.campaignName || ""}
+        isOpen={showAllInfluencers}
+        onClose={closeAllInfluencersModal}
+        onInfluencerClick={handleInfluencerClickFromModal}
+      />
+
       {newCampaign && <NewCampaign onBack={() => setNewCampaign(false)} />}
       {editCampaign && editingCampaign && (
         <EditCampaign
@@ -724,6 +888,55 @@ const Campaigns: React.FC = () => {
                                   </div>
                                 </div>
                               )}
+                            </div>
+                          </div>
+                        )}
+
+                        {campaign.assignedInfluencers?.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <h4 className="font-medium text-gray-700 mb-3">
+                              Assigned Influencers (
+                              {campaign.assignedInfluencers.length})
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {assignedInf[campaign._id!]
+                                ?.slice(0, 3) // show only first 3
+                                .map((inf, idx) => (
+                                  <div
+                                    key={inf._id || idx}
+                                    className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md hover:bg-gray-100 transition cursor-pointer"
+                                    onClick={() => handleInfluencerClick(inf)}
+                                  >
+                                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-semibold">
+                                      {inf.name?.charAt(0).toUpperCase() || "I"}
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="font-medium text-gray-900">
+                                        {inf.name}
+                                      </span>
+                                      <span className="text-gray-600 text-sm">
+                                        {inf.email}
+                                      </span>
+                                      <span className="text-gray-500 text-xs">
+                                        📍 {inf.location}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+
+                              {/* Show "+N more" if influencers exceed 3 */}
+                              {assignedInf[campaign._id!] &&
+                                assignedInf[campaign._id!].length > 3 && (
+                                  <div
+                                    className="flex items-center justify-center p-3 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-200 text-blue-600 text-sm font-medium cursor-pointer transition"
+                                    onClick={() =>
+                                      handleShowAllInfluencers(campaign)
+                                    }
+                                  >
+                                    +{assignedInf[campaign._id!].length - 3}{" "}
+                                    more influencers
+                                  </div>
+                                )}
                             </div>
                           </div>
                         )}
