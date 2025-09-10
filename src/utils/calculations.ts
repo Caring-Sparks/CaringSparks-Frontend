@@ -58,12 +58,21 @@ export interface InfluencerEarnings {
 }
 
 // Brand calculation function
-export const calculateBrandQuotation = (brandData: BrandData): BrandQuotation => {
+export const calculateBrandQuotation = (
+  brandData: BrandData
+): BrandQuotation => {
   const avgInfluencers = Math.ceil(
     (brandData.influencersMin + brandData.influencersMax) / 2
   );
 
-  const postCount = brandData.postFrequency.includes("15 posts") ? 15 : 12;
+  // --- Post count calculation ---
+  let postCount = 12; // default fallback
+
+  // Try to detect custom frequency like "... = 8 posts in total"
+  const match = brandData.postFrequency.match(/(\d+)\s+posts?/i);
+  if (match) {
+    postCount = parseInt(match[1], 10);
+  }
 
   const followerPricing = {
     "1k-3k": 2,
@@ -81,9 +90,11 @@ export const calculateBrandQuotation = (brandData: BrandData): BrandQuotation =>
   };
 
   const baseRate =
-    followerPricing[brandData.followersRange as keyof typeof followerPricing] || 5;
+    followerPricing[brandData.followersRange as keyof typeof followerPricing] ||
+    5;
   const durationMultiplier =
-    durationPricing[brandData.postDuration as keyof typeof durationPricing] || 1.5;
+    durationPricing[brandData.postDuration as keyof typeof durationPricing] ||
+    1.5;
 
   const costPerInfluencerPerPost = baseRate * durationMultiplier * 1000;
   const totalBaseCost = avgInfluencers * postCount * costPerInfluencerPerPost;
@@ -101,7 +112,9 @@ export const calculateBrandQuotation = (brandData: BrandData): BrandQuotation =>
 };
 
 // Influencer calculation function
-export const calculateInfluencerEarnings = (influencerData: InfluencerData): InfluencerEarnings => {
+export const calculateInfluencerEarnings = (
+  influencerData: InfluencerData
+): InfluencerEarnings => {
   // Get platform data for calculations
   const allPlatforms = [
     { name: "Instagram", key: "instagram" },
@@ -117,7 +130,9 @@ export const calculateInfluencerEarnings = (influencerData: InfluencerData): Inf
 
   // Fallback to 0 if no platform data exists
   const followersCount = firstPlatformKey
-    ? Number.parseInt((influencerData[firstPlatformKey] as PlatformData).followers) || 0
+    ? Number.parseInt(
+        (influencerData[firstPlatformKey] as PlatformData).followers
+      ) || 0
     : 0;
 
   let followerFee = 2;

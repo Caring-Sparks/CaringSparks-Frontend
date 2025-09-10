@@ -42,6 +42,12 @@ type formProps = {
 const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
   const [newLocation, setNewLocation] = useState("");
   const [submittedData, setSubmittedData] = useState<BrandData | null>(null);
+  const [customFrequency, setCustomFrequency] = useState(false);
+  const [customFrequencyValues, setCustomFrequencyValues] = useState<any>({
+    postsPerWeek: 1,
+    weeks: 1,
+  });
+  const [selectedCountryCode, setSelectedCountryCode] = useState("+234");
   const { registerBrand, loading } = useAuth();
 
   const initialValues: BrandData = {
@@ -70,7 +76,9 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
     "Discord",
     "Snapchat",
   ];
+
   const roles = ["Brand", "Business", "Person", "Movie", "Music", "Other"];
+
   const followerRanges = [
     "1k-3k",
     "3k-10k",
@@ -78,12 +86,45 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
     "20k-50k",
     "50k & above",
   ];
+
   const postFrequencies = [
     "5 times per week for 3 weeks = 15 posts in total",
     "3 times per week for 4 weeks = 12 posts in total",
     "2 times per week for 6 weeks = 12 posts in total",
+    "1 time per week for 4 weeks = 4 posts in total",
+    "3 times per month for 2 months = 6 posts in total",
+    "custom", // Add custom option
   ];
+
   const postDurations = ["1 day", "1 week", "2 weeks", "1 month"];
+
+  const countryCodes = [
+    { code: "+1", country: "US/Canada", flag: "🇺🇸" },
+    { code: "+44", country: "UK", flag: "🇬🇧" },
+    { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+    { code: "+233", country: "Ghana", flag: "🇬🇭" },
+    { code: "+27", country: "South Africa", flag: "🇿🇦" },
+    { code: "+254", country: "Kenya", flag: "🇰🇪" },
+    { code: "+256", country: "Uganda", flag: "🇺🇬" },
+    { code: "+91", country: "India", flag: "🇮🇳" },
+    { code: "+86", country: "China", flag: "🇨🇳" },
+    { code: "+33", country: "France", flag: "🇫🇷" },
+    { code: "+49", country: "Germany", flag: "🇩🇪" },
+    { code: "+81", country: "Japan", flag: "🇯🇵" },
+    { code: "+61", country: "Australia", flag: "🇦🇺" },
+    { code: "+55", country: "Brazil", flag: "🇧🇷" },
+    { code: "+52", country: "Mexico", flag: "🇲🇽" },
+  ];
+
+  const generateCustomFrequencyString = () => {
+    const { postsPerWeek, weeks } = customFrequencyValues;
+    const totalPosts = postsPerWeek * weeks;
+    return `${postsPerWeek} time${
+      postsPerWeek > 1 ? "s" : ""
+    } per week for ${weeks} week${
+      weeks > 1 ? "s" : ""
+    } = ${totalPosts} posts in total`;
+  };
 
   return (
     <>
@@ -129,10 +170,22 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                 initialValues={initialValues}
                 validationSchema={validationSchema}
                 onSubmit={async (values, { resetForm }) => {
-                  const quotation = calculateBrandQuotation(values);
+                  // Combine country code with phone number for the full phone number
+                  const fullPhoneNumber = `${selectedCountryCode}${values.brandPhone}`;
+
+                  // Prepare data for backend - brandPhone will contain the full number including country code
+                  const dataForBackend = {
+                    ...values,
+                    brandPhone: fullPhoneNumber, // Send complete phone number as string
+                    postFrequency: customFrequency
+                      ? generateCustomFrequencyString()
+                      : values.postFrequency, // Ensure custom frequency is sent as string
+                  };
+
+                  const quotation = calculateBrandQuotation(dataForBackend);
 
                   const brandDataWithCalculations = {
-                    ...values,
+                    ...dataForBackend,
                     avgInfluencers: quotation.avgInfluencers,
                     postCount: quotation.postCount,
                     costPerInfluencerPerPost:
@@ -144,7 +197,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
 
                   const res = await registerBrand(brandDataWithCalculations);
                   if (res) {
-                    setSubmittedData(values);
+                    setSubmittedData(dataForBackend);
                     resetForm();
                   }
                 }}
@@ -362,14 +415,125 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                         as="select"
                         name="postFrequency"
                         className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        onChange={(e: any) => {
+                          const value = e.target.value;
+                          setFieldValue("postFrequency", value);
+                          setCustomFrequency(value === "custom");
+                        }}
                       >
                         <option value="">Select posting frequency...</option>
                         {postFrequencies.map((freq) => (
                           <option key={freq} value={freq}>
-                            {freq}
+                            {freq === "custom" ? "Custom frequency" : freq}
                           </option>
                         ))}
                       </Field>
+
+                      {/* Custom Frequency Options */}
+                      {customFrequency && (
+                        <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+                          <h4 className="text-sm font-medium text-gray-700 mb-3">
+                            Customize your posting schedule:
+                          </h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            {/* Posts per week */}
+                            <div>
+                              <label className="text-xs text-gray-600 mb-1 block">
+                                Posts per week
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                max="7"
+                                value={customFrequencyValues.postsPerWeek ?? ""}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  const newValue =
+                                    value === "" ? "" : parseInt(value, 10);
+
+                                  setCustomFrequencyValues({
+                                    ...customFrequencyValues,
+                                    postsPerWeek: newValue,
+                                  });
+
+                                  if (
+                                    newValue !== "" &&
+                                    customFrequencyValues.weeks !== ""
+                                  ) {
+                                    const updatedFrequency = `${newValue} time${
+                                      newValue > 1 ? "s" : ""
+                                    } per week for ${
+                                      customFrequencyValues.weeks
+                                    } week${
+                                      customFrequencyValues.weeks > 1 ? "s" : ""
+                                    } = ${
+                                      newValue * customFrequencyValues.weeks
+                                    } posts in total`;
+
+                                    setFieldValue(
+                                      "postFrequency",
+                                      updatedFrequency
+                                    );
+                                  }
+                                }}
+                                className="w-full px-2 py-1 text-sm bg-white rounded border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                              />
+                            </div>
+
+                            {/* Number of weeks */}
+                            <div>
+                              <label className="text-xs text-gray-600 mb-1 block">
+                                Number of weeks
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                max="52"
+                                value={customFrequencyValues.weeks ?? ""}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  const newValue =
+                                    value === "" ? "" : parseInt(value, 10);
+
+                                  setCustomFrequencyValues({
+                                    ...customFrequencyValues,
+                                    weeks: newValue,
+                                  });
+
+                                  if (
+                                    newValue !== "" &&
+                                    customFrequencyValues.postsPerWeek !== ""
+                                  ) {
+                                    const updatedFrequency = `${
+                                      customFrequencyValues.postsPerWeek
+                                    } time${
+                                      customFrequencyValues.postsPerWeek > 1
+                                        ? "s"
+                                        : ""
+                                    } per week for ${newValue} week${
+                                      newValue > 1 ? "s" : ""
+                                    } = ${
+                                      customFrequencyValues.postsPerWeek *
+                                      newValue
+                                    } posts in total`;
+
+                                    setFieldValue(
+                                      "postFrequency",
+                                      updatedFrequency
+                                    );
+                                  }
+                                }}
+                                className="w-full px-2 py-1 text-sm bg-white rounded border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="mt-3 text-sm text-gray-600 bg-white p-2 rounded border">
+                            <strong>Preview:</strong>{" "}
+                            {generateCustomFrequencyString()}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Post Duration */}
@@ -441,21 +605,39 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                         />
                       </div>
 
+                      {/* Enhanced Phone Number Field */}
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <Phone className="w-4 h-4" />
                           Brand phone number *
                         </label>
-                        <Field
-                          name="brandPhone"
-                          type="tel"
-                          placeholder="Enter your phone number"
-                          className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                            errors.brandPhone && touched.brandPhone
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                        />
+                        <div className="flex gap-2">
+                          <select
+                            value={selectedCountryCode}
+                            onChange={(e) =>
+                              setSelectedCountryCode(e.target.value)
+                            }
+                            className="px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            style={{ minWidth: "140px" }}
+                          >
+                            {countryCodes.map((country) => (
+                              <option key={country.code} value={country.code}>
+                                {country.flag} {country.code} ({country.country}
+                                )
+                              </option>
+                            ))}
+                          </select>
+                          <Field
+                            name="brandPhone"
+                            type="tel"
+                            placeholder="Enter phone number"
+                            className={`flex-1 px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                              errors.brandPhone && touched.brandPhone
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            }`}
+                          />
+                        </div>
                         <ErrorMessage
                           name="brandPhone"
                           component="p"

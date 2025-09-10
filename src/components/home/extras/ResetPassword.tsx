@@ -215,7 +215,7 @@ export default function ResetPasswordForm() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => router.push("/login")}
+              onClick={() => router.push("/")}
               className="bg-indigo-600 text-white rounded-full py-3 px-6 text-sm font-bold shadow-lg shadow-indigo-600/30 transition-all duration-300 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none"
             >
               Go to Login Now

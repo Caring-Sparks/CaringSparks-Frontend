@@ -76,6 +76,43 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
       </div>
 
       <div className="p-6 space-y-8">
+        {/* Next Steps */}
+        <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+          <h3 className="text-lg font-semibold text-blue-900 mb-3">
+            Next Steps
+          </h3>
+          {type === "brand" ? (
+            <div className="space-y-2 text-blue-800">
+              <p>
+                • Your password and registration details have been sent to your
+                email. You can use that to access your dashboard.
+              </p>
+              <p>• Our team will review your campaign requirements</p>
+              <p>
+                • We&apos;ll match you with suitable influencers within 24-48
+                hours
+              </p>
+              <p>• You&apos;ll receive influencer profiles for approval</p>
+              <p>• Campaign launch after final confirmation and payment</p>
+            </div>
+          ) : (
+            <div className="space-y-2 text-blue-800">
+              <p>
+                • Your password and registration details have been sent to your
+                email. You can use that to access your dashboard.
+              </p>
+              <p>• Our team will review your application within 24-48 hours</p>
+              <p>
+                • We&apos;ll verify your social media accounts and audience data
+              </p>
+              <p>• You&apos;ll receive an email confirmation once approved</p>
+              <p>
+                • Start receiving campaign opportunities that match your profile
+              </p>
+            </div>
+          )}
+        </div>
+
         {/* Brand Summary */}
         {isBrandData(data) && (
           <>
@@ -515,35 +552,6 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
             </div>
           </>
         )}
-
-        {/* Next Steps */}
-        <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-          <h3 className="text-lg font-semibold text-blue-900 mb-3">
-            Next Steps
-          </h3>
-          {type === "brand" ? (
-            <div className="space-y-2 text-blue-800">
-              <p>• Our team will review your campaign requirements</p>
-              <p>
-                • We&apos;ll match you with suitable influencers within 24-48
-                hours
-              </p>
-              <p>• You&apos;ll receive influencer profiles for approval</p>
-              <p>• Campaign launch after final confirmation and payment</p>
-            </div>
-          ) : (
-            <div className="space-y-2 text-blue-800">
-              <p>• Our team will review your application within 24-48 hours</p>
-              <p>
-                • We&apos;ll verify your social media accounts and audience data
-              </p>
-              <p>• You&apos;ll receive an email confirmation once approved</p>
-              <p>
-                • Start receiving campaign opportunities that match your profile
-              </p>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
