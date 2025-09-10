@@ -30,6 +30,108 @@ import { useAuth } from "@/hooks/useAuth";
 import { calculateInfluencerEarnings } from "@/utils/calculations";
 import { BsThreads } from "react-icons/bs";
 
+// Country codes data
+const countryCodes = [
+  { code: "+1", country: "US/CA", flag: "🇺🇸" },
+  { code: "+7", country: "RU", flag: "🇷🇺" },
+  { code: "+20", country: "EG", flag: "🇪🇬" },
+  { code: "+27", country: "ZA", flag: "🇿🇦" },
+  { code: "+30", country: "GR", flag: "🇬🇷" },
+  { code: "+31", country: "NL", flag: "🇳🇱" },
+  { code: "+32", country: "BE", flag: "🇧🇪" },
+  { code: "+33", country: "FR", flag: "🇫🇷" },
+  { code: "+34", country: "ES", flag: "🇪🇸" },
+  { code: "+36", country: "HU", flag: "🇭🇺" },
+  { code: "+39", country: "IT", flag: "🇮🇹" },
+  { code: "+40", country: "RO", flag: "🇷🇴" },
+  { code: "+41", country: "CH", flag: "🇨🇭" },
+  { code: "+43", country: "AT", flag: "🇦🇹" },
+  { code: "+44", country: "GB", flag: "🇬🇧" },
+  { code: "+45", country: "DK", flag: "🇩🇰" },
+  { code: "+46", country: "SE", flag: "🇸🇪" },
+  { code: "+47", country: "NO", flag: "🇳🇴" },
+  { code: "+48", country: "PL", flag: "🇵🇱" },
+  { code: "+49", country: "DE", flag: "🇩🇪" },
+  { code: "+51", country: "PE", flag: "🇵🇪" },
+  { code: "+52", country: "MX", flag: "🇲🇽" },
+  { code: "+53", country: "CU", flag: "🇨🇺" },
+  { code: "+54", country: "AR", flag: "🇦🇷" },
+  { code: "+55", country: "BR", flag: "🇧🇷" },
+  { code: "+56", country: "CL", flag: "🇨🇱" },
+  { code: "+57", country: "CO", flag: "🇨🇴" },
+  { code: "+58", country: "VE", flag: "🇻🇪" },
+  { code: "+60", country: "MY", flag: "🇲🇾" },
+  { code: "+61", country: "AU", flag: "🇦🇺" },
+  { code: "+62", country: "ID", flag: "🇮🇩" },
+  { code: "+63", country: "PH", flag: "🇵🇭" },
+  { code: "+64", country: "NZ", flag: "🇳🇿" },
+  { code: "+65", country: "SG", flag: "🇸🇬" },
+  { code: "+66", country: "TH", flag: "🇹🇭" },
+  { code: "+81", country: "JP", flag: "🇯🇵" },
+  { code: "+82", country: "KR", flag: "🇰🇷" },
+  { code: "+84", country: "VN", flag: "🇻🇳" },
+  { code: "+86", country: "CN", flag: "🇨🇳" },
+  { code: "+90", country: "TR", flag: "🇹🇷" },
+  { code: "+91", country: "IN", flag: "🇮🇳" },
+  { code: "+92", country: "PK", flag: "🇵🇰" },
+  { code: "+93", country: "AF", flag: "🇦🇫" },
+  { code: "+94", country: "LK", flag: "🇱🇰" },
+  { code: "+95", country: "MM", flag: "🇲🇲" },
+  { code: "+98", country: "IR", flag: "🇮🇷" },
+  { code: "+212", country: "MA", flag: "🇲🇦" },
+  { code: "+213", country: "DZ", flag: "🇩🇿" },
+  { code: "+216", country: "TN", flag: "🇹🇳" },
+  { code: "+218", country: "LY", flag: "🇱🇾" },
+  { code: "+220", country: "GM", flag: "🇬🇲" },
+  { code: "+221", country: "SN", flag: "🇸🇳" },
+  { code: "+222", country: "MR", flag: "🇲🇷" },
+  { code: "+223", country: "ML", flag: "🇲🇱" },
+  { code: "+224", country: "GN", flag: "🇬🇳" },
+  { code: "+225", country: "CI", flag: "🇨🇮" },
+  { code: "+226", country: "BF", flag: "🇧🇫" },
+  { code: "+227", country: "NE", flag: "🇳🇪" },
+  { code: "+228", country: "TG", flag: "🇹🇬" },
+  { code: "+229", country: "BJ", flag: "🇧🇯" },
+  { code: "+230", country: "MU", flag: "🇲🇺" },
+  { code: "+231", country: "LR", flag: "🇱🇷" },
+  { code: "+232", country: "SL", flag: "🇸🇱" },
+  { code: "+233", country: "GH", flag: "🇬🇭" },
+  { code: "+234", country: "NG", flag: "🇳🇬" },
+  { code: "+235", country: "TD", flag: "🇹🇩" },
+  { code: "+236", country: "CF", flag: "🇨🇫" },
+  { code: "+237", country: "CM", flag: "🇨🇲" },
+  { code: "+238", country: "CV", flag: "🇨🇻" },
+  { code: "+239", country: "ST", flag: "🇸🇹" },
+  { code: "+240", country: "GQ", flag: "🇬🇶" },
+  { code: "+241", country: "GA", flag: "🇬🇦" },
+  { code: "+242", country: "CG", flag: "🇨🇬" },
+  { code: "+243", country: "CD", flag: "🇨🇩" },
+  { code: "+244", country: "AO", flag: "🇦🇴" },
+  { code: "+245", country: "GW", flag: "🇬🇼" },
+  { code: "+246", country: "IO", flag: "🇮🇴" },
+  { code: "+248", country: "SC", flag: "🇸🇨" },
+  { code: "+249", country: "SD", flag: "🇸🇩" },
+  { code: "+250", country: "RW", flag: "🇷🇼" },
+  { code: "+251", country: "ET", flag: "🇪🇹" },
+  { code: "+252", country: "SO", flag: "🇸🇴" },
+  { code: "+253", country: "DJ", flag: "🇩🇯" },
+  { code: "+254", country: "KE", flag: "🇰🇪" },
+  { code: "+255", country: "TZ", flag: "🇹🇿" },
+  { code: "+256", country: "UG", flag: "🇺🇬" },
+  { code: "+257", country: "BI", flag: "🇧🇮" },
+  { code: "+258", country: "MZ", flag: "🇲🇿" },
+  { code: "+260", country: "ZM", flag: "🇿🇲" },
+  { code: "+261", country: "MG", flag: "🇲🇬" },
+  { code: "+262", country: "RE", flag: "🇷🇪" },
+  { code: "+263", country: "ZW", flag: "🇿🇼" },
+  { code: "+264", country: "NA", flag: "🇳🇦" },
+  { code: "+265", country: "MW", flag: "🇲🇼" },
+  { code: "+266", country: "LS", flag: "🇱🇸" },
+  { code: "+267", country: "BW", flag: "🇧🇼" },
+  { code: "+268", country: "SZ", flag: "🇸🇿" },
+  { code: "+269", country: "KM", flag: "🇰🇲" },
+];
+
 // Define a type for a social media platform's data
 type PlatformData = {
   followers: string;
@@ -58,6 +160,77 @@ type influencerProps = {
   login: () => void;
 };
 
+const PhoneNumberInput: React.FC<{
+  name: string;
+  placeholder: string;
+  icon: React.ComponentType<any>;
+  selectedCountryCode: string;
+  setSelectedCountryCode: (code: string) => void;
+  setFieldValue: (field: string, value: any) => void;
+  value: string;
+  errors: any;
+  touched: any;
+}> = ({
+  name,
+  placeholder,
+  icon: Icon,
+  selectedCountryCode,
+  setSelectedCountryCode,
+  setFieldValue,
+  value,
+  errors,
+  touched,
+}) => {
+  // Extract the number part (strip out country code)
+  const localPart = value.startsWith(selectedCountryCode)
+    ? value.slice(selectedCountryCode.length)
+    : "";
+
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+        <Icon className="w-4 h-4" />
+        {placeholder} *
+      </label>
+      <div className="flex">
+        <select
+          value={selectedCountryCode}
+          onChange={(e) => {
+            const newCode = e.target.value;
+            setSelectedCountryCode(newCode);
+            setFieldValue(name, `${newCode}${localPart}`);
+          }}
+          className="px-3 py-2 bg-gray-100 rounded-l-xl border border-r-0 border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[100px]"
+        >
+          {countryCodes.map((country) => (
+            <option key={country.code} value={country.code}>
+              {country.flag} {country.code}
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="tel"
+          placeholder="1234567890"
+          value={localPart}
+          onChange={(e) => {
+            const newLocal = e.target.value;
+            setFieldValue(name, `${selectedCountryCode}${newLocal}`);
+          }}
+          className={`flex-1 px-3 py-2 bg-gray-100 rounded-r-xl border border-l-0 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 ${
+            errors[name] && touched[name] ? "border-red-500" : "border-gray-300"
+          }`}
+        />
+      </div>
+      <ErrorMessage
+        name={name}
+        component="p"
+        className="text-sm text-red-600"
+      />
+    </div>
+  );
+};
+
 const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
   const { registerInfluencer, loading } = useAuth();
 
@@ -66,6 +239,14 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
   );
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [formValues, setFormValues] = useState<InfluencerFormData | null>(null);
+
+  // Country code states for phone inputs
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+234");
+  const [whatsappCountryCode, setWhatsappCountryCode] = useState("+234");
+
+  // Phone number states (without country codes)
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
 
   const allPlatforms = [
     { name: "Instagram", icon: InstagramLogo, key: "instagram" },
@@ -98,8 +279,12 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
       email: Yup.string()
         .email("Invalid email format")
         .required("Email is required"),
-      phone: Yup.string().required("Phone number is required"),
-      whatsapp: Yup.string().required("WhatsApp number is required"),
+      phone: Yup.string()
+        .matches(/^\+[1-9]\d{1,14}$/, "Invalid phone number format")
+        .required("Phone number is required"),
+      whatsapp: Yup.string()
+        .matches(/^\+[1-9]\d{1,14}$/, "Invalid WhatsApp number format")
+        .required("WhatsApp number is required"),
       location: Yup.string().required("Location is required"),
       niches: Yup.array().min(1, "Select at least one niche"),
     };
@@ -744,49 +929,29 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             />
                           </div>
 
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                              <WhatsappLogo className="w-4 h-4" />
-                              WhatsApp number *
-                            </label>
-                            <Field
-                              name="whatsapp"
-                              type="tel"
-                              placeholder="Enter WhatsApp number"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo
-                                errors.whatsapp && touched.whatsapp
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              }`}
-                            />
-                            <ErrorMessage
-                              name="whatsapp"
-                              component="p"
-                              className="text-sm text-red-600"
-                            />
-                          </div>
+                          <PhoneNumberInput
+                            name="phone"
+                            placeholder="Phone Number"
+                            icon={Phone}
+                            selectedCountryCode={phoneCountryCode}
+                            setSelectedCountryCode={setPhoneCountryCode}
+                            setFieldValue={setFieldValue}
+                            value={values.phone}
+                            errors={errors}
+                            touched={touched}
+                          />
 
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                              <Phone className="w-4 h-4" />
-                              Phone number *
-                            </label>
-                            <Field
-                              name="phone"
-                              type="tel"
-                              placeholder="Enter phone number"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                                errors.phone && touched.phone
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              }`}
-                            />
-                            <ErrorMessage
-                              name="phone"
-                              component="p"
-                              className="text-sm text-red-600"
-                            />
-                          </div>
+                          <PhoneNumberInput
+                            name="whatsapp"
+                            placeholder="WhatsApp Number"
+                            icon={WhatsappLogo}
+                            selectedCountryCode={whatsappCountryCode}
+                            setSelectedCountryCode={setWhatsappCountryCode}
+                            setFieldValue={setFieldValue}
+                            value={values.whatsapp}
+                            errors={errors}
+                            touched={touched}
+                          />
                         </div>
                       </div>
 

@@ -3,17 +3,16 @@
 import { Users, Briefcase, Clock, ArrowClockwise } from "phosphor-react";
 import {
   BiCalendar,
-  BiDollarCircle,
   BiChart,
   BiTrendingUp,
 } from "react-icons/bi";
-import { FaDollarSign, FaHandshake } from "react-icons/fa";
 import { MdOutlineNotificationsPaused } from "react-icons/md";
 import Link from "next/link";
 import { useBrandStore } from "@/stores/brandStore";
 import { GiCheckMark } from "react-icons/gi";
 import { useEffect, useMemo, useState } from "react";
 import { FaNairaSign } from "react-icons/fa6";
+import { TbMoneybag } from "react-icons/tb";
 
 // Updated Campaign interface to match the store
 interface Campaign {
@@ -314,7 +313,7 @@ const Overview: React.FC = () => {
               </p>
             </div>
             <div className="p-3 bg-purple-100 rounded-full">
-              <FaDollarSign size={24} className="text-purple-600" />
+              <TbMoneybag size={24} className="text-purple-600" />
             </div>
           </div>
         </div>

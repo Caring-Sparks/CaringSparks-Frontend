@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeClosed, Lock, User, X, UserCircle } from "phosphor-react";
 import { useEffect, useState } from "react";
 import ForgotPassword from "./ForgotPassword";
+import GetStarted from "./GetStarted";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
@@ -23,8 +24,10 @@ interface LoginPopupProps {
 
 export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
   const { login, loading } = useAuth();
+  const [getStarted, setGetStarted] = useState(false);
   const [resetPassword, setResetPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [logins, setLogins] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -44,7 +47,12 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
 
   return (
     <>
-      {resetPassword ? (
+      {getStarted ? (
+        <GetStarted
+          onClose={() => setGetStarted(false)}
+          login={() => setLogins(false)}
+        />
+      ) : resetPassword ? (
         <ForgotPassword
           isOpen={isOpen}
           onClose={onClose}
@@ -224,8 +232,13 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
 
                       {/* Signup link */}
                       <p className="text-center text-gray-500 text-sm mt-1">
-                        Don&poas;t have an account?{" "}
-                        <span className="text-indigo-600 font-medium hover:underline">
+                        Don&apos;t have an account?{" "}
+                        <span
+                          onClick={() => {
+                            setGetStarted(true);
+                          }}
+                          className="text-indigo-600 font-medium hover:underline"
+                        >
                           Sign up
                         </span>
                       </p>
