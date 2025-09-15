@@ -64,13 +64,13 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
             <motion.div
               id="backdrop"
               onClick={handleBackdropClick}
-              className="fixed inset-0 flex items-center justify-center bg-gray-200/50 backdrop-blur-sm z-50 p-4"
+              className="fixed inset-0 flex items-center justify-center bg-slate-200/20 backdrop-blur-md z-50 p-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
               <motion.div
-                className="bg-white text-gray-800 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
+                className="bg-slate-900 text-slate-300 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
                 initial={{ scale: 0.9, y: 50, opacity: 0 }}
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.9, y: 50, opacity: 0 }}
@@ -88,7 +88,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
 
                 {/* Header */}
                 <div className="flex flex-col items-center mb-8">
-                  <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-gray-900">
+                  <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-slate-300">
                     Welcome Back
                   </h2>
                   <p className="text-gray-500 text-sm">Sign in to continue</p>
@@ -119,7 +119,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                           <Field
                             type="email"
                             name="email"
-                            className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all"
+                            className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all"
                             placeholder="Email address"
                           />
                         </div>
@@ -137,7 +137,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                           <Field
                             type={showPassword ? "text" : "password"}
                             name="password"
-                            className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all"
+                            className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all"
                             placeholder="Password"
                           />
                           <button
@@ -162,7 +162,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                           <Field
                             as="select"
                             name="role"
-                            className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                            className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all appearance-none cursor-pointer"
                           >
                             <option value="" disabled className="text-gray-400">
                               Select your role
@@ -205,7 +205,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                         {loading ? (
                           <button
                             disabled
-                            className="w-full flex justify-center px-4 py-2 bg-indigo-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
+                            className="w-full flex justify-center px-4 py-2 bg-yellow-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
                           >
                             <div className="loader">
                               <span className="bar"></span>
@@ -216,7 +216,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                         ) : (
                           <button
                             type="submit"
-                            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                            className="w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
                           >
                             Login
                           </button>
@@ -237,7 +237,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                           onClick={() => {
                             setGetStarted(true);
                           }}
-                          className="text-indigo-600 font-medium hover:underline"
+                          className="text-yellow-600 font-medium hover:underline"
                         >
                           Sign up
                         </span>
@@ -246,7 +246,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                         onClick={() => setResetPassword(true)}
                         className="text-center text-gray-500 text-sm mt-1 cursor-pointer"
                       >
-                        <span className="text-indigo-600 font-medium hover:underline">
+                        <span className="text-yellow-600 font-medium hover:underline">
                           Don&apos;t remember your password?
                         </span>
                       </p>

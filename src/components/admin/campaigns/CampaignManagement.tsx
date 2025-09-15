@@ -525,7 +525,7 @@ const CampaignManagement: React.FC = () => {
                   placeholder="Search by brand name, location, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 />
               </div>
 
@@ -545,7 +545,7 @@ const CampaignManagement: React.FC = () => {
                     onClick={() => setFilter(status as typeof filter)}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                       filter === status
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-yellow-600 text-white"
                         : "bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                   >
@@ -743,7 +743,7 @@ const CampaignManagement: React.FC = () => {
                                     key={inf._id || idx}
                                     className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition"
                                   >
-                                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-semibold">
+                                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600 font-semibold">
                                       {inf.name?.charAt(0).toUpperCase() || "I"}
                                     </div>
                                     <div className="flex flex-col">
@@ -771,16 +771,18 @@ const CampaignManagement: React.FC = () => {
                       </div>
 
                       <div className="flex flex-col gap-2 lg:ml-6 mt-4 lg:mt-0">
-                        <button
-                          onClick={() =>
-                            router.push(
-                              `/admin/assign-influencers?campaignId=${campaign._id}`
-                            )
-                          }
-                          className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
-                        >
-                          Assign Influencers
-                        </button>
+                        {campaign.hasPaid && (
+                          <button
+                            onClick={() =>
+                              router.push(
+                                `/admin/assign-influencers?campaignId=${campaign._id}`
+                              )
+                            }
+                            className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
+                          >
+                            Assign Influencers
+                          </button>
+                        )}
 
                         {/* Show approve/reject buttons only for pending campaigns */}
                         {campaign.status === "pending" && (
