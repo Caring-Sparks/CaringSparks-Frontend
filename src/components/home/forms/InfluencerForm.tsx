@@ -188,7 +188,7 @@ const PhoneNumberInput: React.FC<{
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+      <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
         <Icon className="w-4 h-4" />
         {placeholder} *
       </label>
@@ -200,7 +200,7 @@ const PhoneNumberInput: React.FC<{
             setSelectedCountryCode(newCode);
             setFieldValue(name, `${newCode}${localPart}`);
           }}
-          className="px-3 py-2 bg-gray-100 rounded-l-xl border border-r-0 border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[100px]"
+          className="px-3 py-2 bg-gray-100 rounded-l-xl border border-r-0 border-gray-300 text-slate-300 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 min-w-[100px]"
         >
           {countryCodes.map((country) => (
             <option key={country.code} value={country.code}>
@@ -217,7 +217,7 @@ const PhoneNumberInput: React.FC<{
             const newLocal = e.target.value;
             setFieldValue(name, `${selectedCountryCode}${newLocal}`);
           }}
-          className={`flex-1 px-3 py-2 bg-gray-100 rounded-r-xl border border-l-0 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 ${
+          className={`flex-1 px-3 py-2 bg-gray-100 rounded-r-xl border border-l-0 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 ${
             errors[name] && touched[name] ? "border-red-500" : "border-gray-300"
           }`}
         />
@@ -408,7 +408,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
           type="influencer"
         />
       ) : (
-        <div className="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200">
+        <div className="w-full max-w-4xl mx-auto bg-slate-900 rounded-xl shadow-lg border border-gray-200">
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -517,7 +517,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                     <button
                       type="button"
                       onClick={onBack}
-                      className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-slate-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <ArrowLeft /> Back
                     </button>
@@ -525,10 +525,10 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                   {/* Header */}
                   <div className="text-center p-6 border-b border-gray-100">
-                    <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-                      <Star className="w-6 h-6 text-indigo-600" />
+                    <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                      <Star className="w-6 h-6 text-yellow-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-2xl font-bold text-slate-300 mb-2">
                       Join as an Influencer
                     </h2>
                     <p className="text-gray-600 mb-4">
@@ -543,7 +543,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
-                          className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                          className="bg-yellow-600 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
@@ -554,7 +554,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                     <Form className="space-y-8">
                       {/* Social Media Accounts Selection */}
                       <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-slate-300 flex items-center gap-2">
                           <Camera className="w-5 h-5" />
                           Social Media Accounts
                         </h3>
@@ -569,8 +569,8 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               onClick={() => handlePlatformToggle(key, values)}
                               className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-all ${
                                 selectedPlatforms.includes(key)
-                                  ? "bg-indigo-50 border-indigo-400 text-indigo-700"
-                                  : "bg-gray-50 border-gray-300 text-gray-500 hover:bg-gray-100"
+                                  ? "bg-yellow-50 border-yellow-400 text-yellow-700"
+                                  : "bg-transparent border-gray-300 text-gray-500 hover:bg-gray-100"
                               }`}
                             >
                               <Icon className="w-8 h-8 mb-2" />
@@ -595,13 +595,13 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             key={platformKey}
                             className="border border-gray-200 rounded-lg p-6 space-y-4"
                           >
-                            <h4 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                            <h4 className="text-base font-semibold text-slate-300 flex items-center gap-2">
                               <Icon className="w-5 h-5" />
                               {platform.name} Account Details
                             </h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700">
+                                <label className="text-sm font-medium text-slate-300">
                                   {getFollowersLabel(platformKey)}
                                 </label>
                                 <Field
@@ -609,7 +609,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                   type="number"
                                   min="0"
                                   placeholder="e.g., 10000"
-                                  className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                  className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                 />
                                 <ErrorMessage
                                   name={`${platformKey}.followers`}
@@ -618,14 +618,14 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                 />
                               </div>
                               <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700">
+                                <label className="text-sm font-medium text-slate-300">
                                   Account URL *
                                 </label>
                                 <Field
                                   name={`${platformKey}.url`}
                                   type="url"
                                   placeholder={getUrlPlaceholder(platformKey)}
-                                  className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                  className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                 />
                                 <ErrorMessage
                                   name={`${platformKey}.url`}
@@ -635,7 +635,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               </div>
                             </div>
                             <div className="space-y-2">
-                              <label className="text-sm font-medium text-gray-700">
+                              <label className="text-sm font-medium text-slate-300">
                                 {platformKey === "discord"
                                   ? "Last 30 days message interactions *"
                                   : "Last 30 days impressions *"}
@@ -649,7 +649,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                     ? "Total message interactions in the last 30 days"
                                     : "Total impressions in the last 30 days"
                                 }
-                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                               />
                               <ErrorMessage
                                 name={`${platformKey}.impressions`}
@@ -658,13 +658,13 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               />
                             </div>
                             <div className="space-y-2">
-                              <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                                 <Upload className="w-4 h-4" />
                                 {platformKey === "discord"
                                   ? "Proof of last 30 days message interactions *"
                                   : "Proof of last 30 days impressions *"}
                               </label>
-                              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-400 transition-colors">
+                              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-yellow-400 transition-colors">
                                 <input
                                   type="file"
                                   accept="image/*,application/pdf"
@@ -696,7 +696,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                   | undefined;
                                 const proofFile = platformData?.proof;
                                 return proofFile ? (
-                                  <div className="bg-indigo-50 text-indigo-700 px-3 py-2 rounded-lg text-sm">
+                                  <div className="bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg text-sm">
                                     File uploaded: {proofFile.name}
                                   </div>
                                 ) : null;
@@ -713,7 +713,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                       {/* Content Niche */}
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                        <label className="text-sm font-semibold text-slate-300 flex items-center gap-2">
                           <FileText className="w-4 h-4 text-slate-500" />I post
                           content about:
                         </label>
@@ -721,7 +721,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                           as="select"
                           name="niches"
                           multiple
-                          className="w-full px-4 py-2 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white hover:border-indigo-400"
+                          className="w-full px-4 py-2 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors bg-transparent hover:border-yellow-400"
                           onChange={(
                             e: React.ChangeEvent<HTMLSelectElement>
                           ) => {
@@ -736,7 +736,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             <option
                               key={niche}
                               value={niche}
-                              className="py-1 px-2 hover:bg-indigo-50 cursor-pointer"
+                              className="py-1 px-2 hover:bg-yellow-50 cursor-pointer"
                             >
                               {niche}
                             </option>
@@ -764,7 +764,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                       {/* Location */}
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                        <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
                           My location: *
                         </label>
@@ -772,7 +772,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                           name="location"
                           type="text"
                           placeholder="City, State, Country"
-                          className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                          className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
                             errors.location && touched.location
                               ? "border-red-500"
                               : "border-gray-300"
@@ -787,13 +787,13 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                       {/* Audience Demographics */}
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-slate-300 flex items-center gap-2">
                           <Users className="w-5 h-5" />
                           Audience Demographics
                         </h3>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700">
+                          <label className="text-sm font-medium text-slate-300">
                             Most of my audience are in:
                           </label>
                           <Field
@@ -801,12 +801,12 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             name="audienceLocation"
                             placeholder="Top 3 countries, top 3 towns/cities, top 3 age ranges"
                             rows={4}
-                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                           />
                         </div>
 
                         <div className="space-y-3">
-                          <label className="text-sm font-medium text-gray-700">
+                          <label className="text-sm font-medium text-slate-300">
                             My gender audience for last 30 days:
                           </label>
                           <div className="grid grid-cols-2 gap-4">
@@ -820,7 +820,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                 min="0"
                                 max="100"
                                 placeholder="e.g., 45"
-                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                               />
                             </div>
                             <div className="space-y-2">
@@ -833,18 +833,18 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                 min="0"
                                 max="100"
                                 placeholder="e.g., 55"
-                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                               />
                             </div>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                             <Upload className="w-4 h-4" />
                             Upload proof of audience data
                           </label>
-                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-400 transition-colors">
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-yellow-400 transition-colors">
                             <input
                               type="file"
                               accept="image/*,application/pdf"
@@ -871,7 +871,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             </label>
                           </div>
                           {values.audienceProof && (
-                            <div className="bg-indigo-50 text-indigo-700 px-3 py-2 rounded-lg text-sm">
+                            <div className="bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg text-sm">
                               File uploaded: {values.audienceProof.name}
                             </div>
                           )}
@@ -880,21 +880,21 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                       {/* Contact Information */}
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-slate-300 flex items-center gap-2">
                           <User className="w-5 h-5" />
                           Contact Information
                         </h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label className="text-sm font-medium text-slate-300">
                               Full name *
                             </label>
                             <Field
                               name="name"
                               type="text"
                               placeholder="Enter your full name"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
                                 errors.name && touched.name
                                   ? "border-red-500"
                                   : "border-gray-300"
@@ -908,7 +908,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                               <Envelope className="w-4 h-4" />
                               Email address *
                             </label>
@@ -916,7 +916,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               name="email"
                               type="email"
                               placeholder="Enter your email"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-slate-300 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
                                 errors.email && touched.email
                                   ? "border-red-500"
                                   : "border-gray-300"
@@ -958,7 +958,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                       {loading ? (
                         <button
                           disabled
-                          className="w-full flex justify-center px-4 py-2 bg-indigo-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
+                          className="w-full flex justify-center px-4 py-2 bg-yellow-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
                         >
                           <div className="loader">
                             <span className="bar"></span>
@@ -969,7 +969,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                       ) : (
                         <button
                           type="submit"
-                          className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                          className="w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
                         >
                           Submit Application
                         </button>

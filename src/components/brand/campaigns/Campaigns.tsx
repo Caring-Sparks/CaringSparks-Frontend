@@ -672,7 +672,7 @@ const Campaigns: React.FC = () => {
               </div>
               <button
                 onClick={() => setNewCampaign(true)}
-                className="bg-indigo-600 flex items-center gap-3 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm"
+                className="bg-orange-600 flex items-center gap-3 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm"
               >
                 <FaPlus /> New
               </button>
@@ -687,7 +687,7 @@ const Campaigns: React.FC = () => {
                   placeholder="Search by brand name, location, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
 
@@ -707,7 +707,7 @@ const Campaigns: React.FC = () => {
                     onClick={() => setFilter(status as typeof filter)}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                       filter === status
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-orange-600 text-white"
                         : "bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                   >
@@ -907,7 +907,7 @@ const Campaigns: React.FC = () => {
                                     className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md hover:bg-gray-100 transition cursor-pointer"
                                     onClick={() => handleInfluencerClick(inf)}
                                   >
-                                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-semibold">
+                                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-orange-100 text-orange-600 font-semibold">
                                       {inf.name?.charAt(0).toUpperCase() || "I"}
                                     </div>
                                     <div className="flex flex-col">
@@ -948,7 +948,7 @@ const Campaigns: React.FC = () => {
                             setEditingCampaign(campaign);
                             setEditCampaign(true);
                           }}
-                          className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
+                          className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
                         >
                           View/Edit Campaign
                         </button>

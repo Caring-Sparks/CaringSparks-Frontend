@@ -29,7 +29,7 @@ export default function ForgotPassword({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
 
-  const handleSubmit = async (values: { email: string, role: string }) => {
+  const handleSubmit = async (values: { email: string; role: string }) => {
     const success = await forgotPassword(values.email, values.role);
     if (success) {
       setSubmittedEmail(values.email);
@@ -47,13 +47,13 @@ export default function ForgotPassword({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-center justify-center bg-gray-200/50 backdrop-blur-sm z-50 p-4"
+          className="fixed inset-0 flex items-center justify-center bg-slate-200/20 backdrop-blur-md z-50 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-white text-gray-800 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
+            className="bg-slate-900 text-slate-300 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
             initial={{ scale: 0.9, y: 50, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 50, opacity: 0 }}
@@ -81,14 +81,14 @@ export default function ForgotPassword({
               <>
                 {/* Header */}
                 <div className="flex flex-col items-center mb-8 mt-2">
-                  <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                  <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                     <EnvelopeSimple
                       size={32}
                       weight="bold"
-                      className="text-indigo-600"
+                      className="text-yellow-600"
                     />
                   </div>
-                  <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-gray-900">
+                  <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-slate-300">
                     Forgot Password?
                   </h2>
                   <p className="text-gray-500 text-sm text-center">
@@ -113,7 +113,7 @@ export default function ForgotPassword({
                             <Field
                               type="email"
                               name="email"
-                              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all"
+                              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all"
                               placeholder="Enter your email address"
                             />
                           </div>
@@ -131,7 +131,7 @@ export default function ForgotPassword({
                             <Field
                               as="select"
                               name="role"
-                              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all appearance-none cursor-pointer"
                             >
                               <option
                                 value=""
@@ -179,7 +179,7 @@ export default function ForgotPassword({
                         {loading ? (
                           <button
                             disabled
-                            className="w-full flex justify-center px-4 py-2 bg-indigo-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
+                            className="w-full flex justify-center px-4 py-2 bg-yellow-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
                           >
                             <div className="loader">
                               <span className="bar"></span>
@@ -190,7 +190,7 @@ export default function ForgotPassword({
                         ) : (
                           <button
                             type="submit"
-                            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                            className="w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
                           >
                             Send reset link
                           </button>
@@ -203,7 +203,7 @@ export default function ForgotPassword({
                         <button
                           type="button"
                           onClick={onBackToLogin}
-                          className="text-indigo-600 font-medium hover:underline"
+                          className="text-yellow-600 font-medium hover:underline"
                         >
                           Back to Login
                         </button>
@@ -249,7 +249,7 @@ export default function ForgotPassword({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleClose}
-                  className="bg-indigo-600 text-white rounded-full py-3 px-6 text-sm font-bold shadow-lg shadow-indigo-600/30 transition-all duration-300 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none mb-4"
+                  className="bg-yellow-600 text-white rounded-full py-3 px-6 text-sm font-bold shadow-lg shadow-yellow-600/30 transition-all duration-300 hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500/50 focus:outline-none mb-4"
                 >
                   Got it, thanks!
                 </motion.button>
@@ -258,7 +258,7 @@ export default function ForgotPassword({
                   Didn&apos;t receive the email?{" "}
                   <button
                     onClick={() => setIsSubmitted(false)}
-                    className="text-indigo-600 font-medium hover:underline"
+                    className="text-yellow-600 font-medium hover:underline"
                   >
                     Try again
                   </button>

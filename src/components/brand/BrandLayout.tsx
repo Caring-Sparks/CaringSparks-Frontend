@@ -56,7 +56,7 @@ const BrandLayout: React.FC<BrandLayoutProps> = ({ children }) => {
   if (isLoading) {
     return (
       <div className="flex justify-center flex-col items-center h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-500 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-500 border-t-transparent"></div>
         <p className="mt-4 text-gray-600 text-lg">Loading Brand data...</p>
       </div>
     );
@@ -74,7 +74,7 @@ const BrandLayout: React.FC<BrandLayoutProps> = ({ children }) => {
           <p className="text-gray-600 mb-4">{userError}</p>
           <button
             onClick={() => router.push("/")}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
           >
             Back to login
           </button>

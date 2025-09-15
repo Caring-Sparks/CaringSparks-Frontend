@@ -69,7 +69,7 @@ export default function LandingPage() {
         />
       )}
       {login && <LoginPopup onClose={() => setLogin(false)} isOpen={login} />}
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-900">
         {/* Navbar */}
         <motion.nav
           className="flex justify-between items-center p-6 md:px-12 relative"
@@ -78,7 +78,7 @@ export default function LandingPage() {
           transition={{ duration: 0.5 }}
         >
           <motion.div
-            className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+            className="text-2xl font-bold text-yellow-500"
             whileHover={{ scale: 1.1 }}
           >
             CaringSparks
@@ -93,7 +93,7 @@ export default function LandingPage() {
             >
               <motion.button
                 onClick={() => setLogin(true)}
-                className="text-gray-700 hover:text-purple-600 transition-colors px-4 py-2"
+                className="text-gray-300 hover:text-yellow-400 transition-colors px-4 py-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -105,7 +105,7 @@ export default function LandingPage() {
               >
                 <button
                   onClick={() => setGetStarted(true)}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-2 rounded-full"
+                  className="bg-yellow-500 transition-all ease-in-out duration-300 text-white px-6 py-2 rounded-full"
                 >
                   Get Started
                 </button>
@@ -131,7 +131,7 @@ export default function LandingPage() {
                   exit={{ rotate: 90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <X className="w-6 h-6 text-gray-700" />
+                  <X className="w-6 h-6 text-gray-300" />
                 </motion.div>
               ) : (
                 <motion.div
@@ -141,7 +141,7 @@ export default function LandingPage() {
                   exit={{ rotate: -90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <List className="w-6 h-6 text-gray-700" />
+                  <List className="w-6 h-6 text-gray-300" />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -150,7 +150,7 @@ export default function LandingPage() {
           <AnimatePresence>
             {isMobileMenuOpen && (
               <motion.div
-                className="absolute z-20 top-full left-0 right-0 bg-white backdrop-blur-md border-b border-gray-200 shadow-lg md:hidden"
+                className="absolute z-20 top-full left-0 right-0 bg-gray-800/95 backdrop-blur-md border-b border-gray-700 shadow-lg md:hidden"
                 variants={mobileMenuVariants}
                 initial="closed"
                 animate="open"
@@ -164,12 +164,12 @@ export default function LandingPage() {
                   animate="open"
                 >
                   <motion.div
-                    className="pt-4 border-t border-gray-200 space-y-3"
+                    className="pt-4 border-t border-gray-700 space-y-3"
                     variants={menuItemVariants}
                     transition={{ delay: 0.3 }}
                   >
                     <motion.button
-                      className="block w-full text-left text-gray-700 hover:text-purple-600 transition-colors py-2"
+                      className="block w-full text-left text-gray-300 hover:text-yellow-400 transition-colors py-2"
                       whileHover={{ x: 10 }}
                       onClick={() => openLogin()}
                     >
@@ -180,7 +180,7 @@ export default function LandingPage() {
                       whileTap={{ scale: 0.98 }}
                     >
                       <button
-                        className="w-full bg-gradient-to-r from-purple-600 p-2 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-full"
+                        className="w-full bg-yellow-500 text-white rounded-full"
                         onClick={() => openPopup()}
                       >
                         Get Started
@@ -203,20 +203,18 @@ export default function LandingPage() {
           >
             <motion.h1
               variants={fadeInUp}
-              className="text-5xl md:text-7xl font-bold mb-6"
+              className="text-5xl md:text-7xl font-black mb-6"
             >
-              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-                Wanna trend?
-              </span>
+              <span className="text-yellow-500">Wanna trend?</span>
             </motion.h1>
 
             <motion.div variants={fadeInUp} className="relative">
-              <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-8">
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-100 mb-8">
                 Then let&apos;s make you trend{" "}
                 <span className="relative">
                   overnight
                   <motion.div
-                    className="absolute -bottom-2 left-0 w-full h-3 bg-yellow-300 -z-10"
+                    className="absolute -bottom-2 left-0 w-full h-3 bg-gradient-to-r from-yellow-500 to-pink-500 -z-10"
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ delay: 1, duration: 0.8 }}
@@ -237,10 +235,10 @@ export default function LandingPage() {
                   ease: "linear",
                 }}
               >
-                <Sparkle className="text-purple-500 w-8 h-8" />
+                <Sparkle className="text-yellow-400 w-8 h-8" />
               </motion.div>
-              <p className="text-xl md:text-2xl text-gray-600">
-                Over <span className="font-bold text-purple-600">100k+</span>{" "}
+              <p className="text-xl md:text-2xl text-gray-400">
+                Over <span className="font-bold text-yellow-400">100k+</span>{" "}
                 micro influencers
               </p>
               <motion.div
@@ -251,14 +249,14 @@ export default function LandingPage() {
                   ease: "linear",
                 }}
               >
-                <Star className="text-pink-500 w-8 h-8" />
+                <Star className="text-pink-400 w-8 h-8" />
               </motion.div>
             </motion.div>
           </motion.div>
         </section>
 
         {/* Services Section */}
-        <section className="px-6 py-20 bg-gradient-to-b from-slate-50 to-white">
+        <section className="px-6 py-20 bg-slate-900">
           <motion.div
             className="max-w-6xl mx-auto"
             initial={{ opacity: 0 }}
@@ -268,7 +266,7 @@ export default function LandingPage() {
           >
             <div className="text-center mb-16">
               <motion.h3
-                className="text-4xl md:text-5xl font-bold text-slate-800 mb-6"
+                className="text-4xl md:text-5xl font-bold text-gray-100 mb-6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -276,7 +274,7 @@ export default function LandingPage() {
                 Whether you&apos;re a
               </motion.h3>
               <motion.div
-                className="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto"
+                className="w-24 h-1 bg-gradient-to-r from-yellow-500 to-pink-500 mx-auto"
                 initial={{ scaleX: 0 }}
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
@@ -293,54 +291,64 @@ export default function LandingPage() {
             >
               {[
                 {
-                  title: "Product",
-                  description:
-                    "Launch and scale your product with targeted influencer partnerships",
-                  icon: "/icons/parcel.png",
-                  gradient: "from-blue-500/10 to-blue-600/20",
-                  border: "border-blue-200",
-                  iconBg: "bg-blue-100",
-                  textColor: "text-blue-700",
-                },
-                {
-                  title: "Service",
-                  description:
-                    "Amplify your service offerings through authentic creator content",
-                  icon: "/icons/power.png",
-                  gradient: "from-emerald-500/10 to-emerald-600/20",
-                  border: "border-emerald-200",
-                  iconBg: "bg-emerald-100",
-                  textColor: "text-emerald-700",
-                },
-                {
                   title: "Brand",
                   description:
                     "Build brand awareness and trust with strategic influencer campaigns",
                   icon: "/icons/organization.png",
-                  gradient: "from-purple-500/10 to-purple-600/20",
-                  border: "border-purple-200",
-                  iconBg: "bg-purple-100",
-                  textColor: "text-purple-700",
+                  gradient: "from-yellow-500/20 to-yellow-500/10",
+                  border: "border-yellow-500/30",
+                  iconBg: "bg-yellow-500/20",
+                  textColor: "text-yellow-400",
+                },
+                {
+                  title: "Business",
+                  description:
+                    "Launch and scale your product with targeted influencer partnerships",
+                  icon: "/icons/parcel.png",
+                  gradient: "from-blue-500/20 to-blue-500/10",
+                  border: "border-blue-500/30",
+                  iconBg: "bg-blue-500/20",
+                  textColor: "text-blue-400",
                 },
                 {
                   title: "Person",
                   description:
                     "Grow your personal brand and reach with our creator network",
                   icon: "/icons/user.png",
-                  gradient: "from-pink-500/10 to-pink-600/20",
-                  border: "border-pink-200",
-                  iconBg: "bg-pink-100",
-                  textColor: "text-pink-700",
+                  gradient: "from-pink-500/20 to-pink-500/10",
+                  border: "border-pink-500/30",
+                  iconBg: "bg-pink-500/20",
+                  textColor: "text-pink-400",
+                },
+                {
+                  title: "Movie",
+                  description:
+                    "Amplify your service offerings through authentic creator content",
+                  icon: "/icons/movie.png",
+                  gradient: "from-emerald-500/20 to-emerald-500/10",
+                  border: "border-emerald-500/30",
+                  iconBg: "bg-emerald-500/20",
+                  textColor: "text-emerald-400",
+                },
+                {
+                  title: "Music",
+                  description:
+                    "Amplify your service offerings through authentic creator content",
+                  icon: "/icons/music.png",
+                  gradient: "from-slate-500/20 to-slate-500/10",
+                  border: "border-slate-500/30",
+                  iconBg: "bg-slate-500/20",
+                  textColor: "text-slate-400",
                 },
                 {
                   title: "Event",
                   description:
                     "Drive attendance and engagement for your events and experiences",
                   icon: "/icons/confetti.png",
-                  gradient: "from-orange-500/10 to-orange-600/20",
-                  border: "border-orange-200",
-                  iconBg: "bg-orange-100",
-                  textColor: "text-orange-700",
+                  gradient: "from-orange-500/20 to-orange-500/10",
+                  border: "border-orange-500/30",
+                  iconBg: "bg-orange-500/20",
+                  textColor: "text-orange-400",
                 },
               ].map((item, index) => (
                 <motion.div
@@ -351,7 +359,13 @@ export default function LandingPage() {
                   transition={{ duration: 0.3 }}
                 >
                   <div
-                    className={`bg-gradient-to-br ${item.gradient} backdrop-blur-sm border ${item.border} p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 h-full`}
+                    className={`bg-gradient-to-br ${
+                      item.gradient
+                    } backdrop-blur-sm border ${
+                      item.border
+                    } bg-gray-800/50 p-8 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-${
+                      item.textColor.split("-")[1]
+                    }-500/10 transition-all duration-300 h-full`}
                   >
                     <div
                       className={`${item.iconBg} w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
@@ -367,7 +381,7 @@ export default function LandingPage() {
                     <h4 className={`text-2xl font-bold ${item.textColor} mb-4`}>
                       {item.title}
                     </h4>
-                    <p className="text-slate-600 leading-relaxed">
+                    <p className="text-gray-400 leading-relaxed">
                       {item.description}
                     </p>
                   </div>
@@ -382,10 +396,10 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
             >
-              <h4 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+              <h4 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
                 We have got you covered
               </h4>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
                 Our comprehensive platform connects you with the right
                 influencers to achieve your unique goals
               </p>
@@ -407,15 +421,15 @@ export default function LandingPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <button className="text-xl px-12 py-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-full shadow-2xl group relative overflow-hidden">
+              <button
+                onClick={() => setGetStarted(true)}
+                className="text-xl px-12 py-6 bg-gradient-to-r from-yellow-500 to-pink-500 hover:from-yellow-400 hover:to-pink-400 text-white rounded-full shadow-2xl shadow-pink-500/25 group relative overflow-hidden"
+              >
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-pink-600 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute inset-0 bg-gradient-to-r from-pink-400 to-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity"
                   layoutId="button-bg"
                 />
-                <span
-                  onClick={() => setGetStarted(true)}
-                  className="relative z-10 flex items-center space-x-3"
-                >
+                <span className="relative z-10 flex items-center space-x-3">
                   <Lightning className="w-6 h-6" />
                   <span>Click here to begin</span>
                   <motion.div
@@ -461,76 +475,33 @@ export default function LandingPage() {
 
         {/* Footer */}
         <motion.footer
-          className="bg-gray-900 text-white py-12 px-6"
+          className="bg-gray-950 text-white py-12 px-6 border-t border-gray-800"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <h5 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-                  CaringSparks
-                </h5>
-                <p className="text-gray-400">
-                  Making brands trend overnight with our network of 100k+ micro
-                  influencers.
-                </p>
-              </motion.div>
-
-              {[
-                {
-                  title: "Services",
-                  items: [
-                    "Influencer Marketing",
-                    "Brand Campaigns",
-                    "Social Media",
-                    "Analytics",
-                  ],
-                },
-                {
-                  title: "Company",
-                  items: ["About Us", "Careers", "Contact", "Blog"],
-                },
-                {
-                  title: "Support",
-                  items: ["Help Center", "Terms", "Privacy", "FAQ"],
-                },
-              ].map((column, index) => (
-                <motion.div
-                  key={column.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <h6 className="font-semibold mb-4">{column.title}</h6>
-                  <ul className="space-y-2">
-                    {column.items.map((item) => (
-                      <li key={item}>
-                        <a
-                          href="#"
-                          className="text-gray-400 hover:text-white transition-colors"
-                        >
-                          {item}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
-            </div>
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-8"
+            >
+              <h5 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent mb-4">
+                CaringSparks
+              </h5>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
+                Making brands trend overnight with our network of 100k+ micro
+                influencers.
+              </p>
+            </motion.div>
 
             <motion.div
-              className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400"
+              className="border-t border-gray-800 pt-8 text-gray-400"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.3 }}
             >
               <p>&copy; 2025 CaringSparks. All rights reserved.</p>
             </motion.div>

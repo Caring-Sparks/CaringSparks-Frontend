@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/utils/ToastNotification";
 
-const inter = Inter({
-  variable: "--font-inter",
+const roboto = Roboto({
+  variable: "--roboto",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -22,7 +23,7 @@ export default function RootLayout({
   return (
     <ToastProvider>
       <html lang="en">
-        <body className={`${inter.variable} antialiased`}>{children}</body>
+        <body className={`${roboto.variable} antialiased`}>{children}</body>
       </html>
     </ToastProvider>
   );

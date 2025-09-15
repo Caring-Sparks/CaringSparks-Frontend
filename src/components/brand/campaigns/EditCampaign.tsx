@@ -274,8 +274,8 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
 
                 {/* Header */}
                 <div className="text-center p-6 border-b border-gray-100">
-                  <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-                    <Buildings className="w-6 h-6 text-indigo-600" />
+                  <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                    <Buildings className="w-6 h-6 text-orange-600" />
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     Edit Campaign
@@ -303,7 +303,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                           <Field
                             as="select"
                             name="role"
-                            className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                            className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
                               errors.role && touched.role
                                 ? "border-red-500"
                                 : "border-gray-300"
@@ -352,7 +352,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                                       );
                                     }
                                   }}
-                                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                  className="w-4 h-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
                                 />
                                 <span className="text-sm text-gray-700">
                                   {platform}
@@ -394,7 +394,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                                           : Number(e.target.value);
                                       setFieldValue("influencersMin", value);
                                     }}
-                                    className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                                    className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
                                       meta.touched && meta.error
                                         ? "border-red-500"
                                         : "border-gray-300"
@@ -428,7 +428,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                                           : Number(e.target.value);
                                       setFieldValue("influencersMax", value);
                                     }}
-                                    className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                                    className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
                                       meta.touched && meta.error
                                         ? "border-red-500"
                                         : "border-gray-300"
@@ -453,7 +453,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                           <Field
                             as="select"
                             name="followersRange"
-                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                           >
                             <option value="">Select followers range...</option>
                             {followerRanges.map((range) => (
@@ -474,7 +474,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                             name="location"
                             type="text"
                             placeholder="e.g., Ikeja, Lagos, Nigeria"
-                            className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                            className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
                               errors.location && touched.location
                                 ? "border-red-500"
                                 : "border-gray-300"
@@ -529,7 +529,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                                         }
                                       }
                                     }}
-                                    className="flex-1 px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="flex-1 px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                                   />
                                   <button
                                     type="button"
@@ -540,7 +540,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                                         setNewLocation("");
                                       }
                                     }}
-                                    className="px-3 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-600 rounded-xl border border-gray-300 transition-colors"
+                                    className="px-3 py-2 bg-orange-100 hover:bg-orange-200 text-orange-600 rounded-xl border border-gray-300 transition-colors"
                                     aria-label="Add location"
                                     title="Add location"
                                   >
@@ -561,7 +561,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                           <Field
                             as="select"
                             name="postFrequency"
-                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                           >
                             <option value="">
                               Select posting frequency...
@@ -583,7 +583,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                           <Field
                             as="select"
                             name="postDuration"
-                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                           >
                             <option value="">Select duration...</option>
                             {postDurations.map((duration) => (
@@ -635,8 +635,8 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                           disabled={loading}
                           className={`w-full px-4 py-3 rounded-lg font-medium transition-colors ${
                             loading
-                              ? "bg-indigo-400 cursor-not-allowed"
-                              : "bg-indigo-600 hover:bg-indigo-700"
+                              ? "bg-orange-400 cursor-not-allowed"
+                              : "bg-orange-600 hover:bg-orange-700"
                           } text-white`}
                         >
                           {loading ? (
