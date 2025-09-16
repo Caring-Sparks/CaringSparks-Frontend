@@ -196,7 +196,7 @@ const Managers: React.FC = () => {
         </span>
         <button
           onClick={() => setAddManager(true)}
-          className="px-6 flex items-center gap-3 cursor-pointer hover:bg-orange-700 transition-all ease-in duration-300 py-2 rounded-md bg-orange-600 text-white border border-slate-200"
+          className="px-6 flex items-center gap-3 cursor-pointer hover:bg-indigo-700 transition-all ease-in duration-300 py-2 rounded-md bg-indigo-600 text-white border border-slate-200"
         >
           <UserPlus />
           Add

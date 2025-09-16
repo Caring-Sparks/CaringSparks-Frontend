@@ -111,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           {/* Header */}
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
                 <Activity className="text-white" size={24} />
               </div>
               <div>
@@ -138,7 +138,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   }}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 ${
                     isActive
-                      ? "bg-gradient-to-r from-orange-50 to-white text-orange-600 border-r-2 border-orange-600"
+                      ? "bg-gradient-to-r from-blue-50 to-purple-50 text-blue-600 border-r-2 border-blue-600"
                       : "text-gray-700 hover:bg-gray-50"
                   }`}
                 >
@@ -183,7 +183,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                       {user.email}
                     </p>
                     {user.role && (
-                      <p className="text-xs text-orange-600 font-medium">
+                      <p className="text-xs text-blue-600 font-medium">
                         {user.role}
                       </p>
                     )}
@@ -201,7 +201,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   </p>
                   <button
                     onClick={() => router.push("/")}
-                    className="text-xs text-orange-600 hover:text-orange-700"
+                    className="text-xs text-blue-600 hover:text-blue-700"
                   >
                     Click to login
                   </button>
