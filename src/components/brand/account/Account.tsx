@@ -477,8 +477,8 @@ const Account: React.FC = () => {
           {/* Account Overview */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
             <div className="flex items-center space-x-4 mb-4">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-                <User className="text-orange-600" size={24} />
+              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center">
+                <User className="text-indigo-600" size={24} />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -525,7 +525,7 @@ const Account: React.FC = () => {
                     onClick={() => setActiveTab(key as typeof activeTab)}
                     className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
                       activeTab === key
-                        ? "border-b-2 border-orange-600 text-orange-600 bg-orange-50"
+                        ? "border-b-2 border-indigo-600 text-indigo-600 bg-indigo-50"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                     }`}
                   >
@@ -546,7 +546,7 @@ const Account: React.FC = () => {
                     </h3>
                     <button
                       onClick={() => setIsEditing(!isEditing)}
-                      className="flex items-center space-x-2 text-orange-600 hover:text-orange-700"
+                      className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-700"
                     >
                       <PencilSimple size={16} />
                       <span>{isEditing ? "Cancel" : "Edit Profile"}</span>
@@ -570,7 +570,7 @@ const Account: React.FC = () => {
                             value={formData.brandName}
                             onChange={handleInputChange}
                             disabled={!isEditing}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                           />
                         </div>
                       </div>
@@ -584,7 +584,7 @@ const Account: React.FC = () => {
                           value={formData.role}
                           onChange={handleInputChange}
                           disabled
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                         >
                           <option value="">Select Role</option>
                           <option value="brand">Brand</option>
@@ -611,7 +611,7 @@ const Account: React.FC = () => {
                             value={formData.email}
                             onChange={handleInputChange}
                             disabled={!isEditing}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                           />
                         </div>
                       </div>
@@ -631,7 +631,7 @@ const Account: React.FC = () => {
                             value={formData.brandPhone}
                             onChange={handleInputChange}
                             disabled={!isEditing}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                           />
                         </div>
                       </div>
@@ -642,7 +642,7 @@ const Account: React.FC = () => {
                         <button
                           type="submit"
                           disabled={loading}
-                          className="flex items-center space-x-2 bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
+                          className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
                         >
                           <FloppyDisk size={16} />
                           <span>{loading ? "Saving..." : "Save Changes"}</span>
@@ -678,7 +678,7 @@ const Account: React.FC = () => {
                           name="currentPassword"
                           value={formData.currentPassword}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           placeholder="Enter current password"
                         />
                         <button
@@ -707,7 +707,7 @@ const Account: React.FC = () => {
                           name="newPassword"
                           value={formData.newPassword}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           placeholder="Enter new password"
                         />
                         <button
@@ -733,7 +733,7 @@ const Account: React.FC = () => {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         placeholder="Confirm new password"
                       />
                     </div>
@@ -745,7 +745,7 @@ const Account: React.FC = () => {
                         !formData.currentPassword ||
                         !formData.newPassword
                       }
-                      className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
                     >
                       {loading ? "Changing Password..." : "Change Password"}
                     </button>
@@ -817,7 +817,7 @@ const Account: React.FC = () => {
                             }
                             className="sr-only peer"
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
                         </label>
                       </div>
                     ))}
@@ -826,7 +826,7 @@ const Account: React.FC = () => {
                   <button
                     onClick={handleNotificationUpdate}
                     disabled={loading}
-                    className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
                   >
                     {loading ? "Updating..." : "Update Preferences"}
                   </button>

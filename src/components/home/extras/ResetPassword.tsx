@@ -58,7 +58,7 @@ export default function ResetPasswordForm() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
           <p className="text-gray-500">Validating reset link...</p>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function ResetPasswordForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <motion.div
-        className="bg-slate-900 text-slate-300 rounded-3xl shadow-2xl w-full max-w-md p-8"
+        className="bg-white text-gray-800 rounded-3xl shadow-2xl w-full max-w-md p-8"
         initial={{ scale: 0.9, y: 50, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
         transition={{ type: "spring", damping: 20, stiffness: 300 }}
@@ -77,14 +77,14 @@ export default function ResetPasswordForm() {
           <>
             {/* Header */}
             <div className="flex flex-col items-center mb-8">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
                 <ShieldCheck
                   size={32}
                   weight="bold"
-                  className="text-yellow-600"
+                  className="text-indigo-600"
                 />
               </div>
-              <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-slate-300">
+              <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-gray-900">
                 Reset Password
               </h2>
               <p className="text-gray-500 text-sm text-center">
@@ -107,7 +107,7 @@ export default function ResetPasswordForm() {
                       <Field
                         type={showPassword ? "text" : "password"}
                         name="password"
-                        className="w-full pl-10 pr-12 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all"
+                        className="w-full pl-10 pr-12 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all"
                         placeholder="New password"
                       />
                       <button
@@ -136,7 +136,7 @@ export default function ResetPasswordForm() {
                       <Field
                         type={showConfirmPassword ? "text" : "password"}
                         name="confirmPassword"
-                        className="w-full pl-10 pr-12 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all"
+                        className="w-full pl-10 pr-12 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/70 focus:border-indigo-500 transition-all"
                         placeholder="Confirm new password"
                       />
                       <button
@@ -178,7 +178,7 @@ export default function ResetPasswordForm() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     disabled={isSubmitting || loading}
-                    className="bg-yellow-600 text-white rounded-full py-3 text-lg font-bold shadow-lg shadow-yellow-600/30 transition-all duration-300 hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500/50 focus:outline-none disabled:opacity-50 disabled:shadow-none"
+                    className="bg-indigo-600 text-white rounded-full py-3 text-lg font-bold shadow-lg shadow-indigo-600/30 transition-all duration-300 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none disabled:opacity-50 disabled:shadow-none"
                   >
                     {loading ? "Resetting..." : "Reset Password"}
                   </motion.button>
@@ -201,8 +201,8 @@ export default function ResetPasswordForm() {
               Password Reset!
             </h2>
             <p className="text-gray-500 text-sm mb-6">
-              Your password has been successfully updated. You&apos;ll be
-              redirected to the login page shortly.
+              Your password has been successfully updated. You&apos;ll be redirected
+              to the login page shortly.
             </p>
 
             <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 w-full">
@@ -216,7 +216,7 @@ export default function ResetPasswordForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => router.push("/")}
-              className="bg-yellow-600 text-white rounded-full py-3 px-6 text-sm font-bold shadow-lg shadow-yellow-600/30 transition-all duration-300 hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500/50 focus:outline-none"
+              className="bg-indigo-600 text-white rounded-full py-3 px-6 text-sm font-bold shadow-lg shadow-indigo-600/30 transition-all duration-300 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none"
             >
               Go to Login Now
             </motion.button>

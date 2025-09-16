@@ -483,7 +483,7 @@ const InfluencerAssignment: React.FC = () => {
       case "snapchat":
         return <FaSnapchat className="text-yellow-400" />;
       case "discord":
-        return <FaDiscord className="text-orange-600" />;
+        return <FaDiscord className="text-indigo-600" />;
       case "threads":
         return (
           <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
@@ -533,7 +533,7 @@ const InfluencerAssignment: React.FC = () => {
           </div>
           <button
             onClick={() => router.push("/admin/campaigns")}
-            className="mt-4 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg"
+            className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg"
           >
             Back to Campaigns
           </button>
@@ -613,14 +613,14 @@ const InfluencerAssignment: React.FC = () => {
                   placeholder="Search influencers..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 ${
                   showFilters
-                    ? "bg-orange-600 text-white"
+                    ? "bg-indigo-600 text-white"
                     : "bg-white text-gray-700 hover:bg-gray-50"
                 }`}
               >
@@ -647,7 +647,7 @@ const InfluencerAssignment: React.FC = () => {
                       <select
                         value={platformFilter}
                         onChange={(e) => setPlatformFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       >
                         <option value="all">All Platforms</option>
                         {availablePlatforms.map((platform) => (
@@ -667,7 +667,7 @@ const InfluencerAssignment: React.FC = () => {
                         placeholder="Type to filter location..."
                         value={locationFilter}
                         onChange={(e) => setLocationFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       />
                     </div>
 
@@ -678,7 +678,7 @@ const InfluencerAssignment: React.FC = () => {
                       <select
                         value={followersFilter}
                         onChange={(e) => setFollowersFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       >
                         <option value="all">All Followers</option>
                         <option value="1k-3k">1K - 3K</option>
@@ -696,7 +696,7 @@ const InfluencerAssignment: React.FC = () => {
                       <select
                         value={nicheFilter}
                         onChange={(e) => setNicheFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       >
                         <option value="all">All Niches</option>
                         {getUniqueNiches().map((niche) => (
@@ -725,7 +725,7 @@ const InfluencerAssignment: React.FC = () => {
                 assignLoading ||
                 selectedInfluencers.size < (campaign.influencersMin || 0)
               }
-              className="bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+              className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
             >
               {assignLoading
                 ? "Assigning..."
@@ -743,7 +743,7 @@ const InfluencerAssignment: React.FC = () => {
               <div
                 key={influencer._id}
                 className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer ${
-                  isSelected ? "ring-2 ring-orange-500 border-orange-500" : ""
+                  isSelected ? "ring-2 ring-indigo-500 border-indigo-500" : ""
                 }`}
                 onClick={() => handleInfluencerSelect(influencer._id)}
               >
@@ -777,7 +777,7 @@ const InfluencerAssignment: React.FC = () => {
                     </div>
                     <div
                       className={`p-2 rounded-full ${
-                        isSelected ? "bg-orange-600" : "bg-gray-100"
+                        isSelected ? "bg-indigo-600" : "bg-gray-100"
                       }`}
                     >
                       {isSelected ? (

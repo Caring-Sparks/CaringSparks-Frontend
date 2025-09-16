@@ -45,7 +45,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
             <button
               onClick={() => handleDelete(id, name)}
               disabled={deleting}
-              className="px-3 disabled:cursor-pointer py-1 bg-red-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1 bg-red-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {deleting ? "deleting..." : "Yes, delete"}
             </button>
