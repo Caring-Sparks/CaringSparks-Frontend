@@ -21,6 +21,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/utils/ToastNotification";
 import Image from "next/image";
+import { BsThreads } from "react-icons/bs";
 
 interface SocialMediaAccount {
   platform: string;
@@ -49,6 +50,25 @@ interface Influencer {
   isActive: boolean;
 }
 
+// Updated interfaces to match new schema
+interface AssignedInfluencer {
+  _id: string;
+  influencerId: string;
+  acceptanceStatus: "pending" | "accepted" | "declined";
+  assignedAt: Date;
+  respondedAt?: Date;
+  isCompleted: boolean;
+  completedAt?: Date;
+  submittedJobs: Array<{
+    description: string;
+    imageUrl: string;
+    submittedAt: Date;
+    isApproved?: boolean;
+    approvedAt?: Date;
+    rejectionReason?: string;
+  }>;
+}
+
 interface Campaign {
   _id: string;
   brandName: string;
@@ -59,7 +79,7 @@ interface Campaign {
   followersRange?: string;
   influencersMin: number;
   influencersMax: number;
-  assignedInfluencers?: string[];
+  assignedInfluencers?: AssignedInfluencer[]; // Updated type
 }
 
 const InfluencerAssignment: React.FC = () => {
@@ -127,6 +147,23 @@ const InfluencerAssignment: React.FC = () => {
     return null;
   };
 
+  // Fix: Updated function signature to handle both new and old data formats.
+  const getAssignedInfluencerIds = (
+    assignedInfluencers?: (AssignedInfluencer | string)[]
+  ): string[] => {
+    if (!assignedInfluencers || !Array.isArray(assignedInfluencers)) {
+      return [];
+    }
+
+    return assignedInfluencers
+      .map((item: any) => {
+        if (typeof item === "string") {
+          return item; // Old format
+        }
+        return item.influencerId?._id || item._id;
+      })
+      .filter(Boolean);
+  };
   // Initialize data and find campaign
   useEffect(() => {
     const initializeData = async () => {
@@ -135,7 +172,7 @@ const InfluencerAssignment: React.FC = () => {
       }
 
       if (!campaignId) {
-        router.push("/campaigns");
+        router.push("admin/campaigns");
         return;
       }
 
@@ -143,11 +180,13 @@ const InfluencerAssignment: React.FC = () => {
       const foundCampaign = campaigns.find((c) => c._id === campaignId);
       if (foundCampaign) {
         setCampaign(foundCampaign);
-        if (foundCampaign.assignedInfluencers) {
-          setSelectedInfluencers(new Set(foundCampaign.assignedInfluencers));
-        }
+
+        // Extract influencer IDs from the new structure
+        const assignedIds = getAssignedInfluencerIds(
+          foundCampaign.assignedInfluencers
+        );
+        setSelectedInfluencers(new Set(assignedIds));
       } else if (hasInitialized && campaigns.length > 0) {
-        // Campaign not found and data has been loaded
         showToast({
           type: "error",
           title: "Error",
@@ -394,11 +433,22 @@ const InfluencerAssignment: React.FC = () => {
   const handleAssignInfluencers = async () => {
     if (!campaignId || selectedInfluencers.size === 0) return;
 
-    if (selectedInfluencers.size < (campaign?.influencersMin || 0)) {
+    // Get currently assigned influencer IDs
+    const currentlyAssignedIds = getAssignedInfluencerIds(
+      campaign?.assignedInfluencers
+    );
+
+    // Filter out already assigned influencers from selection
+    const newInfluencerIds = Array.from(selectedInfluencers).filter(
+      (id) => !currentlyAssignedIds.includes(id)
+    );
+
+    if (newInfluencerIds.length === 0) {
       showToast({
         type: "warning",
-        title: "Minimum Not Met",
-        message: `Please select at least ${campaign?.influencersMin} influencers.`,
+        title: "No New Assignments",
+        message:
+          "All selected influencers are already assigned to this campaign.",
         duration: 4000,
       });
       return;
@@ -426,7 +476,7 @@ const InfluencerAssignment: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            influencerIds: Array.from(selectedInfluencers),
+            influencerIds: newInfluencerIds,
           }),
         }
       );
@@ -442,7 +492,7 @@ const InfluencerAssignment: React.FC = () => {
         title: "Success!",
         message:
           data.message ||
-          `${selectedInfluencers.size} influencers have been assigned to the campaign.`,
+          `${newInfluencerIds.length} new influencers have been assigned to the campaign.`,
         duration: 6000,
       });
 
@@ -485,9 +535,7 @@ const InfluencerAssignment: React.FC = () => {
       case "discord":
         return <FaDiscord className="text-indigo-600" />;
       case "threads":
-        return (
-          <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
-        );
+        return <BsThreads className="text-white" />;
       default:
         return <div className="w-4 h-4 bg-gray-400 rounded-full" />;
     }
@@ -504,6 +552,23 @@ const InfluencerAssignment: React.FC = () => {
       .flatMap((inf) => inf.niche)
       .filter(Boolean);
     return [...new Set(niches)].sort();
+  };
+
+  // Calculate assignment summary
+  const getAssignmentSummary = () => {
+    const currentlyAssignedIds = getAssignedInfluencerIds(
+      campaign?.assignedInfluencers
+    );
+    const newSelections = Array.from(selectedInfluencers).filter(
+      (id) => !currentlyAssignedIds.includes(id)
+    );
+
+    return {
+      currentlyAssigned: currentlyAssignedIds.length,
+      newSelections: newSelections.length,
+      totalSelected: selectedInfluencers.size,
+      totalAfterAssignment: currentlyAssignedIds.length + newSelections.length,
+    };
   };
 
   if (loading || !hasInitialized) {
@@ -541,6 +606,8 @@ const InfluencerAssignment: React.FC = () => {
       </div>
     );
   }
+
+  const assignmentSummary = getAssignmentSummary();
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -583,9 +650,29 @@ const InfluencerAssignment: React.FC = () => {
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-700">Selected:</span>
-                <div className="text-gray-900">{selectedInfluencers.size}</div>
+                <span className="font-medium text-gray-700">
+                  Currently Assigned:
+                </span>
+                <div className="text-gray-900">
+                  {assignmentSummary.currentlyAssigned}
+                </div>
               </div>
+              <div>
+                <span className="font-medium text-gray-700">Selected:</span>
+                <div className="text-gray-900">
+                  {assignmentSummary.totalSelected}
+                </div>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">
+                  New Assignments:
+                </span>
+                <div className="text-gray-900">
+                  {assignmentSummary.newSelections}
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="font-medium text-gray-700">Platforms:</span>
                 <div className="text-gray-900">
@@ -718,42 +805,64 @@ const InfluencerAssignment: React.FC = () => {
           <p className="text-gray-600">
             {filteredInfluencers.length} influencers found
           </p>
-          {selectedInfluencers.size > 0 && (
+          {assignmentSummary.newSelections > 0 && (
             <button
               onClick={handleAssignInfluencers}
-              disabled={
-                assignLoading ||
-                selectedInfluencers.size < (campaign.influencersMin || 0)
-              }
+              disabled={assignLoading}
               className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
             >
               {assignLoading
                 ? "Assigning..."
-                : `Assign ${selectedInfluencers.size} Influencers`}
+                : `Assign ${assignmentSummary.newSelections} New Influencers`}
             </button>
           )}
         </div>
+
+        {/* Assignment Status Info */}
+        {assignmentSummary.currentlyAssigned > 0 && (
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 text-blue-800">
+              <div className="text-sm">
+                <strong>{assignmentSummary.currentlyAssigned}</strong>{" "}
+                influencers already assigned. Selecting additional influencers
+                will add them to the campaign.
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Influencers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredInfluencers.map((influencer) => {
             const isSelected = selectedInfluencers.has(influencer._id);
+            const isAlreadyAssigned = getAssignedInfluencerIds(
+              campaign?.assignedInfluencers
+            ).includes(influencer._id);
 
             return (
               <div
                 key={influencer._id}
-                className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer ${
+                className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer relative ${
                   isSelected ? "ring-2 ring-indigo-500 border-indigo-500" : ""
-                }`}
+                } ${isAlreadyAssigned ? "opacity-75" : ""}`}
                 onClick={() => handleInfluencerSelect(influencer._id)}
               >
                 <div className="p-6">
+                  {/* Already Assigned Badge */}
+                  {isAlreadyAssigned && (
+                    <div className="absolute top-3 right-3 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                      Already Assigned
+                    </div>
+                  )}
+
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       {influencer.profileImage ? (
                         <Image
                           src={influencer.profileImage}
                           alt={`${influencer.firstName} ${influencer.lastName}`}
+                          width={48}
+                          height={48}
                           className="w-12 h-12 rounded-full object-cover"
                         />
                       ) : (

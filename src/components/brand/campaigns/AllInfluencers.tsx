@@ -72,7 +72,7 @@ interface AllInfluencersProps {
   campaignName: string;
   isOpen: boolean;
   onClose: () => void;
-  onInfluencerClick: (influencer: Influencer) => void;
+  onInfluencerClick: any;
 }
 
 const AllInfluencers: React.FC<AllInfluencersProps> = ({
@@ -323,7 +323,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
                             {influencer.niches.slice(0, 2).map((niche, idx) => (
                               <span
                                 key={idx}
-                                className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded"
+                                className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded"
                               >
                                 {niche}
                               </span>
@@ -390,7 +390,8 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
                     No influencers assigned
                   </div>
                   <p className="text-gray-600">
-                    This campaign doesn&apos;t have any assigned influencers yet.
+                    This campaign doesn&apos;t have any assigned influencers
+                    yet.
                   </p>
                 </div>
               )}
@@ -403,7 +404,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
               </div>
               <button
                 onClick={onClose}
-                className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
               >
                 Close
               </button>

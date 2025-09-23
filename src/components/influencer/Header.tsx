@@ -1,19 +1,14 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import {
-  BiBell,
-  BiLogOut,
-  BiMenu,
-  BiTrendingUp,
-  BiUserCheck,
-  BiX,
-} from "react-icons/bi";
+import { BiBell, BiLogOut, BiMenu, BiX } from "react-icons/bi";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAdminStore } from "@/stores/adminStore";
+import { useInfluencerStore } from "@/stores/influencerStore";
 import Link from "next/link";
 import { FaDollarSign } from "react-icons/fa";
 import { MdOutlineNotificationsPaused } from "react-icons/md";
+import { CheckCircle, Clock } from "phosphor-react";
+import { FiZap } from "react-icons/fi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/utils/ToastNotification";
@@ -28,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const [notificationOffset, setNotificationOffset] = useState(0);
   const NOTIFICATIONS_PER_PAGE = 10;
 
-  // NEW: track unseen/seen using timestamps
+  // Track unseen/seen using timestamps
   const [hasNewNotifications, setHasNewNotifications] = useState(false);
   const [lastSeen, setLastSeen] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
@@ -38,11 +33,10 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
 
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const { brands, influencers } = useAdminStore();
+  const { assignedCampaigns, user } = useInfluencerStore();
   const navigate = useRouter();
   const { showToast } = useToast();
 
-  const newPayments = brands.filter((brand) => brand.hasPaid === true);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const getAuthToken = () => {
@@ -64,49 +58,105 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
 
   const token = getAuthToken();
 
-  const hasNoActivity =
-    influencers.length === 0 && brands.length === 0 && newPayments.length === 0;
+  // Helper function for deadline calculation
+  const getDaysUntilDeadline = (createdAt: string, postFrequency: string) => {
+    const created = new Date(createdAt);
+    const weekMatch = postFrequency.match(/(?:for\s+)?(\d+)\s+weeks?/i);
+    const monthMatch = postFrequency.match(/(?:for\s+)?(\d+)\s+months?/i);
+    const dayMatch = postFrequency.match(/(?:for\s+)?(\d+)\s+days?/i);
 
-  // Combine and sort all notifications by creation date
+    let durationInDays = 7;
+
+    if (weekMatch) {
+      durationInDays = parseInt(weekMatch[1]) * 7;
+    } else if (monthMatch) {
+      durationInDays = parseInt(monthMatch[1]) * 30;
+    } else if (dayMatch) {
+      durationInDays = parseInt(dayMatch[1]);
+    }
+
+    const deadline = new Date(created);
+    deadline.setDate(deadline.getDate() + durationInDays);
+
+    const now = new Date();
+    const diffTime = deadline.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return { deadline, daysRemaining: diffDays };
+  };
+  // Generate notifications from campaign data
   const allNotifications = useMemo(() => {
     const notifications: any[] = [];
 
-    // Add influencers
-    influencers.forEach((influencer: any) => {
-      notifications.push({
-        id: influencer.id,
-        type: "influencer",
-        data: influencer,
-        createdAt: influencer.createdAt,
-        timestamp: new Date(influencer.createdAt).getTime(),
-      });
-    });
+    assignedCampaigns.forEach((campaign) => {
+      const assignedToInfluencer = campaign.assignedInfluencers.find(
+        (influencer: any) => influencer.isCompleted
+      );
 
-    // Add brands
-    brands.forEach((brand: any) => {
       notifications.push({
-        id: brand._id,
-        type: "brand",
-        data: brand,
-        createdAt: brand.createdAt,
-        timestamp: new Date(brand.createdAt).getTime(),
+        id: `assignment-${campaign._id}`,
+        type: "assignment",
+        title: "New job assigned",
+        message: `${campaign.brandName} campaign has been assigned to you`,
+        timestamp: new Date(campaign.createdAt).getTime(),
+        createdAt: campaign.createdAt,
+        campaign,
+        icon: "zap",
+        bgColor: "bg-blue-50",
+        iconColor: "text-blue-500",
+        hoverColor: "hover:bg-blue-100",
       });
-    });
 
-    // Add payments
-    newPayments.forEach((payment: any) => {
-      notifications.push({
-        id: payment._id,
-        type: "payment",
-        data: payment,
-        createdAt: payment.createdAt,
-        timestamp: new Date(payment.createdAt).getTime(),
-      });
+      if (assignedToInfluencer) {
+        notifications.push({
+          id: `payment-${campaign._id}`,
+          type: "payment",
+          title: "Payment in order!",
+          message: `You have completed the job for ${campaign.brandName} campaign is being processed`,
+          timestamp: new Date(
+            campaign.updatedAt || campaign.createdAt
+          ).getTime(),
+          createdAt: campaign.updatedAt || campaign.createdAt,
+          campaign,
+          icon: "dollar",
+          bgColor: "bg-green-50",
+          iconColor: "text-green-500",
+          hoverColor: "hover:bg-green-100",
+        });
+      }
+
+      // Deadline notifications (for campaigns due within 3 days)
+      const { daysRemaining } = getDaysUntilDeadline(
+        campaign.createdAt,
+        campaign.postFrequency
+      );
+
+      if (daysRemaining <= 3 && daysRemaining >= 0) {
+        notifications.push({
+          id: `deadline-${campaign._id}`,
+          type: "deadline",
+          title: "Deadline reminder",
+          message: `${campaign.brandName} campaign due ${
+            daysRemaining === 0
+              ? "today"
+              : daysRemaining === 1
+              ? "tomorrow"
+              : `in ${daysRemaining} days`
+          }`,
+          timestamp: Date.now(), // Current time for deadline reminders
+          createdAt: new Date().toISOString(),
+          campaign,
+          icon: "clock",
+          bgColor: "bg-yellow-50",
+          iconColor: "text-yellow-500",
+          hoverColor: "hover:bg-yellow-100",
+        });
+      }
     });
 
     // Sort by newest first
     return notifications.sort((a, b) => b.timestamp - a.timestamp);
-  }, [influencers, brands, newPayments]);
+  }, [assignedCampaigns]);
 
   // Get current page of notifications
   const currentNotifications = allNotifications.slice(
@@ -115,6 +165,8 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   );
   const hasMoreNotifications =
     notificationOffset + NOTIFICATIONS_PER_PAGE < allNotifications.length;
+
+  const hasNoActivity = assignedCampaigns.length === 0;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -137,7 +189,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         {},
         {
           headers: {
-            Authorization: `Bearer: ${token}`, // keep as-is if your API expects this
+            Authorization: `Bearer: ${token}`,
           },
         }
       );
@@ -153,7 +205,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       showToast({
         type: "error",
         title: "Sorry!",
-        message: `We could not log out out, please try again later.`,
+        message: `We could not log you out, please try again later.`,
         duration: 5000,
       });
     }
@@ -193,24 +245,21 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     }
   };
 
-  // NEW: compute latest activity timestamp across all sources
+  // Compute latest activity timestamp
   const latestActivityTs = useMemo(() => {
     const times: number[] = [];
 
-    influencers.forEach((i: any) => {
-      if (i?.createdAt) times.push(new Date(i.createdAt).getTime());
-    });
-    brands.forEach((b: any) => {
-      if (b?.createdAt) times.push(new Date(b.createdAt).getTime());
-    });
-    newPayments.forEach((p: any) => {
-      if (p?.createdAt) times.push(new Date(p.createdAt).getTime());
+    assignedCampaigns.forEach((campaign: any) => {
+      if (campaign?.createdAt)
+        times.push(new Date(campaign.createdAt).getTime());
+      if (campaign?.updatedAt)
+        times.push(new Date(campaign.updatedAt).getTime());
     });
 
     return times.length ? Math.max(...times) : 0;
-  }, [influencers, brands, newPayments]);
+  }, [assignedCampaigns]);
 
-  // NEW: only show the dot if there's something newer than the last time the user opened the panel
+  // Show notification dot if there's something newer than last seen
   useEffect(() => {
     if (latestActivityTs > lastSeen) {
       setHasNewNotifications(true);
@@ -225,7 +274,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       const seen = Date.now();
       setLastSeen(seen);
       setHasNewNotifications(false);
-      setNotificationOffset(0); // Reset to show latest notifications
+      setNotificationOffset(0);
       if (typeof window !== "undefined") {
         localStorage.setItem("notif_last_seen", String(seen));
       }
@@ -236,77 +285,40 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     setNotificationOffset((prev) => prev + NOTIFICATIONS_PER_PAGE);
   };
 
-  const renderNotificationItem = (notification: any) => {
-    switch (notification.type) {
-      case "influencer":
-        return (
-          <Link
-            href="/admin/influencers"
-            key={notification.id}
-            className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100"
-          >
-            <BiUserCheck className="text-blue-600" size={20} />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">
-                New influencer joined!
-              </p>
-              <p className="text-xs text-gray-600">
-                {notification.data.name} joined as an influencer
-              </p>
-              <span className="text-xs text-gray-500">
-                {formatDate(notification.createdAt)}
-              </span>
-            </div>
-          </Link>
-        );
-
-      case "brand":
-        return (
-          <Link
-            href="/admin/brands"
-            key={notification.id}
-            className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg hover:bg-purple-100"
-          >
-            <BiTrendingUp className="text-purple-600" size={20} />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">
-                New brand registered!
-              </p>
-              <p className="text-xs text-gray-600">
-                {notification.data.brandName} created an account
-              </p>
-              <span className="text-xs text-gray-500">
-                {formatDate(notification.createdAt)}
-              </span>
-            </div>
-          </Link>
-        );
-
-      case "payment":
-        return (
-          <Link
-            href="/admin/brands"
-            key={notification.id}
-            className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100"
-          >
-            <FaDollarSign className="text-green-600" size={20} />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">
-                Campaign payment processed!
-              </p>
-              <p className="text-xs text-gray-600">
-                ${notification.data.totalCost} has been paid for a campaign
-              </p>
-              <span className="text-xs text-gray-500">
-                {formatDate(notification.createdAt)}
-              </span>
-            </div>
-          </Link>
-        );
-
+  const renderIcon = (iconType: string, iconColor: string) => {
+    switch (iconType) {
+      case "zap":
+        return <FiZap className={iconColor} size={20} />;
+      case "check":
+        return <CheckCircle className={iconColor} size={20} />;
+      case "clock":
+        return <Clock className={iconColor} size={20} />;
+      case "dollar":
+        return <FaDollarSign className={iconColor} size={20} />;
       default:
-        return null;
+        return <FiZap className={iconColor} size={20} />;
     }
+  };
+
+  const renderNotificationItem = (notification: any) => {
+    return (
+      <Link
+        href="/influencer/jobs"
+        key={notification.id}
+        className={`flex items-center space-x-3 p-3 ${notification.bgColor} rounded-lg ${notification.hoverColor} transition-colors`}
+      >
+        {renderIcon(notification.icon, notification.iconColor)}
+        <div className="flex-1">
+          <p className="text-sm font-medium text-gray-900">
+            {notification.title}
+          </p>
+          <p className="text-xs text-gray-600">{notification.message}</p>
+          <span className="text-xs text-gray-500">
+            {formatDate(notification.createdAt)}
+          </span>
+        </div>
+      </Link>
+    );
   };
 
   return (
@@ -370,7 +382,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                       It&apos;s quiet for now
                     </p>
                     <p className="text-sm text-gray-400">
-                      Try refreshing or check back later.
+                      No campaigns assigned yet.
                     </p>
                   </div>
                 ) : (

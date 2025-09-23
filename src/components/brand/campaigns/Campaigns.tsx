@@ -1,17 +1,19 @@
 "use client";
 
+import type React from "react";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useBrandStore } from "@/stores/brandStore";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaUpload, FaTimes } from "react-icons/fa";
 import NewCampaign from "./NewCampaign";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/utils/ToastNotification";
 import EditCampaign from "./EditCampaign";
-import InfluencerDetailsModal from "./InfluencerDetailsModal";
+import InfluencerDetailsModal from "./InfluencerDetailsModal"
 import AllInfluencersModal from "./AllInfluencers";
 import axios from "axios";
+import Image from "next/image";
 
 // Flutterwave types
 interface FlutterwaveConfig {
@@ -96,6 +98,24 @@ interface Influencer {
   updatedAt?: string;
 }
 
+interface SubmittedJob {
+  _id: string;
+  id: string;
+  description: string;
+  submittedAt: string;
+}
+
+interface AssignedInfluencer {
+  influencerId: string;
+  acceptanceStatus: string;
+  assignedAt: string;
+  completedAt?: string;
+  isCompleted: boolean;
+  respondedAt?: string;
+  submittedJobs: SubmittedJob[];
+  _id: string;
+}
+
 // Updated Campaign interface to match the brand store
 interface Campaign {
   _id?: string;
@@ -127,7 +147,21 @@ interface Campaign {
   status: "pending" | "approved" | "rejected";
   createdAt?: string;
   updatedAt?: string;
-  assignedInfluencers: string[];
+  assignedInfluencers: AssignedInfluencer[]; // Updated to use AssignedInfluencer interface
+}
+
+interface CampaignMaterial {
+  id: string;
+  file: File | null;
+  description: string;
+  preview?: string;
+}
+
+interface UploadedMaterial {
+  _id: string;
+  imageUrl: string;
+  postDescription: string;
+  uploadedAt: string;
 }
 
 const Campaigns: React.FC = () => {
@@ -175,6 +209,30 @@ const Campaigns: React.FC = () => {
       campaignName: string;
     } | null>(null);
 
+  const [selectedInfluencerJobs, setSelectedInfluencerJobs] = useState<{
+    influencer: Influencer;
+    jobs: SubmittedJob[];
+    campaignName: string;
+  } | null>(null);
+
+  const [showMaterialsModal, setShowMaterialsModal] = useState<boolean>(false);
+  const [selectedCampaignForMaterials, setSelectedCampaignForMaterials] =
+    useState<Campaign | null>(null);
+  const [campaignMaterials, setCampaignMaterials] = useState<
+    CampaignMaterial[]
+  >([{ id: "1", file: null, description: "" }]);
+  const [isUploadingMaterials, setIsUploadingMaterials] =
+    useState<boolean>(false);
+
+  const [showViewMaterialsModal, setShowViewMaterialsModal] =
+    useState<boolean>(false);
+  const [selectedCampaignForViewing, setSelectedCampaignForViewing] =
+    useState<Campaign | null>(null);
+  const [uploadedMaterials, setUploadedMaterials] = useState<
+    UploadedMaterial[]
+  >([]);
+  const [isLoadingMaterials, setIsLoadingMaterials] = useState<boolean>(false);
+
   const { showToast } = useToast();
 
   // Load Flutterwave script
@@ -213,18 +271,21 @@ const Campaigns: React.FC = () => {
     if (campaigns.length > 0) {
       campaigns.forEach((c) => {
         if (c.assignedInfluencers?.length > 0) {
-          c.assignedInfluencers.forEach((infId) => {
-            fetchInfluencerById(c._id!, infId);
+          c.assignedInfluencers.forEach((assignedInf: any) => {
+            fetchInfluencerById(c._id!, assignedInf);
           });
         }
       });
     }
   }, [campaigns]);
 
-  const fetchInfluencerById = async (campaignId: string, id: string) => {
+  const fetchInfluencerById = async (
+    campaignId: string,
+    assignedInf: AssignedInfluencer
+  ) => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/influencers/${id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/influencers/${assignedInf.influencerId}`
       );
 
       if (res.status === 200) {
@@ -249,25 +310,22 @@ const Campaigns: React.FC = () => {
   };
 
   // Handle individual influencer click
-  const handleInfluencerClick = (influencer: Influencer) => {
-    setSelectedInfluencer(influencer);
-    setShowInfluencerDetails(true);
-  };
+  const handleInfluencerClick = (
+    influencer: Influencer,
+    campaign: Campaign
+  ) => {
+    // Find the assigned influencer data for this specific influencer and campaign
+    const assignedInfluencerData = campaign.assignedInfluencers?.find(
+      (assigned) => assigned.influencerId === influencer._id
+    );
 
-  // Handle "show all influencers" click
-  const handleShowAllInfluencers = (campaign: Campaign) => {
-    const campaignInfluencers = assignedInf[campaign._id!] || [];
-    setSelectedCampaignInfluencers({
-      influencers: campaignInfluencers,
+    // Always show the influencer details modal, with job submissions if available
+    setSelectedInfluencer(influencer);
+    setSelectedInfluencerJobs({
+      influencer,
+      jobs: assignedInfluencerData?.submittedJobs || [],
       campaignName: campaign.brandName,
     });
-    setShowAllInfluencers(true);
-  };
-
-  // Handle influencer click from all influencers modal
-  const handleInfluencerClickFromModal = (influencer: Influencer) => {
-    setShowAllInfluencers(false);
-    setSelectedInfluencer(influencer);
     setShowInfluencerDetails(true);
   };
 
@@ -275,11 +333,154 @@ const Campaigns: React.FC = () => {
   const closeInfluencerDetailsModal = () => {
     setShowInfluencerDetails(false);
     setSelectedInfluencer(null);
+    setSelectedInfluencerJobs(null); // Clear job submissions when closing
   };
 
   const closeAllInfluencersModal = () => {
     setShowAllInfluencers(false);
     setSelectedCampaignInfluencers(null);
+  };
+
+  // Removed the old job submissions modal - now integrated into InfluencerDetailsModal
+  // const closeJobSubmissionsModal = () => {
+  //   setShowJobSubmissionsModal(false)
+  //   setSelectedInfluencerJobs(null)
+  // }
+
+  const handleOpenMaterialsModal = (campaign: Campaign) => {
+    setSelectedCampaignForMaterials(campaign);
+    setShowMaterialsModal(true);
+    setCampaignMaterials([{ id: "1", file: null, description: "" }]);
+  };
+
+  const closeMaterialsModal = () => {
+    setShowMaterialsModal(false);
+    setSelectedCampaignForMaterials(null);
+    setCampaignMaterials([{ id: "1", file: null, description: "" }]);
+  };
+
+  const addNewMaterial = () => {
+    const newId = Date.now().toString();
+    setCampaignMaterials((prev) => [
+      ...prev,
+      { id: newId, file: null, description: "" },
+    ]);
+  };
+
+  const removeMaterial = (id: string) => {
+    if (campaignMaterials.length > 1) {
+      setCampaignMaterials((prev) =>
+        prev.filter((material) => material.id !== id)
+      );
+    }
+  };
+
+  const handleFileChange = (id: string, file: File | null) => {
+    setCampaignMaterials((prev) =>
+      prev.map((material) => {
+        if (material.id === id) {
+          let preview = undefined;
+          if (file && file.type.startsWith("image/")) {
+            preview = URL.createObjectURL(file);
+          }
+          return { ...material, file, preview };
+        }
+        return material;
+      })
+    );
+  };
+
+  const handleDescriptionChange = (id: string, description: string) => {
+    setCampaignMaterials((prev) =>
+      prev.map((material) =>
+        material.id === id ? { ...material, description } : material
+      )
+    );
+  };
+
+  const handleUploadMaterials = async () => {
+    if (!selectedCampaignForMaterials) return;
+
+    const validMaterials = campaignMaterials.filter(
+      (material) => material.file && material.description.trim()
+    );
+
+    if (validMaterials.length === 0) {
+      showToast({
+        type: "error",
+        title: "No Materials",
+        message:
+          "Please add at least one material with both file and description.",
+        duration: 4000,
+      });
+      return;
+    }
+
+    setIsUploadingMaterials(true);
+
+    try {
+      const formData = new FormData();
+
+      // Add campaign ID
+      formData.append("campaignId", selectedCampaignForMaterials._id || "");
+
+      validMaterials.forEach((material, index) => {
+        if (material.file) {
+          // Add images to the 'images' field that multer expects
+          formData.append("images", material.file);
+          // Add descriptions with indexed format that the backend parses
+          formData.append(
+            `materials[${index}][description]`,
+            material.description
+          );
+        }
+      });
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/brands/campaigns/upload-materials`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Upload failed");
+      }
+
+      showToast({
+        type: "success",
+        title: "Materials Uploaded!",
+        message: `Successfully uploaded ${validMaterials.length} campaign materials.`,
+        duration: 6000,
+      });
+
+      closeMaterialsModal();
+
+      // Refresh campaigns to show updated materials
+      if (user?.email) {
+        await fetchCampaignsByEmail(user.email);
+      } else {
+        await fetchCampaigns();
+      }
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      showToast({
+        type: "error",
+        title: "Upload Failed",
+        message:
+          error.message ||
+          "Failed to upload campaign materials. Please try again.",
+        duration: 6000,
+      });
+    } finally {
+      setIsUploadingMaterials(false);
+    }
   };
 
   // Flutterwave payment handler
@@ -546,6 +747,131 @@ const Campaigns: React.FC = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const handleViewMaterials = async (campaign: Campaign) => {
+    setSelectedCampaignForViewing(campaign);
+    setShowViewMaterialsModal(true);
+    setIsLoadingMaterials(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/brands/${campaign._id}/materials`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch materials");
+      }
+
+      setUploadedMaterials(result.data.materials || []);
+    } catch (error: any) {
+      console.error("Error fetching materials:", error);
+      showToast({
+        type: "error",
+        title: "Error",
+        message: error.message || "Failed to load campaign materials",
+        duration: 4000,
+      });
+    } finally {
+      setIsLoadingMaterials(false);
+    }
+  };
+
+  const closeViewMaterialsModal = () => {
+    setShowViewMaterialsModal(false);
+    setSelectedCampaignForViewing(null);
+    setUploadedMaterials([]);
+  };
+
+  const handleDeleteMaterial = async (materialId: string) => {
+    if (!selectedCampaignForViewing) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/${selectedCampaignForViewing._id}/materials/${materialId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to delete material");
+      }
+
+      // Remove the deleted material from the list
+      setUploadedMaterials((prev) =>
+        prev.filter((material) => material._id !== materialId)
+      );
+
+      showToast({
+        type: "success",
+        title: "Material Deleted",
+        message: "Campaign material has been deleted successfully",
+        duration: 4000,
+      });
+    } catch (error: any) {
+      console.error("Error deleting material:", error);
+      showToast({
+        type: "error",
+        title: "Delete Failed",
+        message: error.message || "Failed to delete campaign material",
+        duration: 4000,
+      });
+    }
+  };
+
+  // Helper function to check if an influencer has completed all their assigned jobs
+  const isInfluencerCompleted = (
+    campaign: Campaign,
+    influencerId: string
+  ): boolean => {
+    const assigned = campaign.assignedInfluencers?.find(
+      (assigned) => assigned.influencerId === influencerId
+    );
+    return assigned?.isCompleted ?? false;
+  };
+
+  // Handler to show all influencers for a campaign
+  const handleShowAllInfluencers = (campaign: Campaign) => {
+    const influencersForCampaign = assignedInf[campaign._id!] || [];
+    setSelectedCampaignInfluencers({
+      influencers: influencersForCampaign,
+      campaignName: campaign.brandName,
+    });
+    setShowAllInfluencers(true);
+  };
+
+  // Handler to open influencer details or job submissions from the AllInfluencersModal
+  const handleInfluencerClickFromModal = (
+    influencer: Influencer,
+    campaign: Campaign
+  ) => {
+    // Find the assigned influencer data for this specific influencer and campaign
+    const assignedInfluencerData = campaign.assignedInfluencers?.find(
+      (assigned) => assigned.influencerId === influencer._id
+    );
+
+    // Always show the influencer details modal, with job submissions if available
+    setSelectedInfluencer(influencer);
+    setSelectedInfluencerJobs({
+      influencer,
+      jobs: assignedInfluencerData?.submittedJobs || [],
+      campaignName: campaign.brandName,
+    });
+    setShowInfluencerDetails(true);
+  };
+
   if (campaignsLoading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
@@ -596,6 +922,7 @@ const Campaigns: React.FC = () => {
         influencer={selectedInfluencer}
         isOpen={showInfluencerDetails}
         onClose={closeInfluencerDetailsModal}
+        submittedJobs={selectedInfluencerJobs?.jobs || []}
       />
 
       <AllInfluencersModal
@@ -605,6 +932,280 @@ const Campaigns: React.FC = () => {
         onClose={closeAllInfluencersModal}
         onInfluencerClick={handleInfluencerClickFromModal}
       />
+
+      <AnimatePresence>
+        {showViewMaterialsModal && (
+          <motion.div
+            key="view-materials-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+            onClick={closeViewMaterialsModal}
+          >
+            <motion.div
+              key="view-materials-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      Campaign Materials
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Materials for &quot;
+                      {selectedCampaignForViewing?.brandName}&quot;
+                    </p>
+                  </div>
+                  <button
+                    onClick={closeViewMaterialsModal}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <FaTimes className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                {isLoadingMaterials ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    <span className="ml-3 text-gray-600">
+                      Loading materials...
+                    </span>
+                  </div>
+                ) : uploadedMaterials.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-gray-400 text-lg mb-2">
+                      No materials uploaded yet
+                    </div>
+                    <p className="text-gray-600">
+                      Upload some campaign materials to see them here.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {uploadedMaterials.map((material) => (
+                      <div
+                        key={material._id}
+                        className="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        <div className="aspect-square relative">
+                          <Image
+                            src={material.imageUrl || "/placeholder.svg"}
+                            width={200}
+                            height={200}
+                            alt="Campaign material"
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            onClick={() => handleDeleteMaterial(material._id)}
+                            className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-colors"
+                            title="Delete material"
+                          >
+                            <FaTimes className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <div className="p-4">
+                          <p className="text-gray-800 text-sm leading-relaxed mb-2">
+                            {material.postDescription}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-6 border-t border-gray-200 bg-gray-50">
+                <div className="flex justify-end">
+                  <button
+                    onClick={closeViewMaterialsModal}
+                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Existing Upload Materials Modal */}
+      <AnimatePresence>
+        {showMaterialsModal && (
+          <motion.div
+            key="materials-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+            onClick={closeMaterialsModal}
+          >
+            <motion.div
+              key="materials-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      Add Campaign Materials
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Upload materials for &quot;
+                      {selectedCampaignForMaterials?.brandName}&quot;
+                    </p>
+                  </div>
+                  <button
+                    onClick={closeMaterialsModal}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <FaTimes className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                <div className="space-y-6">
+                  {campaignMaterials.map((material, index) => (
+                    <div
+                      key={material.id}
+                      className="border border-gray-200 rounded-lg p-4"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-medium text-gray-900">
+                          Material {index + 1}
+                        </h3>
+                        {campaignMaterials.length > 1 && (
+                          <button
+                            onClick={() => removeMaterial(material.id)}
+                            className="text-red-500 hover:text-red-700 p-1"
+                          >
+                            <FaTimes className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* File Upload */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Upload Image
+                          </label>
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-indigo-400 transition-colors">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) =>
+                                handleFileChange(
+                                  material.id,
+                                  e.target.files?.[0] || null
+                                )
+                              }
+                              className="hidden"
+                              id={`file-${material.id}`}
+                            />
+                            <label
+                              htmlFor={`file-${material.id}`}
+                              className="cursor-pointer"
+                            >
+                              {material.preview ? (
+                                <div className="space-y-2">
+                                  <Image
+                                    src={material.preview || "/placeholder.svg"}
+                                    width={200}
+                                    height={200}
+                                    alt="Preview"
+                                    className="w-full h-32 object-cover rounded-lg"
+                                  />
+                                  <p className="text-sm text-gray-600">
+                                    Click to change image
+                                  </p>
+                                </div>
+                              ) : (
+                                <div className="space-y-2">
+                                  <FaUpload className="w-8 h-8 text-gray-400 mx-auto" />
+                                  <p className="text-sm text-gray-600">
+                                    Click to upload image
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    PNG, JPG, GIF up to 10MB
+                                  </p>
+                                </div>
+                              )}
+                            </label>
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Description
+                          </label>
+                          <textarea
+                            value={material.description}
+                            onChange={(e) =>
+                              handleDescriptionChange(
+                                material.id,
+                                e.target.value
+                              )
+                            }
+                            placeholder="Describe this campaign material..."
+                            rows={6}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Add Another Material Button */}
+                  <button
+                    onClick={addNewMaterial}
+                    className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
+                  >
+                    <FaPlus className="w-5 h-5 text-gray-400 mx-auto mb-2" />
+                    <span className="text-sm text-gray-600">
+                      Add Another Material
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-gray-200 bg-gray-50">
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={closeMaterialsModal}
+                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleUploadMaterials}
+                    disabled={isUploadingMaterials}
+                    className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isUploadingMaterials ? "Uploading..." : "Upload Materials"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {newCampaign && <NewCampaign onBack={() => setNewCampaign(false)} />}
       {editCampaign && editingCampaign && (
@@ -672,7 +1273,7 @@ const Campaigns: React.FC = () => {
               </div>
               <button
                 onClick={() => setNewCampaign(true)}
-                className="bg-orange-600 flex items-center gap-3 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm"
+                className="bg-indigo-600 flex items-center gap-3 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm"
               >
                 <FaPlus /> New
               </button>
@@ -687,7 +1288,7 @@ const Campaigns: React.FC = () => {
                   placeholder="Search by brand name, location, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
               </div>
 
@@ -707,7 +1308,7 @@ const Campaigns: React.FC = () => {
                     onClick={() => setFilter(status as typeof filter)}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                       filter === status
-                        ? "bg-orange-600 text-white"
+                        ? "bg-indigo-600 text-white"
                         : "bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                   >
@@ -796,7 +1397,7 @@ const Campaigns: React.FC = () => {
                 </p>
               </div>
             ) : (
-              filteredCampaigns.map((campaign) => (
+              filteredCampaigns.map((campaign: any) => (
                 <div
                   key={campaign._id}
                   className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
@@ -901,28 +1502,59 @@ const Campaigns: React.FC = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               {assignedInf[campaign._id!]
                                 ?.slice(0, 3) // show only first 3
-                                .map((inf, idx) => (
-                                  <div
-                                    key={inf._id || idx}
-                                    className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md hover:bg-gray-100 transition cursor-pointer"
-                                    onClick={() => handleInfluencerClick(inf)}
-                                  >
-                                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-orange-100 text-orange-600 font-semibold">
-                                      {inf.name?.charAt(0).toUpperCase() || "I"}
+                                .map((inf, idx) => {
+                                  const isCompleted = isInfluencerCompleted(
+                                    campaign,
+                                    inf._id
+                                  );
+
+                                  return (
+                                    <div
+                                      key={inf._id || idx}
+                                      className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md hover:bg-gray-100 transition cursor-pointer relative"
+                                      onClick={() =>
+                                        handleInfluencerClick(inf, campaign)
+                                      }
+                                    >
+                                      {isCompleted && (
+                                        <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1">
+                                          <svg
+                                            className="w-4 h-4"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                          >
+                                            <path
+                                              fillRule="evenodd"
+                                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                              clipRule="evenodd"
+                                            />
+                                          </svg>
+                                        </div>
+                                      )}
+
+                                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-semibold">
+                                        {inf.name?.charAt(0).toUpperCase() ||
+                                          "I"}
+                                      </div>
+                                      <div className="flex flex-col">
+                                        <span className="font-medium text-gray-900">
+                                          {inf.name}
+                                        </span>
+                                        <span className="text-gray-600 text-sm">
+                                          {inf.email}
+                                        </span>
+                                        <span className="text-gray-500 text-xs">
+                                          📍 {inf.location}
+                                        </span>
+                                        {isCompleted && (
+                                          <span className="text-green-600 text-xs font-medium mt-1">
+                                            ✓ Completed
+                                          </span>
+                                        )}
+                                      </div>
                                     </div>
-                                    <div className="flex flex-col">
-                                      <span className="font-medium text-gray-900">
-                                        {inf.name}
-                                      </span>
-                                      <span className="text-gray-600 text-sm">
-                                        {inf.email}
-                                      </span>
-                                      <span className="text-gray-500 text-xs">
-                                        📍 {inf.location}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
 
                               {/* Show "+N more" if influencers exceed 3 */}
                               {assignedInf[campaign._id!] &&
@@ -948,7 +1580,7 @@ const Campaigns: React.FC = () => {
                             setEditingCampaign(campaign);
                             setEditCampaign(true);
                           }}
-                          className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
+                          className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
                         >
                           View/Edit Campaign
                         </button>
@@ -975,6 +1607,22 @@ const Campaigns: React.FC = () => {
                               ? "Processing..."
                               : "Make Payment"}
                           </button>
+                        )}
+                        {campaign.hasPaid && (
+                          <>
+                            <button
+                              onClick={() => handleOpenMaterialsModal(campaign)}
+                              className="bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                            >
+                              Add Campaign Materials
+                            </button>
+                            <button
+                              onClick={() => handleViewMaterials(campaign)}
+                              className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                            >
+                              View Materials
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>

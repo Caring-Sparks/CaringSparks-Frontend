@@ -18,7 +18,7 @@ section {
 .loaderr {
   display: block;
   --height-of-loader: 4px;
-  --loader-color: #e28800;
+  --loader-color: #0008e2;
   width: 130px;
   height: var(--height-of-loader);
   border-radius: 30px;

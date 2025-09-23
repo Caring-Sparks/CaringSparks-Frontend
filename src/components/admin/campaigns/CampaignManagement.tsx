@@ -1,12 +1,29 @@
 "use client";
 
+import type React from "react";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useBrandStore } from "@/stores/brandStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/utils/ToastNotification";
 import axios from "axios";
+import InfluencerDetailsModal from "@/components/brand/campaigns/InfluencerDetailsModal";
+
+interface SubmittedJob {
+  _id: string;
+  description: string;
+  submittedAt: string;
+}
+
+interface AssignedInfluencer {
+  influencerId: string;
+  isCompleted: boolean;
+  submittedJobs: SubmittedJob[];
+  acceptanceStatus: string;
+  completedAt?: string;
+}
+
 interface Campaign {
   _id?: string;
   role: "Brand" | "Business" | "Person" | "Movie" | "Music" | "Other";
@@ -37,7 +54,7 @@ interface Campaign {
   status: "pending" | "approved" | "rejected";
   createdAt?: string;
   updatedAt?: string;
-  assignedInfluencers: string[];
+  assignedInfluencers: AssignedInfluencer[];
 }
 
 const CampaignManagement: React.FC = () => {
@@ -68,9 +85,15 @@ const CampaignManagement: React.FC = () => {
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [showInfluencerModal, setShowInfluencerModal] =
+    useState<boolean>(false);
+  const [selectedInfluencer, setSelectedInfluencer] = useState<any>(null);
+  const [selectedInfluencerJobs, setSelectedInfluencerJobs] = useState<
+    SubmittedJob[]
+  >([]);
+
   const { showToast } = useToast();
 
-  // Fetch campaigns on component mount
   useEffect(() => {
     const loadCampaigns = async () => {
       await fetchCampaigns();
@@ -84,7 +107,7 @@ const CampaignManagement: React.FC = () => {
     if (campaigns.length > 0) {
       campaigns.forEach((c) => {
         if (c.assignedInfluencers?.length > 0) {
-          c.assignedInfluencers.forEach((infId) => {
+          c.assignedInfluencers.forEach((infId: any) => {
             fetchInfluencerById(c._id!, infId);
           });
         }
@@ -92,7 +115,6 @@ const CampaignManagement: React.FC = () => {
     }
   }, [campaigns]);
 
-  // API call to approve campaign
   const handleApproveCampaign = async (campaignId: string) => {
     setIsApproving(true);
     try {
@@ -115,7 +137,6 @@ const CampaignManagement: React.FC = () => {
 
       const data = await response.json();
 
-      // Refresh campaigns list
       await fetchCampaigns();
 
       showToast({
@@ -140,7 +161,6 @@ const CampaignManagement: React.FC = () => {
     }
   };
 
-  // API call to reject campaign
   const handleRejectCampaign = async (campaignId: string) => {
     setIsRejecting(true);
     try {
@@ -163,7 +183,6 @@ const CampaignManagement: React.FC = () => {
 
       const data = await response.json();
 
-      // Refresh campaigns list
       await fetchCampaigns();
 
       showToast({
@@ -188,10 +207,13 @@ const CampaignManagement: React.FC = () => {
     }
   };
 
-  const fetchInfluencerById = async (campaignId: string, id: string) => {
+  const fetchInfluencerById = async (
+    campaignId: string,
+    assignedInfluencer: AssignedInfluencer
+  ) => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/influencers/${id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/influencers/${assignedInfluencer.influencerId}`
       );
 
       if (res.status === 200) {
@@ -202,7 +224,7 @@ const CampaignManagement: React.FC = () => {
             (inf) => inf._id === influencer._id
           );
 
-          if (alreadyAdded) return prev; // Correctly skips if already found
+          if (alreadyAdded) return prev;
 
           return {
             ...prev,
@@ -215,37 +237,56 @@ const CampaignManagement: React.FC = () => {
     }
   };
 
-  // Filter campaigns based on current filters
-  const filteredCampaigns = campaigns.filter((campaign) => {
-    // Status filter
-    let matchesFilter = true;
-    if (filter === "paid") matchesFilter = campaign.hasPaid === true;
-    else if (filter === "unpaid") matchesFilter = campaign.hasPaid !== true;
-    else if (filter === "approved")
-      matchesFilter = campaign.status === "approved";
-    else if (filter === "rejected")
-      matchesFilter = campaign.status === "rejected";
-    else if (filter === "pending")
-      matchesFilter = campaign.status === "pending";
+  const handleDeleteCampaign = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      const res = await deleteCampaign(id);
+      showToast({
+        type: "success",
+        title: "Success!",
+        message: "Your campaign has been deleted!",
+        duration: 6000,
+      });
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Failed to delete campaign:", error);
+      showToast({
+        type: "error",
+        title: "Sorry!",
+        message:
+          "We were not able to delete your campaign, please try again later.",
+        duration: 6000,
+      });
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
 
-    // Search filter
-    const matchesSearch =
-      campaign.brandName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      campaign.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      campaign.email.toLowerCase().includes(searchTerm.toLowerCase());
-
-    // Platform filter
-    const matchesPlatform =
-      platformFilter === "all" ||
-      campaign.platforms.some(
-        (p) => p.toLowerCase() === platformFilter.toLowerCase()
+  const handleInfluencerClick = async (
+    campaignId: string,
+    assignedInfluencer: AssignedInfluencer
+  ) => {
+    try {
+      const influencerData = assignedInf[campaignId]?.find(
+        (inf) => inf._id === assignedInfluencer.influencerId
       );
 
-    // Role filter
-    const matchesRole = roleFilter === "all" || campaign.role === roleFilter;
-
-    return matchesFilter && matchesSearch && matchesPlatform && matchesRole;
-  });
+      if (influencerData) {
+        setSelectedInfluencer(influencerData);
+        setSelectedInfluencerJobs(assignedInfluencer.submittedJobs || []);
+        setShowInfluencerModal(true);
+      }
+    } catch (error) {
+      console.error("Error opening influencer details:", error);
+      showToast({
+        type: "error",
+        title: "Error",
+        message: "Could not load influencer details",
+        duration: 4000,
+      });
+    }
+  };
 
   const getStatusColor = (campaign: Campaign) => {
     switch (campaign.status) {
@@ -287,32 +328,6 @@ const CampaignManagement: React.FC = () => {
     }
   };
 
-  const handleDeleteCampaign = async (id: string) => {
-    setIsDeleting(true);
-    try {
-      const res = await deleteCampaign(id);
-      showToast({
-        type: "success",
-        title: "Success!",
-        message: "Your campaign has been deleted!",
-        duration: 6000,
-      });
-      setIsDeleting(false);
-      setShowDeleteModal(false);
-    } catch (error) {
-      console.error("Failed to delete campaign:", error);
-      showToast({
-        type: "error",
-        title: "Sorry!",
-        message:
-          "We were not able to delete your campaign, please try again later.",
-        duration: 6000,
-      });
-      setIsDeleting(false);
-      setShowDeleteModal(false);
-    }
-  };
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
@@ -324,6 +339,33 @@ const CampaignManagement: React.FC = () => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString();
   };
+
+  const filteredCampaigns = campaigns.filter((campaign) => {
+    let matchesFilter = true;
+    if (filter === "paid") matchesFilter = campaign.hasPaid === true;
+    else if (filter === "unpaid") matchesFilter = campaign.hasPaid !== true;
+    else if (filter === "approved")
+      matchesFilter = campaign.status === "approved";
+    else if (filter === "rejected")
+      matchesFilter = campaign.status === "rejected";
+    else if (filter === "pending")
+      matchesFilter = campaign.status === "pending";
+
+    const matchesSearch =
+      campaign.brandName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      campaign.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      campaign.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesPlatform =
+      platformFilter === "all" ||
+      campaign.platforms.some(
+        (p) => p.toLowerCase() === platformFilter.toLowerCase()
+      );
+
+    const matchesRole = roleFilter === "all" || campaign.role === roleFilter;
+
+    return matchesFilter && matchesSearch && matchesPlatform && matchesRole;
+  });
 
   if (campaignsLoading) {
     return (
@@ -367,7 +409,6 @@ const CampaignManagement: React.FC = () => {
   return (
     <>
       <AnimatePresence>
-        {/* Delete Modal */}
         {showDeleteModal && (
           <motion.div
             key="delete-backdrop"
@@ -412,7 +453,6 @@ const CampaignManagement: React.FC = () => {
           </motion.div>
         )}
 
-        {/* Approve Modal */}
         {showApproveModal && (
           <motion.div
             key="approve-backdrop"
@@ -457,7 +497,6 @@ const CampaignManagement: React.FC = () => {
           </motion.div>
         )}
 
-        {/* Reject Modal */}
         {showRejectModal && (
           <motion.div
             key="reject-backdrop"
@@ -503,9 +542,19 @@ const CampaignManagement: React.FC = () => {
         )}
       </AnimatePresence>
 
+      <InfluencerDetailsModal
+        influencer={selectedInfluencer}
+        isOpen={showInfluencerModal}
+        onClose={() => {
+          setShowInfluencerModal(false);
+          setSelectedInfluencer(null);
+          setSelectedInfluencerJobs([]);
+        }}
+        submittedJobs={selectedInfluencerJobs}
+      />
+
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
           <div className="mb-8">
             <div className="flex justify-between items-center gap-6 mb-6">
               <div>
@@ -516,22 +565,18 @@ const CampaignManagement: React.FC = () => {
               </div>
             </div>
 
-            {/* Filters and Search */}
             <div className="space-y-4 mb-6">
-              {/* Search */}
               <div className="flex-1">
                 <input
                   type="text"
                   placeholder="Search by brand name, location, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
               </div>
 
-              {/* Filter buttons */}
               <div className="flex flex-wrap gap-2">
-                {/* Status filters */}
                 {[
                   "all",
                   "paid",
@@ -545,7 +590,7 @@ const CampaignManagement: React.FC = () => {
                     onClick={() => setFilter(status as typeof filter)}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                       filter === status
-                        ? "bg-yellow-600 text-white"
+                        ? "bg-indigo-600 text-white"
                         : "bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                   >
@@ -554,9 +599,7 @@ const CampaignManagement: React.FC = () => {
                 ))}
               </div>
 
-              {/* Additional filters */}
               <div className="flex flex-wrap gap-4">
-                {/* Role filter */}
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
@@ -571,7 +614,6 @@ const CampaignManagement: React.FC = () => {
                   <option value="Other">Other</option>
                 </select>
 
-                {/* Platform filter */}
                 <select
                   value={platformFilter}
                   onChange={(e) => setPlatformFilter(e.target.value)}
@@ -591,7 +633,6 @@ const CampaignManagement: React.FC = () => {
               </div>
             </div>
 
-            {/* Stats Overview */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="text-2xl font-bold text-gray-900">
@@ -620,7 +661,6 @@ const CampaignManagement: React.FC = () => {
             </div>
           </div>
 
-          {/* Campaigns List */}
           <div className="space-y-4">
             {filteredCampaigns.length === 0 ? (
               <div className="bg-white p-12 rounded-lg shadow-sm text-center">
@@ -634,7 +674,7 @@ const CampaignManagement: React.FC = () => {
                 </p>
               </div>
             ) : (
-              filteredCampaigns.map((campaign) => (
+              filteredCampaigns.map((campaign: any) => (
                 <div
                   key={campaign._id}
                   className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
@@ -737,27 +777,66 @@ const CampaignManagement: React.FC = () => {
                             </h4>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               {assignedInf[campaign._id!]
-                                ?.slice(0, 3) // show only first 3
-                                .map((inf, idx) => (
-                                  <div
-                                    key={inf._id || idx}
-                                    className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition"
-                                  >
-                                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600 font-semibold">
-                                      {inf.name?.charAt(0).toUpperCase() || "I"}
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <span className="font-medium text-gray-900">
-                                        {inf.name}
-                                      </span>
-                                      <span className="text-gray-600 text-sm">
-                                        {inf.email}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
+                                ?.slice(0, 3)
+                                .map((inf, idx) => {
+                                  const assignedInfluencer =
+                                    campaign.assignedInfluencers.find(
+                                      (ai: any) => ai.influencerId === inf._id
+                                    );
+                                  const isCompleted =
+                                    assignedInfluencer?.isCompleted || false;
 
-                              {/* Show "+N more" if influencers exceed 3 */}
+                                  return (
+                                    <div
+                                      key={inf._id || idx}
+                                      className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition cursor-pointer relative"
+                                      onClick={() =>
+                                        assignedInfluencer &&
+                                        handleInfluencerClick(
+                                          campaign._id!,
+                                          assignedInfluencer
+                                        )
+                                      }
+                                    >
+                                      {isCompleted && (
+                                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                          <svg
+                                            className="w-4 h-4 text-white"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth={2}
+                                              d="M5 13l4 4L19 7"
+                                            />
+                                          </svg>
+                                        </div>
+                                      )}
+
+                                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-semibold">
+                                        {inf.name?.charAt(0).toUpperCase() ||
+                                          "I"}
+                                      </div>
+                                      <div className="flex flex-col">
+                                        <span className="font-medium text-gray-900">
+                                          {inf.name}
+                                        </span>
+                                        <span className="text-gray-600 text-sm">
+                                          {inf.email}
+                                        </span>
+                                        {isCompleted && (
+                                          <span className="text-green-600 text-xs font-medium mt-1">
+                                            ✓ Completed
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+
                               {assignedInf[campaign._id!] &&
                                 assignedInf[campaign._id!].length > 3 && (
                                   <div className="flex items-center justify-center p-3 bg-gray-100 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium">
@@ -778,13 +857,12 @@ const CampaignManagement: React.FC = () => {
                                 `/admin/assign-influencers?campaignId=${campaign._id}`
                               )
                             }
-                            className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
+                            className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
                           >
                             Assign Influencers
                           </button>
                         )}
 
-                        {/* Show approve/reject buttons only for pending campaigns */}
                         {campaign.status === "pending" && (
                           <>
                             <button
@@ -810,7 +888,6 @@ const CampaignManagement: React.FC = () => {
                           </>
                         )}
 
-                        {/* Show re-approve button for rejected campaigns */}
                         {campaign.status === "rejected" && (
                           <button
                             onClick={() => {
@@ -824,7 +901,6 @@ const CampaignManagement: React.FC = () => {
                           </button>
                         )}
 
-                        {/* Show revoke approval button for approved campaigns */}
                         {campaign.status === "approved" && (
                           <button
                             onClick={() => {

@@ -15,6 +15,7 @@ import { CgChevronRight } from "react-icons/cg";
 import { useAdminUser } from "@/stores/adminStore";
 import Image from "next/image";
 import axios from "axios";
+import { useInfluencerStore } from "@/stores/influencerStore";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -27,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [activeTab, setActiveTab] = useState("overview");
 
   // Get user data from store
-  const { user, userLoading, clearUser } = useAdminUser();
+  const { user, userLoading, clearUser } = useInfluencerStore();
 
   const menuItems = useMemo(
     () => [

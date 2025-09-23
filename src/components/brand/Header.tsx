@@ -108,7 +108,7 @@ interface Influencer {
 
 interface Notification {
   id: string;
-  type: "approval" | "assignment";
+  type: "approval" | "assignment" | "rejection";
   data: Campaign;
   createdAt: string;
   timestamp: number;
@@ -154,6 +154,9 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const approvedCampaigns = campaigns.filter(
     (campaign: Campaign) => campaign.status === "approved"
   );
+  const rejectedCampaigns = campaigns.filter(
+    (campaign: Campaign) => campaign.status === "rejected"
+  );
   const campaignsWithInfluencers = campaigns.filter(
     (campaign: Campaign) =>
       campaign.assignedInfluencers && campaign.assignedInfluencers.length > 0
@@ -198,6 +201,17 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       });
     });
 
+    // Add rejected campaigns notifications
+    rejectedCampaigns.forEach((campaign: Campaign) => {
+      notifications.push({
+        id: `rejection-${campaign._id}`,
+        type: "rejection",
+        data: campaign,
+        createdAt: campaign.updatedAt || campaign.createdAt,
+        timestamp: new Date(campaign.updatedAt || campaign.createdAt).getTime(),
+      });
+    });
+
     // Add influencer assignment notifications
     campaignsWithInfluencers.forEach((campaign: Campaign) => {
       notifications.push({
@@ -225,7 +239,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     );
 
     return uniqueNotifications.sort((a, b) => b.timestamp - a.timestamp);
-  }, [approvedCampaigns, campaignsWithInfluencers]);
+  }, [approvedCampaigns, campaignsWithInfluencers, rejectedCampaigns]);
 
   // Get current page of notifications
   const currentNotifications = allNotifications.slice(
@@ -372,6 +386,29 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
               <p className="text-xs text-gray-600">
                 &quot;{notification.data.brandName}&quot; campaign has been
                 approved and is now active
+              </p>
+              <span className="text-xs text-gray-500">
+                {formatDate(notification.createdAt)}
+              </span>
+            </div>
+          </Link>
+        );
+
+      case "rejection":
+        return (
+          <Link
+            href="/brand/campaigns"
+            key={notification.id}
+            className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100"
+          >
+            <BiCheck className="text-green-600" size={20} />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900">
+                Campaign Rejected!
+              </p>
+              <p className="text-xs text-gray-600">
+                &quot;{notification.data.brandName}&quot; campaign has been
+                rejected. Please contact support for more details
               </p>
               <span className="text-xs text-gray-500">
                 {formatDate(notification.createdAt)}
