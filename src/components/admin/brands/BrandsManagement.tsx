@@ -16,6 +16,7 @@ import {
 } from "@/stores/adminStore";
 import { Eye, Trash } from "phosphor-react";
 import BrandDetails from "./BrandDetails";
+import { GiCheckMark } from "react-icons/gi";
 
 // Define the expected structure of brand data
 interface BrandData {
@@ -486,7 +487,7 @@ const BrandsManagement: React.FC = () => {
                     <tr
                       key={brand._id}
                       className="hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={() => handleRowClick(brand)}
+                      // onClick={() => handleRowClick(brand)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
@@ -519,14 +520,14 @@ const BrandsManagement: React.FC = () => {
                         >
                           <button
                             type="button"
-                            className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="text-green-600 hover:text-green-800 p-2 hover:bg-green-50 rounded-lg transition-colors"
                             title="View brand details"
                             aria-label={`View details for ${
                               brandData.brandName || "brand"
                             }`}
-                            onClick={() => handleRowClick(brand)}
+                            // onClick={() => handleRowClick(brand)}
                           >
-                            <Eye size={16} />
+                            <GiCheckMark size={16} />
                           </button>
                         </div>
                       </td>

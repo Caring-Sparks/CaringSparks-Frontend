@@ -232,6 +232,7 @@ export const useBrandStore = create<BrandState>()(
             `/api/campaigns/email/${encodeURIComponent(email)}`
           );
           const data = handleApiResponse(res);
+          console.log(data.data)
           set({ campaigns: data.data || [], campaignsLoading: false });
         } catch (err: any) {
           const msg = handleApiError(err);

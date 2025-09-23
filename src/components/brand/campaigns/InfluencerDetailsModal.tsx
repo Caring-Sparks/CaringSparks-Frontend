@@ -1,5 +1,28 @@
+"use client";
+
+import type React from "react";
+
 import { AnimatePresence, motion } from "framer-motion";
-import { FaTimes, FaInstagram, FaFacebook, FaTiktok, FaYoutube, FaLinkedin, FaTwitter, FaSnapchat, FaWhatsapp, FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import {
+  FaTimes,
+  FaInstagram,
+  FaFacebook,
+  FaTiktok,
+  FaYoutube,
+  FaLinkedin,
+  FaTwitter,
+  FaSnapchat,
+  FaWhatsapp,
+  FaPhone,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaEye,
+  FaHeart,
+  FaComment,
+  FaShare,
+  FaChartLine,
+  FaUsers,
+} from "react-icons/fa";
 import { SiThreads, SiDiscord } from "react-icons/si";
 
 // Platform data interface matching your schema
@@ -8,6 +31,13 @@ interface PlatformData {
   url: string;
   impressions: string;
   proofUrl?: string;
+}
+
+// SubmittedJob interface for job submissions
+interface SubmittedJob {
+  _id: string;
+  description: string;
+  submittedAt: string;
 }
 
 // Influencer interface matching your schema
@@ -23,7 +53,7 @@ interface Influencer {
   malePercentage?: string;
   femalePercentage?: string;
   audienceProofUrl?: string;
-  
+
   // Platform data
   instagram?: PlatformData;
   twitter?: PlatformData;
@@ -34,7 +64,7 @@ interface Influencer {
   discord?: PlatformData;
   threads?: PlatformData;
   snapchat?: PlatformData;
-  
+
   // Calculated earnings
   followerFee?: number;
   impressionFee?: number;
@@ -45,11 +75,11 @@ interface Influencer {
   maxMonthlyEarnings?: number;
   maxMonthlyEarningsNaira?: number;
   followersCount?: number;
-  
+
   // Legacy fields
   amountPerPost?: string;
   amountPerMonth?: string;
-  
+
   // Metadata
   status: "pending" | "approved" | "rejected";
   emailSent: boolean;
@@ -62,34 +92,36 @@ interface InfluencerDetailsModalProps {
   influencer: Influencer | null;
   isOpen: boolean;
   onClose: () => void;
+  submittedJobs?: SubmittedJob[];
 }
 
 const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
   influencer,
   isOpen,
   onClose,
+  submittedJobs = [],
 }) => {
   if (!influencer) return null;
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
-      case 'instagram':
+      case "instagram":
         return <FaInstagram className="text-pink-500" />;
-      case 'facebook':
+      case "facebook":
         return <FaFacebook className="text-blue-600" />;
-      case 'tiktok':
+      case "tiktok":
         return <FaTiktok className="text-black" />;
-      case 'youtube':
+      case "youtube":
         return <FaYoutube className="text-red-600" />;
-      case 'linkedin':
+      case "linkedin":
         return <FaLinkedin className="text-blue-700" />;
-      case 'twitter':
+      case "twitter":
         return <FaTwitter className="text-blue-400" />;
-      case 'snapchat':
+      case "snapchat":
         return <FaSnapchat className="text-yellow-400" />;
-      case 'threads':
+      case "threads":
         return <SiThreads className="text-black" />;
-      case 'discord':
+      case "discord":
         return <SiDiscord className="text-indigo-600" />;
       default:
         return null;
@@ -97,13 +129,13 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
   };
 
   const formatNumber = (num: string | number) => {
-    const value = typeof num === 'string' ? parseInt(num) : num;
-    if (isNaN(value)) return '0';
-    
+    const value = typeof num === "string" ? Number.parseInt(num) : num;
+    if (isNaN(value)) return "0";
+
     if (value >= 1000000) {
-      return (value / 1000000).toFixed(1) + 'M';
+      return (value / 1000000).toFixed(1) + "M";
     } else if (value >= 1000) {
-      return (value / 1000).toFixed(1) + 'K';
+      return (value / 1000).toFixed(1) + "K";
     }
     return value.toString();
   };
@@ -122,21 +154,36 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
   // Get platforms with data
   const getPlatformsWithData = () => {
-    const platforms = ['instagram', 'twitter', 'tiktok', 'youtube', 'facebook', 'linkedin', 'discord', 'threads', 'snapchat'];
-    return platforms.filter(platform => {
-      const platformData = influencer[platform as keyof Influencer] as PlatformData;
-      return platformData && (platformData.followers || platformData.url || platformData.impressions);
+    const platforms = [
+      "instagram",
+      "twitter",
+      "tiktok",
+      "youtube",
+      "facebook",
+      "linkedin",
+      "discord",
+      "threads",
+      "snapchat",
+    ];
+    return platforms.filter((platform) => {
+      const platformData = influencer[
+        platform as keyof Influencer
+      ] as PlatformData;
+      return (
+        platformData &&
+        (platformData.followers || platformData.url || platformData.impressions)
+      );
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved':
-        return 'bg-green-100 text-green-800';
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
+      case "approved":
+        return "bg-green-100 text-green-800";
+      case "rejected":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-yellow-100 text-yellow-800';
+        return "bg-yellow-100 text-yellow-800";
     }
   };
 
@@ -162,7 +209,9 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
           >
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">Influencer Details</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Influencer Details
+              </h2>
               <button
                 onClick={onClose}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -180,9 +229,16 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
-                    <h3 className="text-2xl font-semibold text-gray-900">{influencer.name}</h3>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(influencer.status)}`}>
-                      {influencer.status.charAt(0).toUpperCase() + influencer.status.slice(1)}
+                    <h3 className="text-2xl font-semibold text-gray-900">
+                      {influencer.name}
+                    </h3>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                        influencer.status
+                      )}`}
+                    >
+                      {influencer.status.charAt(0).toUpperCase() +
+                        influencer.status.slice(1)}
                     </span>
                     {influencer.isValidated && (
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
@@ -190,7 +246,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                       </span>
                     )}
                   </div>
-                  
+
                   {/* Contact Info */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-gray-600">
@@ -229,28 +285,45 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
               </div>
 
               {/* Audience Demographics */}
-              {(influencer.audienceLocation || influencer.malePercentage || influencer.femalePercentage) && (
+              {(influencer.audienceLocation ||
+                influencer.malePercentage ||
+                influencer.femalePercentage) && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">Audience Demographics</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">
+                    Audience Demographics
+                  </h4>
                   <div className="bg-gray-50 p-4 rounded-lg">
                     {influencer.audienceLocation && (
                       <div className="mb-2">
-                        <span className="font-medium text-gray-700">Location: </span>
-                        <span className="text-gray-900">{influencer.audienceLocation}</span>
+                        <span className="font-medium text-gray-700">
+                          Location:{" "}
+                        </span>
+                        <span className="text-gray-900">
+                          {influencer.audienceLocation}
+                        </span>
                       </div>
                     )}
-                    {(influencer.malePercentage || influencer.femalePercentage) && (
+                    {(influencer.malePercentage ||
+                      influencer.femalePercentage) && (
                       <div className="flex gap-4">
                         {influencer.malePercentage && (
                           <div>
-                            <span className="font-medium text-gray-700">Male: </span>
-                            <span className="text-gray-900">{influencer.malePercentage}%</span>
+                            <span className="font-medium text-gray-700">
+                              Male:{" "}
+                            </span>
+                            <span className="text-gray-900">
+                              {influencer.malePercentage}%
+                            </span>
                           </div>
                         )}
                         {influencer.femalePercentage && (
                           <div>
-                            <span className="font-medium text-gray-700">Female: </span>
-                            <span className="text-gray-900">{influencer.femalePercentage}%</span>
+                            <span className="font-medium text-gray-700">
+                              Female:{" "}
+                            </span>
+                            <span className="text-gray-900">
+                              {influencer.femalePercentage}%
+                            </span>
                           </div>
                         )}
                       </div>
@@ -274,28 +347,45 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
               {/* Social Media Platforms */}
               {activePlatforms.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">Social Media Platforms</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">
+                    Social Media Platforms
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {activePlatforms.map((platform) => {
-                      const platformData = influencer[platform as keyof Influencer] as PlatformData;
+                      const platformData = influencer[
+                        platform as keyof Influencer
+                      ] as PlatformData;
                       return (
-                        <div key={platform} className="p-4 bg-gray-50 rounded-lg border">
+                        <div
+                          key={platform}
+                          className="p-4 bg-gray-50 rounded-lg border"
+                        >
                           <div className="flex items-center gap-3 mb-3">
                             {getPlatformIcon(platform)}
-                            <span className="font-medium text-gray-900 capitalize">{platform}</span>
+                            <span className="font-medium text-gray-900 capitalize">
+                              {platform}
+                            </span>
                           </div>
-                          
+
                           <div className="space-y-2 text-sm">
                             {platformData.followers && (
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Followers:</span>
-                                <span className="font-medium">{formatNumber(platformData.followers)}</span>
+                                <span className="text-gray-600">
+                                  Followers:
+                                </span>
+                                <span className="font-medium">
+                                  {formatNumber(platformData.followers)}
+                                </span>
                               </div>
                             )}
                             {platformData.impressions && (
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Impressions:</span>
-                                <span className="font-medium">{formatNumber(platformData.impressions)}</span>
+                                <span className="text-gray-600">
+                                  Impressions:
+                                </span>
+                                <span className="font-medium">
+                                  {formatNumber(platformData.impressions)}
+                                </span>
                               </div>
                             )}
                             {platformData.url && (
@@ -331,13 +421,20 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
               )}
 
               {/* Earnings Information */}
-              {(influencer.earningsPerPostNaira || influencer.maxMonthlyEarningsNaira || influencer.amountPerPost || influencer.amountPerMonth) && (
+              {(influencer.earningsPerPostNaira ||
+                influencer.maxMonthlyEarningsNaira ||
+                influencer.amountPerPost ||
+                influencer.amountPerMonth) && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">Earnings Information</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">
+                    Earnings Information
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {influencer.earningsPerPostNaira && (
                       <div className="p-4 bg-green-50 rounded-lg">
-                        <h5 className="font-medium text-green-900 mb-1">Earnings Per Post</h5>
+                        <h5 className="font-medium text-green-900 mb-1">
+                          Earnings Per Post
+                        </h5>
                         <p className="text-2xl font-bold text-green-600">
                           {formatCurrency(influencer.earningsPerPostNaira)}
                         </p>
@@ -345,7 +442,9 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                     )}
                     {influencer.maxMonthlyEarningsNaira && (
                       <div className="p-4 bg-blue-50 rounded-lg">
-                        <h5 className="font-medium text-blue-900 mb-1">Max Monthly Earnings</h5>
+                        <h5 className="font-medium text-blue-900 mb-1">
+                          Max Monthly Earnings
+                        </h5>
                         <p className="text-2xl font-bold text-blue-600">
                           {formatCurrency(influencer.maxMonthlyEarningsNaira)}
                         </p>
@@ -353,7 +452,9 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                     )}
                     {influencer.amountPerPost && (
                       <div className="p-4 bg-purple-50 rounded-lg">
-                        <h5 className="font-medium text-purple-900 mb-1">Amount Per Post (Legacy)</h5>
+                        <h5 className="font-medium text-purple-900 mb-1">
+                          Amount Per Post (Legacy)
+                        </h5>
                         <p className="text-lg font-semibold text-purple-600">
                           {influencer.amountPerPost}
                         </p>
@@ -361,7 +462,9 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                     )}
                     {influencer.amountPerMonth && (
                       <div className="p-4 bg-orange-50 rounded-lg">
-                        <h5 className="font-medium text-orange-900 mb-1">Amount Per Month (Legacy)</h5>
+                        <h5 className="font-medium text-orange-900 mb-1">
+                          Amount Per Month (Legacy)
+                        </h5>
                         <p className="text-lg font-semibold text-orange-600">
                           {influencer.amountPerMonth}
                         </p>
@@ -372,22 +475,304 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
               )}
 
               {/* Additional Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {influencer.followersCount && (
-                  <div className="p-4 bg-indigo-50 rounded-lg">
-                    <h5 className="font-medium text-indigo-900 mb-1">Total Followers</h5>
-                    <p className="text-2xl font-bold text-indigo-600">
-                      {formatNumber(influencer.followersCount)}
-                    </p>
-                  </div>
-                )}
+              <div className="grid grid-cols-1 gap-4">
                 <div className="p-4 bg-gray-50 rounded-lg">
-                  <h5 className="font-medium text-gray-900 mb-1">Member Since</h5>
+                  <h5 className="font-medium text-gray-900 mb-1">
+                    Member Since
+                  </h5>
                   <p className="text-gray-600 font-medium">
                     {formatDate(influencer.createdAt)}
                   </p>
                 </div>
               </div>
+
+              {/* Submitted Jobs */}
+              {submittedJobs.length > 0 && (
+                <div className="mt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                      <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                      Submitted Jobs
+                    </h4>
+                    <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                      {submittedJobs.length}{" "}
+                      {submittedJobs.length === 1 ? "Job" : "Jobs"}
+                    </span>
+                  </div>
+
+                  <div className="space-y-4">
+                    {submittedJobs.map((job, index) => {
+                      // Parse job description to extract structured data
+                      const parseJobDescription = (description: string) => {
+                        const lines = description
+                          .split("\n")
+                          .filter((line) => line.trim());
+                        const parsed: { [key: string]: string } = {};
+
+                        lines.forEach((line) => {
+                          if (line.includes(":")) {
+                            const [key, ...valueParts] = line.split(":");
+                            const value = valueParts.join(":").trim();
+                            parsed[key.trim()] = value;
+                          }
+                        });
+
+                        return parsed;
+                      };
+
+                      const jobData = parseJobDescription(job.description);
+
+                      return (
+                        <div
+                          key={job._id}
+                          className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
+                        >
+                          {/* Job Header */}
+                          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                  {index + 1}
+                                </div>
+                                <h5 className="text-lg font-semibold text-gray-900">
+                                  Job Submission #{index + 1}
+                                </h5>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm text-gray-500">
+                                  Submitted
+                                </div>
+                                <div className="text-sm font-medium text-gray-900">
+                                  {formatDate(job.submittedAt)}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Job Content */}
+                          <div className="p-6">
+                            {/* Structured Data Display */}
+                            {Object.keys(jobData).length > 0 ? (
+                              <div className="space-y-6">
+                                {/* Metrics Section */}
+                                {Object.entries(jobData).some(
+                                  ([key]) =>
+                                    key.toLowerCase().includes("reach") ||
+                                    key.toLowerCase().includes("engagement") ||
+                                    key.toLowerCase().includes("views") ||
+                                    key.toLowerCase().includes("likes") ||
+                                    key.toLowerCase().includes("comments") ||
+                                    key.toLowerCase().includes("shares") ||
+                                    key.toLowerCase().includes("impressions")
+                                ) && (
+                                  <div>
+                                    <h6 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                      <FaChartLine className="text-indigo-600" />
+                                      Performance Metrics
+                                    </h6>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                      {Object.entries(jobData)
+                                        .filter(
+                                          ([key]) =>
+                                            key
+                                              .toLowerCase()
+                                              .includes("reach") ||
+                                            key
+                                              .toLowerCase()
+                                              .includes("engagement") ||
+                                            key
+                                              .toLowerCase()
+                                              .includes("views") ||
+                                            key
+                                              .toLowerCase()
+                                              .includes("likes") ||
+                                            key
+                                              .toLowerCase()
+                                              .includes("comments") ||
+                                            key
+                                              .toLowerCase()
+                                              .includes("shares") ||
+                                            key
+                                              .toLowerCase()
+                                              .includes("impressions")
+                                        )
+                                        .map(([key, value]) => {
+                                          const getMetricIcon = (
+                                            metricKey: string
+                                          ) => {
+                                            const lowerKey =
+                                              metricKey.toLowerCase();
+                                            if (
+                                              lowerKey.includes("views") ||
+                                              lowerKey.includes("reach") ||
+                                              lowerKey.includes("impressions")
+                                            ) {
+                                              return (
+                                                <FaEye className="text-blue-500" />
+                                              );
+                                            } else if (
+                                              lowerKey.includes("likes")
+                                            ) {
+                                              return (
+                                                <FaHeart className="text-red-500" />
+                                              );
+                                            } else if (
+                                              lowerKey.includes("comments")
+                                            ) {
+                                              return (
+                                                <FaComment className="text-green-500" />
+                                              );
+                                            } else if (
+                                              lowerKey.includes("shares")
+                                            ) {
+                                              return (
+                                                <FaShare className="text-purple-500" />
+                                              );
+                                            } else if (
+                                              lowerKey.includes("engagement")
+                                            ) {
+                                              return (
+                                                <FaUsers className="text-orange-500" />
+                                              );
+                                            }
+                                            return (
+                                              <FaChartLine className="text-indigo-500" />
+                                            );
+                                          };
+
+                                          const formatMetricValue = (
+                                            val: string
+                                          ) => {
+                                            const cleaned = val
+                                              .replace(/,/g, "")
+                                              .trim(); // remove commas
+                                            const numValue = Number.parseFloat(
+                                              cleaned.replace(/[^\d.-]/g, "")
+                                            );
+                                            if (!isNaN(numValue)) {
+                                              if (numValue >= 1_000_000)
+                                                return (
+                                                  (
+                                                    numValue / 1_000_000
+                                                  ).toFixed(1) + "M"
+                                                );
+                                              if (numValue >= 1_000)
+                                                return (
+                                                  (numValue / 1_000).toFixed(
+                                                    1
+                                                  ) + "K"
+                                                );
+                                              return numValue.toString();
+                                            }
+                                            return val; // fallback to original if not a number
+                                          };
+
+                                          return (
+                                            <div
+                                              key={key}
+                                              className="p-3 bg-white rounded-lg shadow flex flex-col items-center"
+                                            >
+                                              <div className="flex items-center gap-2 text-gray-700 font-medium">
+                                                {getMetricIcon(key)}
+                                                <span>{key}</span>
+                                              </div>
+                                              <p className="text-lg font-bold text-gray-900">
+                                                {formatMetricValue(value)}
+                                              </p>
+                                            </div>
+                                          );
+                                        })}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Other Job Details */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {Object.entries(jobData)
+                                    .filter(
+                                      ([key]) =>
+                                        !key.toLowerCase().includes("reach") &&
+                                        !key
+                                          .toLowerCase()
+                                          .includes("engagement") &&
+                                        !key.toLowerCase().includes("views") &&
+                                        !key.toLowerCase().includes("likes") &&
+                                        !key
+                                          .toLowerCase()
+                                          .includes("comments") &&
+                                        !key.toLowerCase().includes("shares") &&
+                                        !key
+                                          .toLowerCase()
+                                          .includes("impressions")
+                                    )
+                                    .map(([key, value]) => {
+                                      // Special handling for different field types
+                                      const isUrl = value.startsWith("http");
+                                      const isPlatform = key
+                                        .toLowerCase()
+                                        .includes("platform");
+
+                                      return (
+                                        <div key={key} className="space-y-1">
+                                          <div className="text-sm font-medium text-gray-600 capitalize">
+                                            {key
+                                              .replace(/([A-Z])/g, " $1")
+                                              .trim()}
+                                          </div>
+                                          <div className="text-sm text-gray-900">
+                                            {isUrl ? (
+                                              <a
+                                                href={value}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-indigo-600 hover:text-indigo-800 underline break-all"
+                                              >
+                                                View Post
+                                              </a>
+                                            ) : isPlatform ? (
+                                              <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
+                                                {value}
+                                              </span>
+                                            ) : (
+                                              <span className="break-words">
+                                                {value}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </div>
+                            ) : (
+                              /* Fallback for unstructured descriptions */
+                              <div className="bg-gray-50 rounded-lg p-4">
+                                <div className="text-sm font-medium text-gray-600 mb-2">
+                                  Job Description
+                                </div>
+                                <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                  {job.description}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Job Footer */}
+                          <div className="px-6 py-3 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                              <span>Job ID: {job._id}</span>
+                              <span className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                Completed
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Footer */}
