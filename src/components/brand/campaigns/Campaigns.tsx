@@ -5,12 +5,12 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useBrandStore } from "@/stores/brandStore";
-import { FaPlus, FaUpload, FaTimes } from "react-icons/fa";
+import { FaPlus, FaUpload, FaTimes, FaSpinner } from "react-icons/fa";
 import NewCampaign from "./NewCampaign";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/utils/ToastNotification";
 import EditCampaign from "./EditCampaign";
-import InfluencerDetailsModal from "./InfluencerDetailsModal"
+import InfluencerDetailsModal from "./InfluencerDetailsModal";
 import AllInfluencersModal from "./AllInfluencers";
 import axios from "axios";
 import Image from "next/image";
@@ -232,6 +232,7 @@ const Campaigns: React.FC = () => {
     UploadedMaterial[]
   >([]);
   const [isLoadingMaterials, setIsLoadingMaterials] = useState<boolean>(false);
+  const [isDeletingMaterial, setIsDeletingMaterial] = useState<boolean>(false);
 
   const { showToast } = useToast();
 
@@ -791,10 +792,11 @@ const Campaigns: React.FC = () => {
 
   const handleDeleteMaterial = async (materialId: string) => {
     if (!selectedCampaignForViewing) return;
+    setIsDeletingMaterial(true);
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/${selectedCampaignForViewing._id}/materials/${materialId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/brands/${selectedCampaignForViewing._id}/materials/${materialId}`,
         {
           method: "DELETE",
           headers: {
@@ -813,6 +815,7 @@ const Campaigns: React.FC = () => {
       setUploadedMaterials((prev) =>
         prev.filter((material) => material._id !== materialId)
       );
+      setIsDeletingMaterial(false);
 
       showToast({
         type: "success",
@@ -821,6 +824,8 @@ const Campaigns: React.FC = () => {
         duration: 4000,
       });
     } catch (error: any) {
+      setIsDeletingMaterial(false);
+
       console.error("Error deleting material:", error);
       showToast({
         type: "error",
@@ -1009,7 +1014,7 @@ const Campaigns: React.FC = () => {
                             className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-colors"
                             title="Delete material"
                           >
-                            <FaTimes className="w-3 h-3" />
+                            {isDeletingMaterial ? <FaSpinner /> : <FaTimes />}
                           </button>
                         </div>
                         <div className="p-4">
