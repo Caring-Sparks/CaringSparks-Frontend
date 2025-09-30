@@ -23,113 +23,30 @@ import {
   LinkedinLogo,
   DiscordLogo,
   SnapchatLogo,
+  Check,
 } from "phosphor-react";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import CampaignSummary from "../extras/CampaignSummary";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateInfluencerEarnings } from "@/utils/calculations";
 import { BsThreads } from "react-icons/bs";
 
-// Country codes data
 const countryCodes = [
-  { code: "+1", country: "US/CA", flag: "🇺🇸" },
-  { code: "+7", country: "RU", flag: "🇷🇺" },
-  { code: "+20", country: "EG", flag: "🇪🇬" },
-  { code: "+27", country: "ZA", flag: "🇿🇦" },
-  { code: "+30", country: "GR", flag: "🇬🇷" },
-  { code: "+31", country: "NL", flag: "🇳🇱" },
-  { code: "+32", country: "BE", flag: "🇧🇪" },
-  { code: "+33", country: "FR", flag: "🇫🇷" },
-  { code: "+34", country: "ES", flag: "🇪🇸" },
-  { code: "+36", country: "HU", flag: "🇭🇺" },
-  { code: "+39", country: "IT", flag: "🇮🇹" },
-  { code: "+40", country: "RO", flag: "🇷🇴" },
-  { code: "+41", country: "CH", flag: "🇨🇭" },
-  { code: "+43", country: "AT", flag: "🇦🇹" },
-  { code: "+44", country: "GB", flag: "🇬🇧" },
-  { code: "+45", country: "DK", flag: "🇩🇰" },
-  { code: "+46", country: "SE", flag: "🇸🇪" },
-  { code: "+47", country: "NO", flag: "🇳🇴" },
-  { code: "+48", country: "PL", flag: "🇵🇱" },
-  { code: "+49", country: "DE", flag: "🇩🇪" },
-  { code: "+51", country: "PE", flag: "🇵🇪" },
-  { code: "+52", country: "MX", flag: "🇲🇽" },
-  { code: "+53", country: "CU", flag: "🇨🇺" },
-  { code: "+54", country: "AR", flag: "🇦🇷" },
-  { code: "+55", country: "BR", flag: "🇧🇷" },
-  { code: "+56", country: "CL", flag: "🇨🇱" },
-  { code: "+57", country: "CO", flag: "🇨🇴" },
-  { code: "+58", country: "VE", flag: "🇻🇪" },
-  { code: "+60", country: "MY", flag: "🇲🇾" },
-  { code: "+61", country: "AU", flag: "🇦🇺" },
-  { code: "+62", country: "ID", flag: "🇮🇩" },
-  { code: "+63", country: "PH", flag: "🇵🇭" },
-  { code: "+64", country: "NZ", flag: "🇳🇿" },
-  { code: "+65", country: "SG", flag: "🇸🇬" },
-  { code: "+66", country: "TH", flag: "🇹🇭" },
-  { code: "+81", country: "JP", flag: "🇯🇵" },
-  { code: "+82", country: "KR", flag: "🇰🇷" },
-  { code: "+84", country: "VN", flag: "🇻🇳" },
-  { code: "+86", country: "CN", flag: "🇨🇳" },
-  { code: "+90", country: "TR", flag: "🇹🇷" },
-  { code: "+91", country: "IN", flag: "🇮🇳" },
-  { code: "+92", country: "PK", flag: "🇵🇰" },
-  { code: "+93", country: "AF", flag: "🇦🇫" },
-  { code: "+94", country: "LK", flag: "🇱🇰" },
-  { code: "+95", country: "MM", flag: "🇲🇲" },
-  { code: "+98", country: "IR", flag: "🇮🇷" },
-  { code: "+212", country: "MA", flag: "🇲🇦" },
-  { code: "+213", country: "DZ", flag: "🇩🇿" },
-  { code: "+216", country: "TN", flag: "🇹🇳" },
-  { code: "+218", country: "LY", flag: "🇱🇾" },
-  { code: "+220", country: "GM", flag: "🇬🇲" },
-  { code: "+221", country: "SN", flag: "🇸🇳" },
-  { code: "+222", country: "MR", flag: "🇲🇷" },
-  { code: "+223", country: "ML", flag: "🇲🇱" },
-  { code: "+224", country: "GN", flag: "🇬🇳" },
-  { code: "+225", country: "CI", flag: "🇨🇮" },
-  { code: "+226", country: "BF", flag: "🇧🇫" },
-  { code: "+227", country: "NE", flag: "🇳🇪" },
-  { code: "+228", country: "TG", flag: "🇹🇬" },
-  { code: "+229", country: "BJ", flag: "🇧🇯" },
-  { code: "+230", country: "MU", flag: "🇲🇺" },
-  { code: "+231", country: "LR", flag: "🇱🇷" },
-  { code: "+232", country: "SL", flag: "🇸🇱" },
-  { code: "+233", country: "GH", flag: "🇬🇭" },
-  { code: "+234", country: "NG", flag: "🇳🇬" },
-  { code: "+235", country: "TD", flag: "🇹🇩" },
-  { code: "+236", country: "CF", flag: "🇨🇫" },
-  { code: "+237", country: "CM", flag: "🇨🇲" },
-  { code: "+238", country: "CV", flag: "🇨🇻" },
-  { code: "+239", country: "ST", flag: "🇸🇹" },
-  { code: "+240", country: "GQ", flag: "🇬🇶" },
-  { code: "+241", country: "GA", flag: "🇬🇦" },
-  { code: "+242", country: "CG", flag: "🇨🇬" },
-  { code: "+243", country: "CD", flag: "🇨🇩" },
-  { code: "+244", country: "AO", flag: "🇦🇴" },
-  { code: "+245", country: "GW", flag: "🇬🇼" },
-  { code: "+246", country: "IO", flag: "🇮🇴" },
-  { code: "+248", country: "SC", flag: "🇸🇨" },
-  { code: "+249", country: "SD", flag: "🇸🇩" },
-  { code: "+250", country: "RW", flag: "🇷🇼" },
-  { code: "+251", country: "ET", flag: "🇪🇹" },
-  { code: "+252", country: "SO", flag: "🇸🇴" },
-  { code: "+253", country: "DJ", flag: "🇩🇯" },
-  { code: "+254", country: "KE", flag: "🇰🇪" },
-  { code: "+255", country: "TZ", flag: "🇹🇿" },
-  { code: "+256", country: "UG", flag: "🇺🇬" },
-  { code: "+257", country: "BI", flag: "🇧🇮" },
-  { code: "+258", country: "MZ", flag: "🇲🇿" },
-  { code: "+260", country: "ZM", flag: "🇿🇲" },
-  { code: "+261", country: "MG", flag: "🇲🇬" },
-  { code: "+262", country: "RE", flag: "🇷🇪" },
-  { code: "+263", country: "ZW", flag: "🇿🇼" },
-  { code: "+264", country: "NA", flag: "🇳🇦" },
-  { code: "+265", country: "MW", flag: "🇲🇼" },
-  { code: "+266", country: "LS", flag: "🇱🇸" },
-  { code: "+267", country: "BW", flag: "🇧🇼" },
-  { code: "+268", country: "SZ", flag: "🇸🇿" },
-  { code: "+269", country: "KM", flag: "🇰🇲" },
+  { code: "+1", country: "US/Canada", flag: "🇺🇸" },
+  { code: "+44", country: "UK", flag: "🇬🇧" },
+  { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+  { code: "+233", country: "Ghana", flag: "🇬🇭" },
+  { code: "+27", country: "South Africa", flag: "🇿🇦" },
+  { code: "+254", country: "Kenya", flag: "🇰🇪" },
+  { code: "+256", country: "Uganda", flag: "🇺🇬" },
+  { code: "+91", country: "India", flag: "🇮🇳" },
+  { code: "+86", country: "China", flag: "🇨🇳" },
+  { code: "+33", country: "France", flag: "🇫🇷" },
+  { code: "+49", country: "Germany", flag: "🇩🇪" },
+  { code: "+81", country: "Japan", flag: "🇯🇵" },
+  { code: "+61", country: "Australia", flag: "🇦🇺" },
+  { code: "+55", country: "Brazil", flag: "🇧🇷" },
+  { code: "+52", country: "Mexico", flag: "🇲🇽" },
 ];
 
 // Define a type for a social media platform's data
@@ -181,10 +98,116 @@ const PhoneNumberInput: React.FC<{
   errors,
   touched,
 }) => {
-  // Extract the number part (strip out country code)
-  const localPart = value.startsWith(selectedCountryCode)
-    ? value.slice(selectedCountryCode.length)
-    : "";
+  const [localNumber, setLocalNumber] = useState("");
+  const [formattedDisplay, setFormattedDisplay] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
+
+  const phoneFormats: any = {
+    "+1": {
+      mask: "(###) ###-####",
+      placeholder: "(555) 123-4567",
+      maxLength: 10,
+    }, // US/Canada
+    "+44": { mask: "#### ### ####", placeholder: "7700 900123", maxLength: 10 }, // UK
+    "+234": {
+      mask: "### ### ####",
+      placeholder: "803 123 4567",
+      maxLength: 10,
+    }, // Nigeria
+    "+233": { mask: "### ### ####", placeholder: "244 123 456", maxLength: 9 }, // Ghana
+    "+254": { mask: "### ######", placeholder: "712 123456", maxLength: 9 }, // Kenya
+    "+256": { mask: "### ######", placeholder: "712 123456", maxLength: 9 }, // Uganda
+    "+91": { mask: "##### #####", placeholder: "98765 43210", maxLength: 10 }, // India
+    "+86": {
+      mask: "### #### ####",
+      placeholder: "138 0013 8000",
+      maxLength: 11,
+    }, // China
+    "+81": { mask: "##-####-####", placeholder: "90-1234-5678", maxLength: 10 }, // Japan
+    "+49": { mask: "### ########", placeholder: "151 12345678", maxLength: 11 }, // Germany
+    "+33": {
+      mask: "# ## ## ## ##",
+      placeholder: "6 12 34 56 78",
+      maxLength: 9,
+    }, // France
+    "+61": { mask: "### ### ###", placeholder: "412 345 678", maxLength: 9 }, // Australia
+    "+27": { mask: "## ### ####", placeholder: "82 123 4567", maxLength: 9 }, // South Africa
+    "+55": {
+      mask: "(##) #####-####",
+      placeholder: "(11) 98765-4321",
+      maxLength: 11,
+    }, // Brazil
+    "+52": { mask: "### ### ####", placeholder: "222 123 4567", maxLength: 10 }, // Mexico
+  };
+
+  const formatPhoneNumber = (value: string, mask: any) => {
+    const numbers = value.replace(/\D/g, "");
+    let formatted = "";
+    let numberIndex = 0;
+
+    for (let i = 0; i < mask.length && numberIndex < numbers.length; i++) {
+      if (mask[i] === "#") {
+        formatted += numbers[numberIndex];
+        numberIndex++;
+      } else {
+        formatted += mask[i];
+      }
+    }
+
+    return formatted;
+  };
+
+  const validatePhoneNumber = (value: string, countryCode: string) => {
+    const format = phoneFormats[countryCode];
+    if (!format) return false;
+
+    const numbers = value.replace(/\D/g, "");
+    return numbers.length === format.maxLength;
+  };
+
+  const currentFormat = phoneFormats[selectedCountryCode];
+
+  // Sync with Formik value
+  useEffect(() => {
+    setLocalNumber(value || "");
+  }, [value]);
+
+  // Format the display and validate
+  useEffect(() => {
+    if (localNumber && currentFormat) {
+      const formatted = formatPhoneNumber(localNumber, currentFormat.mask);
+      setFormattedDisplay(formatted);
+      setIsValid(validatePhoneNumber(localNumber, selectedCountryCode));
+    } else {
+      setFormattedDisplay("");
+      setIsValid(false);
+    }
+  }, [localNumber, selectedCountryCode, currentFormat]);
+
+  const handlePhoneChange = (e: any) => {
+    const input = e.target.value;
+    const numbers = input.replace(/\D/g, "");
+
+    if (numbers.length <= currentFormat.maxLength) {
+      setLocalNumber(numbers);
+      setFieldValue(name, numbers);
+    }
+  };
+
+  const handleCountryChange = (e: any) => {
+    const newCode = e.target.value;
+    setSelectedCountryCode(newCode);
+    setLocalNumber("");
+    setFormattedDisplay("");
+    setFieldValue(name, "");
+    setIsValid(false);
+    setIsTouched(false);
+  };
+
+  const handleBlur = () => {
+    setIsTouched(true);
+  };
 
   return (
     <div className="space-y-2">
@@ -192,36 +215,49 @@ const PhoneNumberInput: React.FC<{
         <Icon className="w-4 h-4" />
         {placeholder} *
       </label>
-      <div className="flex">
+
+      <div className="flex relative">
         <select
           value={selectedCountryCode}
-          onChange={(e) => {
-            const newCode = e.target.value;
-            setSelectedCountryCode(newCode);
-            setFieldValue(name, `${newCode}${localPart}`);
-          }}
-          className="px-3 py-2 bg-gray-100 rounded-l-xl border border-r-0 border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[100px]"
+          onChange={handleCountryChange}
+          className="px-3 py-2 bg-gray-100 rounded-l-xl border border-r-0 border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-w-[140px]"
         >
           {countryCodes.map((country) => (
             <option key={country.code} value={country.code}>
-              {country.flag} {country.code}
+              {country.flag} {country.code} ({country.country})
             </option>
           ))}
         </select>
 
-        <input
-          type="tel"
-          placeholder="1234567890"
-          value={localPart}
-          onChange={(e) => {
-            const newLocal = e.target.value;
-            setFieldValue(name, `${selectedCountryCode}${newLocal}`);
-          }}
-          className={`flex-1 px-3 py-2 bg-gray-100 rounded-r-xl border border-l-0 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 ${
-            errors[name] && touched[name] ? "border-red-500" : "border-gray-300"
-          }`}
-        />
+        <div className="relative flex-1">
+          <input
+            type="tel"
+            placeholder={currentFormat.placeholder}
+            value={formattedDisplay}
+            onChange={handlePhoneChange}
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 bg-gray-100 rounded-r-xl border border-l-0 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all ${
+              (isTouched || touched[name]) && !isValid && localNumber
+                ? "border-red-500 focus:ring-red-500"
+                : (isTouched || touched[name]) && isValid
+                ? "border-green-500 focus:ring-green-500"
+                : "border-gray-300"
+            }`}
+          />
+          {(isTouched || touched[name]) && isValid && (
+            <Check className="w-5 h-5 text-green-500 absolute right-3 top-1/2 transform -translate-y-1/2" />
+          )}
+        </div>
       </div>
+
+      {(isTouched || touched[name]) && localNumber && !isValid && (
+        <p className="text-sm text-red-600">
+          Please enter a valid{" "}
+          {countryCodes.find((c) => c.code === selectedCountryCode)?.country}{" "}
+          phone number ({currentFormat.maxLength} digits)
+        </p>
+      )}
+
       <ErrorMessage
         name={name}
         component="p"
@@ -279,12 +315,8 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
       email: Yup.string()
         .email("Invalid email format")
         .required("Email is required"),
-      phone: Yup.string()
-        .matches(/^\+[1-9]\d{1,14}$/, "Invalid phone number format")
-        .required("Phone number is required"),
-      whatsapp: Yup.string()
-        .matches(/^\+[1-9]\d{1,14}$/, "Invalid WhatsApp number format")
-        .required("WhatsApp number is required"),
+      phone: Yup.string().required("Phone number is required"),
+      whatsapp: Yup.string().required("WhatsApp number is required"),
       location: Yup.string().required("Location is required"),
       niches: Yup.array().min(1, "Select at least one niche"),
     };
@@ -419,8 +451,11 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
               formData.append("name", values.name);
               formData.append("email", values.email);
-              formData.append("phone", values.phone);
-              formData.append("whatsapp", values.whatsapp);
+              formData.append("phone", `${phoneCountryCode}${values.phone}`);
+              formData.append(
+                "whatsapp",
+                `${whatsappCountryCode}${values.whatsapp}`
+              );
               formData.append("location", values.location);
               formData.append("audienceLocation", values.audienceLocation);
               formData.append(
