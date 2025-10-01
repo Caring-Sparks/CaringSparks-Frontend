@@ -147,32 +147,39 @@ const Jobs: React.FC = () => {
 
   const { showToast } = useToast();
 
-  // Helper function to calculate due date
-  const calculateDueDate = (assignedAt: string, postDuration: string): Date => {
+  const calculateDueDate = (
+    assignedAt: string,
+    postFrequency: string
+  ): Date => {
     const dueDate = new Date(assignedAt);
 
-    switch (postDuration) {
-      case "1 day":
-        dueDate.setDate(dueDate.getDate() + 1);
-        break;
-      case "1 week":
-        dueDate.setDate(dueDate.getDate() + 7);
-        break;
-      case "2 weeks":
-        dueDate.setDate(dueDate.getDate() + 14);
-        break;
-      case "1 month":
-        dueDate.setMonth(dueDate.getMonth() + 1);
-        break;
-      default:
-        dueDate.setDate(dueDate.getDate() + 7);
-        break;
+    // Parse postFrequency to extract the duration
+    // Expected formats: "1 time per week for 4 weeks", "2 times per week for 2 weeks", etc.
+    const frequencyMatch = postFrequency.match(/for (\d+) (day|week|month)s?/i);
+
+    if (frequencyMatch) {
+      const duration = parseInt(frequencyMatch[1]);
+      const unit = frequencyMatch[2].toLowerCase();
+
+      switch (unit) {
+        case "day":
+          dueDate.setDate(dueDate.getDate() + duration);
+          break;
+        case "week":
+          dueDate.setDate(dueDate.getDate() + duration * 7);
+          break;
+        case "month":
+          dueDate.setMonth(dueDate.getMonth() + duration);
+          break;
+      }
+    } else {
+      // Fallback: if we can't parse the frequency, default to 7 days
+      dueDate.setDate(dueDate.getDate() + 7);
     }
 
     return dueDate;
   };
 
-  // Helper function to check if campaign is overdue
   const isOverdue = (campaign: AssignedCampaign) => {
     const influencerStatus = getInfluencerStatus(campaign);
     if (
@@ -185,9 +192,38 @@ const Jobs: React.FC = () => {
 
     const dueDate = calculateDueDate(
       influencerStatus.assignedAt,
-      campaign.postDuration || "1 week"
+      campaign.postFrequency || "1 time per week for 1 week" // Use postFrequency instead of postDuration
     );
     return new Date() > dueDate;
+  };
+
+  // Updated formatDueDate function
+  const formatDueDate = (campaign: AssignedCampaign): DueDateInfo => {
+    const influencerStatus = getInfluencerStatus(campaign);
+    if (!influencerStatus || influencerStatus.acceptanceStatus !== "accepted") {
+      return {
+        date: "N/A",
+        isOverdue: false,
+        daysRemaining: 0,
+      };
+    }
+
+    const dueDate: any = calculateDueDate(
+      influencerStatus.assignedAt,
+      campaign.postFrequency || "1 time per week for 1 week" // Use postFrequency instead of postDuration
+    );
+    const isOverdueStatus =
+      !influencerStatus.isCompleted && new Date() > dueDate;
+
+    return {
+      date: dueDate.toLocaleDateString(),
+      isOverdue: isOverdueStatus,
+      daysRemaining: influencerStatus.isCompleted
+        ? 0
+        : Math.ceil(
+            (dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+          ),
+    };
   };
 
   // Helper function to find the assigned influencer's details for the current user
@@ -610,35 +646,6 @@ const Jobs: React.FC = () => {
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString();
-  };
-
-  // Updated formatDueDate function
-  const formatDueDate = (campaign: AssignedCampaign): DueDateInfo => {
-    const influencerStatus = getInfluencerStatus(campaign);
-    if (!influencerStatus || influencerStatus.acceptanceStatus !== "accepted") {
-      return {
-        date: "N/A",
-        isOverdue: false,
-        daysRemaining: 0,
-      };
-    }
-
-    const dueDate: any = calculateDueDate(
-      influencerStatus.assignedAt,
-      campaign.postDuration || "1 week"
-    );
-    const isOverdueStatus =
-      !influencerStatus.isCompleted && new Date() > dueDate;
-
-    return {
-      date: dueDate.toLocaleDateString(),
-      isOverdue: isOverdueStatus,
-      daysRemaining: influencerStatus.isCompleted
-        ? 0
-        : Math.ceil(
-            (dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-          ),
-    };
   };
 
   if (campaignsLoading) {

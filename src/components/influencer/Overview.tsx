@@ -351,8 +351,8 @@ const Overview: React.FC = () => {
         notifications.push({
           id: `approval-${campaign._id}`,
           type: "approval",
-          title: "Submission approved!",
-          message: `Your ${campaign.brandName} campaign submission has been approved`,
+          title: "You accepted the task!",
+          message: `The campaign ${campaign.brandName} has been accepted and is now being tracked`,
           timestamp: new Date(campaign.updatedAt || campaign.createdAt),
           campaign,
           icon: CheckCircle,
@@ -429,7 +429,9 @@ const Overview: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900">
           {user ? `Welcome Back, ${user.name}!` : `Welcome Back, user!`}
         </h1>
-        <p className="text-gray-600">Here&apos;s your information at a glance.</p>
+        <p className="text-gray-600">
+          Here&apos;s your information at a glance.
+        </p>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">

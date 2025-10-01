@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Buildings,
   Calendar,
+  Check,
   Clock,
   Envelope,
   MapPin,
@@ -16,7 +17,7 @@ import {
   Users,
   X,
 } from "phosphor-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CampaignSummary from "../extras/CampaignSummary";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateBrandQuotation, type BrandData } from "@/utils/calculations";
@@ -28,7 +29,12 @@ const validationSchema = Yup.object({
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
-  brandPhone: Yup.string().required("Phone number is required"),
+  brandPhone: Yup.string()
+    .required("Phone number is required")
+    .test("valid-phone", "Please enter a valid phone number", function (value) {
+      const countryCode = this.parent.selectedCountryCode || "+234";
+      return validatePhoneNumber(value || "", countryCode);
+    }),
   influencersMin: Yup.number().min(1, "Minimum must be at least 1"),
   influencersMax: Yup.number().min(1, "Maximum must be at least 1"),
   location: Yup.string().required("Location is required"),
@@ -37,6 +43,195 @@ const validationSchema = Yup.object({
 type formProps = {
   onBack: () => void;
   login: () => void;
+};
+
+const phoneFormats: any = {
+  "+1": {
+    mask: "(###) ###-####",
+    placeholder: "(555) 123-4567",
+    maxLength: 10,
+  }, // US/Canada
+  "+44": { mask: "#### ### ####", placeholder: "7700 900123", maxLength: 10 }, // UK
+  "+234": { mask: "### ### ####", placeholder: "803 123 4567", maxLength: 10 }, // Nigeria
+  "+233": { mask: "### ### ####", placeholder: "244 123 456", maxLength: 9 }, // Ghana
+  "+254": { mask: "### ######", placeholder: "712 123456", maxLength: 9 }, // Kenya
+  "+256": { mask: "### ######", placeholder: "712 123456", maxLength: 9 }, // Uganda
+  "+91": { mask: "##### #####", placeholder: "98765 43210", maxLength: 10 }, // India
+  "+86": { mask: "### #### ####", placeholder: "138 0013 8000", maxLength: 11 }, // China
+  "+81": { mask: "##-####-####", placeholder: "90-1234-5678", maxLength: 10 }, // Japan
+  "+49": { mask: "### ########", placeholder: "151 12345678", maxLength: 11 }, // Germany
+  "+33": { mask: "# ## ## ## ##", placeholder: "6 12 34 56 78", maxLength: 9 }, // France
+  "+61": { mask: "### ### ###", placeholder: "412 345 678", maxLength: 9 }, // Australia
+  "+27": { mask: "## ### ####", placeholder: "82 123 4567", maxLength: 9 }, // South Africa
+  "+55": {
+    mask: "(##) #####-####",
+    placeholder: "(11) 98765-4321",
+    maxLength: 11,
+  }, // Brazil
+  "+52": { mask: "### ### ####", placeholder: "222 123 4567", maxLength: 10 }, // Mexico
+};
+
+const countryCodes = [
+  { code: "+1", country: "US/Canada", flag: "🇺🇸" },
+  { code: "+44", country: "UK", flag: "🇬🇧" },
+  { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+  { code: "+233", country: "Ghana", flag: "🇬🇭" },
+  { code: "+27", country: "South Africa", flag: "🇿🇦" },
+  { code: "+254", country: "Kenya", flag: "🇰🇪" },
+  { code: "+256", country: "Uganda", flag: "🇺🇬" },
+  { code: "+91", country: "India", flag: "🇮🇳" },
+  { code: "+86", country: "China", flag: "🇨🇳" },
+  { code: "+33", country: "France", flag: "🇫🇷" },
+  { code: "+49", country: "Germany", flag: "🇩🇪" },
+  { code: "+81", country: "Japan", flag: "🇯🇵" },
+  { code: "+61", country: "Australia", flag: "🇦🇺" },
+  { code: "+55", country: "Brazil", flag: "🇧🇷" },
+  { code: "+52", country: "Mexico", flag: "🇲🇽" },
+];
+
+const formatPhoneNumber = (value: string, mask: any) => {
+  const numbers = value.replace(/\D/g, "");
+  let formatted = "";
+  let numberIndex = 0;
+
+  for (let i = 0; i < mask.length && numberIndex < numbers.length; i++) {
+    if (mask[i] === "#") {
+      formatted += numbers[numberIndex];
+      numberIndex++;
+    } else {
+      formatted += mask[i];
+    }
+  }
+
+  return formatted;
+};
+
+const validatePhoneNumber = (value: string, countryCode: string) => {
+  const format = phoneFormats[countryCode];
+  if (!format) return false;
+
+  const numbers = value.replace(/\D/g, "");
+  return numbers.length === format.maxLength;
+};
+
+const PhoneNumberInput = ({
+  selectedCountryCode,
+  setSelectedCountryCode,
+  setFieldValue,
+  value,
+  errors,
+  touched,
+}: {
+  selectedCountryCode: string;
+  setSelectedCountryCode: (code: string) => void;
+  setFieldValue: (field: string, value: any) => void;
+  value: string;
+  errors: any;
+  touched: any;
+}) => {
+  const [localNumber, setLocalNumber] = useState("");
+  const [formattedDisplay, setFormattedDisplay] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
+
+  const currentFormat = phoneFormats[selectedCountryCode];
+
+  // Sync with Formik value
+  useEffect(() => {
+    setLocalNumber(value || "");
+  }, [value]);
+
+  // Format the display and validate
+  useEffect(() => {
+    if (localNumber && currentFormat) {
+      const formatted = formatPhoneNumber(localNumber, currentFormat.mask);
+      setFormattedDisplay(formatted);
+      setIsValid(validatePhoneNumber(localNumber, selectedCountryCode));
+    } else {
+      setFormattedDisplay("");
+      setIsValid(false);
+    }
+  }, [localNumber, selectedCountryCode, currentFormat]);
+
+  const handlePhoneChange = (e: any) => {
+    const input = e.target.value;
+    const numbers = input.replace(/\D/g, "");
+
+    if (numbers.length <= currentFormat.maxLength) {
+      setLocalNumber(numbers);
+      setFieldValue("brandPhone", numbers);
+    }
+  };
+
+  const handleCountryChange = (e: any) => {
+    const newCode = e.target.value;
+    setSelectedCountryCode(newCode);
+    setLocalNumber("");
+    setFormattedDisplay("");
+    setFieldValue("brandPhone", "");
+    setIsValid(false);
+    setIsTouched(false);
+  };
+
+  const handleBlur = () => {
+    setIsTouched(true);
+  };
+
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+        <Phone className="w-4 h-4" />
+        Brand phone number (Preferably WhatsApp)*
+      </label>
+
+      <div className="flex relative">
+        <select
+          value={selectedCountryCode}
+          onChange={handleCountryChange}
+          className="px-3 py-2 bg-gray-100 rounded-l-xl border border-r-0 border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+          style={{ minWidth: "140px" }}
+        >
+          {countryCodes.map((country) => (
+            <option key={country.code} value={country.code}>
+              {country.flag} {country.code} ({country.country})
+            </option>
+          ))}
+        </select>
+
+        <div className="relative flex-1">
+          <input
+            type="tel"
+            placeholder={currentFormat.placeholder}
+            value={formattedDisplay}
+            onChange={handlePhoneChange}
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 bg-gray-100 rounded-r-xl border border-l-0 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all ${
+              (isTouched || touched.brandPhone) && !isValid && localNumber
+                ? "border-red-500 focus:ring-red-500"
+                : (isTouched || touched.brandPhone) && isValid
+                ? "border-green-500 focus:ring-green-500"
+                : "border-gray-300"
+            }`}
+          />
+          {(isTouched || touched.brandPhone) && isValid && (
+            <Check className="w-5 h-5 text-green-500 absolute right-3 top-1/2 transform -translate-y-1/2" />
+          )}
+        </div>
+      </div>
+
+      {(isTouched || touched.brandPhone) && localNumber && !isValid && (
+        <p className="text-sm text-red-600">
+          Please enter a valid{" "}
+          {countryCodes.find((c) => c.code === selectedCountryCode)?.country}{" "}
+          phone number ({currentFormat.maxLength} digits)
+        </p>
+      )}
+
+      {errors.brandPhone && touched.brandPhone && !localNumber && (
+        <p className="text-sm text-red-600">{errors.brandPhone}</p>
+      )}
+    </div>
+  );
 };
 
 const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
@@ -97,24 +292,6 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
   ];
 
   const postDurations = ["1 day", "1 week", "2 weeks", "1 month"];
-
-  const countryCodes = [
-    { code: "+1", country: "US/Canada", flag: "🇺🇸" },
-    { code: "+44", country: "UK", flag: "🇬🇧" },
-    { code: "+234", country: "Nigeria", flag: "🇳🇬" },
-    { code: "+233", country: "Ghana", flag: "🇬🇭" },
-    { code: "+27", country: "South Africa", flag: "🇿🇦" },
-    { code: "+254", country: "Kenya", flag: "🇰🇪" },
-    { code: "+256", country: "Uganda", flag: "🇺🇬" },
-    { code: "+91", country: "India", flag: "🇮🇳" },
-    { code: "+86", country: "China", flag: "🇨🇳" },
-    { code: "+33", country: "France", flag: "🇫🇷" },
-    { code: "+49", country: "Germany", flag: "🇩🇪" },
-    { code: "+81", country: "Japan", flag: "🇯🇵" },
-    { code: "+61", country: "Australia", flag: "🇦🇺" },
-    { code: "+55", country: "Brazil", flag: "🇧🇷" },
-    { code: "+52", country: "Mexico", flag: "🇲🇽" },
-  ];
 
   const generateCustomFrequencyString = () => {
     const { postsPerWeek, weeks } = customFrequencyValues;
@@ -605,45 +782,14 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                         />
                       </div>
 
-                      {/* Enhanced Phone Number Field */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                          <Phone className="w-4 h-4" />
-                          Brand phone number *
-                        </label>
-                        <div className="flex gap-2">
-                          <select
-                            value={selectedCountryCode}
-                            onChange={(e) =>
-                              setSelectedCountryCode(e.target.value)
-                            }
-                            className="px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            style={{ minWidth: "140px" }}
-                          >
-                            {countryCodes.map((country) => (
-                              <option key={country.code} value={country.code}>
-                                {country.flag} {country.code} ({country.country}
-                                )
-                              </option>
-                            ))}
-                          </select>
-                          <Field
-                            name="brandPhone"
-                            type="tel"
-                            placeholder="Enter phone number"
-                            className={`flex-1 px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                              errors.brandPhone && touched.brandPhone
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            }`}
-                          />
-                        </div>
-                        <ErrorMessage
-                          name="brandPhone"
-                          component="p"
-                          className="text-sm text-red-600"
-                        />
-                      </div>
+                      <PhoneNumberInput
+                        selectedCountryCode={selectedCountryCode}
+                        setSelectedCountryCode={setSelectedCountryCode}
+                        setFieldValue={setFieldValue}
+                        value={values.brandPhone}
+                        errors={errors}
+                        touched={touched}
+                      />
                     </div>
 
                     {loading ? (

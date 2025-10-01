@@ -3,20 +3,16 @@ import { devtools } from "zustand/middleware";
 import axios from "axios";
 
 // =====================
-// Types (Influencer-specific - Updated to match schema)
+// Types (Influencer-specific - Updated)
 // =====================
 
-// Updated types for the influencer store to include bank details
-
-// Social media platform data interface (matching the schema)
 interface PlatformData {
   followers: string;
   url: string;
   impressions: string;
-  proofUrl?: string; // Cloudinary URL after upload
+  proofUrl?: string;
 }
 
-// Bank account details interface
 interface BankDetails {
   bankName: string;
   accountNumber: string;
@@ -24,26 +20,36 @@ interface BankDetails {
   isVerified?: boolean;
 }
 
-// Main influencer interface (updated to match the actual schema)
+// NEW: Crypto details interface
+interface CryptoDetails {
+  walletAddress: string;
+  network: string;
+  walletType: string;
+  isVerified?: boolean;
+}
+
 interface Influencer {
   _id: string;
   name: string;
   email: string;
   phone: string;
-  password?: string; // Optional in frontend, required in backend
+  password?: string;
   whatsapp: string;
   location: string;
   niches: string[];
   audienceLocation?: string;
   malePercentage?: string;
   femalePercentage?: string;
-  audienceProofUrl?: string; // Cloudinary URL after upload
+  audienceProofUrl?: string;
 
-  // Bank account details - NEW ADDITION
+  // Payment details - UPDATED
+  paymentMethod?: "bank" | "crypto";
   bankDetails?: BankDetails;
-  hasBankDetails?: boolean; // Flag to check if bank details are provided
+  hasBankDetails?: boolean;
+  cryptoDetails?: CryptoDetails;
+  hasCryptoDetails?: boolean;
 
-  // Dynamic platform data (matching schema exactly)
+  // Platform data
   instagram?: PlatformData;
   twitter?: PlatformData;
   tiktok?: PlatformData;
@@ -54,7 +60,7 @@ interface Influencer {
   threads?: PlatformData;
   snapchat?: PlatformData;
 
-  // Calculated earnings fields (from frontend)
+  // Earnings
   followerFee?: number;
   impressionFee?: number;
   locationFee?: number;
@@ -65,7 +71,7 @@ interface Influencer {
   maxMonthlyEarningsNaira?: number;
   followersCount?: number;
 
-  // Legacy fields (keeping for backward compatibility)
+  // Legacy
   amountPerPost?: string;
   amountPerMonth?: string;
 
@@ -81,16 +87,15 @@ interface Influencer {
   avatar: string;
 }
 
+// ... (keep all other interfaces: AssignedCampaign, PerformanceMetrics, etc.)
+
 interface AssignedCampaign {
   _id?: string;
-  // Basic brand information
   role: "Brand" | "Business" | "Person" | "Movie" | "Music" | "Other";
   platforms: string[];
   brandName: string;
   email: string;
   brandPhone: string;
-
-  // Campaign requirements
   influencersMin: number;
   influencersMax: number;
   followersRange?:
@@ -104,16 +109,12 @@ interface AssignedCampaign {
   additionalLocations?: string[];
   postFrequency?: any;
   postDuration?: any;
-
-  // Calculated pricing fields (from frontend calculations)
   avgInfluencers?: number;
   postCount?: number;
   costPerInfluencerPerPost?: number;
   totalBaseCost?: number;
   platformFee?: number;
   totalCost?: number;
-
-  // System fields
   hasPaid?: boolean;
   isValidated?: boolean;
   status: "pending" | "approved" | "rejected";
@@ -182,13 +183,11 @@ interface AccountSettings {
 }
 
 interface InfluencerState {
-  // Loading states
   userLoading: boolean;
   campaignsLoading: boolean;
   analyticsLoading: boolean;
   accountLoading: boolean;
 
-  // Data
   user: Influencer | null;
   assignedCampaigns: AssignedCampaign[];
   campaignHistory: AssignedCampaign[];
@@ -198,13 +197,11 @@ interface InfluencerState {
   earnings: Earnings;
   accountSettings: AccountSettings | null;
 
-  // Errors
   userError: string | null;
   campaignsError: string | null;
   analyticsError: string | null;
   accountError: string | null;
 
-  // Pagination
   pagination: {
     campaigns: {
       page: number;
@@ -224,14 +221,22 @@ interface InfluencerState {
   fetchInfluencerById: (id: string) => Promise<Influencer | null>;
   fetchCurrentInfluencer: () => Promise<void>;
   updateInfluencerProfile: (updates: Partial<Influencer>) => Promise<void>;
-  updateInfluencerBankDetails: (bankDetails: {
-    bankName: string;
-    accountNumber: string;
-    accountName: string;
+  updateInfluencerBankDetails: (paymentDetails: {
+    paymentType: "bank" | "crypto";
+    bankName?: string;
+    accountNumber?: string;
+    accountName?: string;
+    walletAddress?: string;
+    network?: string;
+    walletType?: string;
   }) => Promise<any>;
-  fetchInfluencerBankDetails: () => Promise<{
+
+  fetchInfluencerPaymentDetails: () => Promise<{
+    paymentMethod: "bank" | "crypto" | null;
     bankDetails: BankDetails | null;
     hasBankDetails: boolean;
+    cryptoDetails: CryptoDetails | null;
+    hasCryptoDetails: boolean;
   }>;
   updatePlatformData: (platform: string, data: PlatformData) => Promise<void>;
   updateEarningsData: (earningsData: {

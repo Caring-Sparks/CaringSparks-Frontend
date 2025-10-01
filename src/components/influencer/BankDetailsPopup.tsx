@@ -2,14 +2,14 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaTimes, FaCheck } from "react-icons/fa";
-import { Bank } from "phosphor-react";
+import { Bank, CurrencyBtc } from "phosphor-react";
 
-interface BankDetailsPopupProps {
+interface PaymentDetailsPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (bankDetails: BankDetails) => Promise<void>;
+  onSubmit: (paymentDetails: PaymentDetails) => Promise<void>;
   userName: string;
-  isSubmitting?: boolean; // External loading state
+  isSubmitting?: boolean;
 }
 
 export interface BankDetails {
@@ -18,69 +18,68 @@ export interface BankDetails {
   accountName: string;
 }
 
-const NIGERIAN_BANKS = [
-  "Access Bank",
-  "Citibank Nigeria",
-  "Ecobank Nigeria",
-  "Fidelity Bank",
-  "First Bank of Nigeria",
-  "First City Monument Bank",
-  "Guaranty Trust Bank",
-  "Heritage Bank",
-  "Keystone Bank",
-  "Polaris Bank",
-  "Providus Bank",
-  "Stanbic IBTC Bank",
-  "Standard Chartered Bank",
-  "Sterling Bank",
-  "Union Bank of Nigeria",
-  "United Bank for Africa",
-  "Unity Bank",
-  "Wema Bank",
-  "Zenith Bank",
-  "Jaiz Bank",
-  "SunTrust Bank",
-  "Titan Trust Bank",
-  "VFD Microfinance Bank",
-  "Moniepoint Microfinance Bank",
-  "Opay",
-  "Kuda Bank",
-  "Rubies Bank",
-  "GoMoney",
-  "V Bank",
+export interface CryptoDetails {
+  walletAddress: string;
+  network: string;
+  walletType: string;
+}
+
+export interface PaymentDetails {
+  paymentType: "bank" | "crypto";
+  bankDetails?: BankDetails;
+  cryptoDetails?: CryptoDetails;
+}
+
+const CRYPTO_NETWORKS = [
+  "Bitcoin (BTC)",
+  "Ethereum (ETH)",
+  "Binance Smart Chain (BSC)",
+  "Tron (TRX)",
+  "Polygon (MATIC)",
+  "Solana (SOL)",
+  "USDT (TRC20)",
+  "USDT (ERC20)",
+  "USDT (BSC)",
+  "USDC",
 ];
 
-const BankDetailsPopup: React.FC<BankDetailsPopupProps> = ({
+const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
   isOpen,
   onClose,
   onSubmit,
   userName,
   isSubmitting = false,
 }) => {
-  const [formData, setFormData] = useState<BankDetails>({
+  const [paymentType, setPaymentType] = useState<"bank" | "crypto">("bank");
+  const [bankData, setBankData] = useState<BankDetails>({
     bankName: "",
     accountNumber: "",
     accountName: "",
   });
-  const [errors, setErrors] = useState<Partial<BankDetails>>({});
+  const [cryptoData, setCryptoData] = useState<CryptoDetails>({
+    walletAddress: "",
+    network: "",
+    walletType: "",
+  });
+  const [errors, setErrors] = useState<Record<any, any>>({});
   const [submitError, setSubmitError] = useState<string>("");
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<BankDetails> = {};
+  const validateBankForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
 
-    if (!formData.bankName) {
-      newErrors.bankName = "Please select your bank";
+    if (!bankData.bankName.trim()) {
+      newErrors.bankName = "Bank name is required";
     }
 
-    if (!formData.accountNumber) {
+    if (!bankData.accountNumber) {
       newErrors.accountNumber = "Account number is required";
-    } else if (!/^\d{10}$/.test(formData.accountNumber)) {
+    } else if (!/^\d{10}$/.test(bankData.accountNumber)) {
       newErrors.accountNumber = "Account number must be exactly 10 digits";
     }
 
-    if (!formData.accountName) {
+    if (!bankData.accountName.trim()) {
       newErrors.accountName = "Account name is required";
-    } else if (formData.accountName.length < 2) {
+    } else if (bankData.accountName.length < 2) {
       newErrors.accountName = "Account name must be at least 2 characters";
     }
 
@@ -88,41 +87,74 @@ const BankDetailsPopup: React.FC<BankDetailsPopupProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof BankDetails, value: string) => {
-    setFormData({ ...formData, [field]: value });
-    // Clear error for this field when user starts typing
+  const validateCryptoForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!cryptoData.walletAddress.trim()) {
+      newErrors.walletAddress = "Wallet address is required";
+    } else if (cryptoData.walletAddress.length < 26) {
+      newErrors.walletAddress = "Please enter a valid wallet address";
+    }
+
+    if (!cryptoData.network) {
+      newErrors.network = "Please select a network";
+    }
+
+    if (!cryptoData.walletType.trim()) {
+      newErrors.walletType = "Wallet type is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleBankInputChange = (field: keyof BankDetails, value: string) => {
+    setBankData({ ...bankData, [field]: value });
     if (errors[field]) {
       setErrors({ ...errors, [field]: undefined });
     }
-    // Clear submit error when user makes changes
-    if (submitError) {
-      setSubmitError("");
+    if (submitError) setSubmitError("");
+  };
+
+  const handleCryptoInputChange = (
+    field: keyof CryptoDetails,
+    value: string
+  ) => {
+    setCryptoData({ ...cryptoData, [field]: value });
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: undefined });
     }
+    if (submitError) setSubmitError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    const isValid =
+      paymentType === "bank" ? validateBankForm() : validateCryptoForm();
+
+    if (!isValid) return;
 
     try {
       setSubmitError("");
-      await onSubmit(formData);
-      // Success handled by parent component (closing popup, etc.)
+      const paymentDetails: PaymentDetails = {
+        paymentType,
+        ...(paymentType === "bank"
+          ? { bankDetails: bankData }
+          : { cryptoDetails: cryptoData }),
+      };
+      await onSubmit(paymentDetails);
     } catch (error: any) {
-      console.error("Error submitting bank details:", error);
+      console.error("Error submitting payment details:", error);
       setSubmitError(
-        error.message || "Failed to save bank details. Please try again."
+        error.message || "Failed to save payment details. Please try again."
       );
     }
   };
 
   const handleSkipForNow = () => {
-    // Store in localStorage that user skipped (temporary solution)
-    localStorage.setItem("bankDetailsSkipped", "true");
-    localStorage.setItem("bankDetailsSkippedDate", new Date().toISOString());
+    localStorage.setItem("paymentDetailsSkipped", "true");
+    localStorage.setItem("paymentDetailsSkippedDate", new Date().toISOString());
     onClose();
   };
 
@@ -143,15 +175,19 @@ const BankDetailsPopup: React.FC<BankDetailsPopupProps> = ({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="p-6 border-b border-gray-100">
+          <div className="p-6 border-b border-gray-100 sticky top-0 bg-white z-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Bank className="text-blue-600 text-xl" />
+                  {paymentType === "bank" ? (
+                    <Bank className="text-blue-600 text-xl" />
+                  ) : (
+                    <CurrencyBtc className="text-blue-600 text-xl" />
+                  )}
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">
@@ -176,18 +212,52 @@ const BankDetailsPopup: React.FC<BankDetailsPopupProps> = ({
 
           {/* Content */}
           <div className="p-6">
+            {/* Payment Type Toggle */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Payment Method
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPaymentType("bank")}
+                  disabled={isSubmitting}
+                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                    paymentType === "bank"
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  <Bank className="text-xl" />
+                  <span className="font-medium">Bank Transfer</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentType("crypto")}
+                  disabled={isSubmitting}
+                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                    paymentType === "crypto"
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  <CurrencyBtc className="text-xl" />
+                  <span className="font-medium">Crypto</span>
+                </button>
+              </div>
+            </div>
+
             <div className="mb-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <p className="text-blue-800 text-sm">
                   <FaCheck className="inline mr-2 text-blue-600" />
-                  To receive payments for completed campaigns, please provide
-                  your bank account details. This information is secure and will
-                  only be used for payment processing.
+                  {paymentType === "bank"
+                    ? "To receive payments for completed campaigns, please provide your bank account details."
+                    : "To receive crypto payments for completed campaigns, please provide your wallet details."}
                 </p>
               </div>
             </div>
 
-            {/* Error Message */}
             {submitError && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-red-800 text-sm">{submitError}</p>
@@ -195,89 +265,175 @@ const BankDetailsPopup: React.FC<BankDetailsPopupProps> = ({
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Bank Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bank Name *
-                </label>
-                <select
-                  value={formData.bankName}
-                  onChange={(e) =>
-                    handleInputChange("bankName", e.target.value)
-                  }
-                  disabled={isSubmitting}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
-                    errors.bankName
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300"
-                  }`}
-                >
-                  <option value="">Select your bank</option>
-                  {NIGERIAN_BANKS.map((bank) => (
-                    <option key={bank} value={bank}>
-                      {bank}
-                    </option>
-                  ))}
-                </select>
-                {errors.bankName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.bankName}</p>
-                )}
-              </div>
+              {paymentType === "bank" ? (
+                <>
+                  {/* Bank Name Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bank Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={bankData.bankName}
+                      onChange={(e) =>
+                        handleBankInputChange("bankName", e.target.value)
+                      }
+                      placeholder="e.g., First Bank of Nigeria"
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                        errors.bankName
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    {errors.bankName && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.bankName}
+                      </p>
+                    )}
+                  </div>
 
-              {/* Account Number */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Account Number *
-                </label>
-                <input
-                  type="text"
-                  value={formData.accountNumber}
-                  onChange={(e) =>
-                    handleInputChange(
-                      "accountNumber",
-                      e.target.value.replace(/\D/g, "").slice(0, 10)
-                    )
-                  }
-                  placeholder="1234567890"
-                  disabled={isSubmitting}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
-                    errors.accountNumber
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300"
-                  }`}
-                />
-                {errors.accountNumber && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.accountNumber}
-                  </p>
-                )}
-              </div>
+                  {/* Account Number */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Account Number *
+                    </label>
+                    <input
+                      type="text"
+                      value={bankData.accountNumber}
+                      onChange={(e) =>
+                        handleBankInputChange(
+                          "accountNumber",
+                          e.target.value.replace(/\D/g, "").slice(0, 10)
+                        )
+                      }
+                      placeholder="1234567890"
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                        errors.accountNumber
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    {errors.accountNumber && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.accountNumber}
+                      </p>
+                    )}
+                  </div>
 
-              {/* Account Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Account Name *
-                </label>
-                <input
-                  type="text"
-                  value={formData.accountName}
-                  onChange={(e) =>
-                    handleInputChange("accountName", e.target.value)
-                  }
-                  placeholder="Enter account name as shown on your bank statement"
-                  disabled={isSubmitting}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
-                    errors.accountName
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300"
-                  }`}
-                />
-                {errors.accountName && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.accountName}
-                  </p>
-                )}
-              </div>
+                  {/* Account Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Account Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={bankData.accountName}
+                      onChange={(e) =>
+                        handleBankInputChange("accountName", e.target.value)
+                      }
+                      placeholder="John Doe"
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                        errors.accountName
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    {errors.accountName && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.accountName}
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Crypto Network */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Network/Currency *
+                    </label>
+                    <select
+                      value={cryptoData.network}
+                      onChange={(e) =>
+                        handleCryptoInputChange("network", e.target.value)
+                      }
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                        errors.network
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      <option value="">Select network</option>
+                      {CRYPTO_NETWORKS.map((network) => (
+                        <option key={network} value={network}>
+                          {network}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.network && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.network}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Wallet Address */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Wallet Address *
+                    </label>
+                    <input
+                      type="text"
+                      value={cryptoData.walletAddress}
+                      onChange={(e) =>
+                        handleCryptoInputChange("walletAddress", e.target.value)
+                      }
+                      placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors font-mono text-sm disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                        errors.walletAddress
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    {errors.walletAddress && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.walletAddress}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Wallet Type */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Wallet Type *
+                    </label>
+                    <input
+                      type="text"
+                      value={cryptoData.walletType}
+                      onChange={(e) =>
+                        handleCryptoInputChange("walletType", e.target.value)
+                      }
+                      placeholder="e.g., MetaMask, Trust Wallet, Binance"
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                        errors.walletType
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    {errors.walletType && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.walletType}
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
 
               {/* Action Buttons */}
               <div className="flex flex-col gap-3 pt-4">
@@ -294,7 +450,7 @@ const BankDetailsPopup: React.FC<BankDetailsPopupProps> = ({
                   ) : (
                     <>
                       <FaCheck />
-                      Save Bank Details
+                      Save Payment Details
                     </>
                   )}
                 </button>
@@ -323,4 +479,4 @@ const BankDetailsPopup: React.FC<BankDetailsPopupProps> = ({
   );
 };
 
-export default BankDetailsPopup;
+export default PaymentDetailsPopup;
