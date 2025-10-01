@@ -21,6 +21,7 @@ import {
   Users,
   Star,
   Clock,
+  CurrencyBtc,
 } from "phosphor-react";
 import { BiBuilding, BiTrendingUp } from "react-icons/bi";
 import { CgMail } from "react-icons/cg";
@@ -36,22 +37,32 @@ interface AccountFormData {
   location: string;
   niches: string[];
   audienceLocation?: string;
-  // Bank Details
+  paymentType: "bank" | "crypto";
   bankName?: string;
   accountNumber?: string;
   accountName?: string;
+  walletAddress?: string;
+  network?: string;
+  walletType?: string;
   currentPassword?: string;
   newPassword?: string;
   confirmPassword?: string;
 }
 
-interface NotificationSettings {
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  newCampaignAlerts: boolean;
-  paymentUpdates: boolean;
-  marketingEmails: boolean;
-}
+type TabType = "profile" | "payment" | "security" | "analytics";
+
+const CRYPTO_NETWORKS = [
+  "Bitcoin (BTC)",
+  "Ethereum (ETH)",
+  "Binance Smart Chain (BSC)",
+  "Tron (TRX)",
+  "Polygon (MATIC)",
+  "Solana (SOL)",
+  "USDT (TRC20)",
+  "USDT (ERC20)",
+  "USDT (BSC)",
+  "USDC",
+];
 
 const Account: React.FC = () => {
   const {
@@ -63,14 +74,11 @@ const Account: React.FC = () => {
     fetchAssignedCampaigns,
     updateInfluencerProfile,
     updateInfluencerBankDetails,
-    fetchInfluencerBankDetails,
     clearErrors,
     clearUser,
   } = useInfluencerStore();
 
-  const [activeTab, setActiveTab] = useState<
-    "profile" | "banking" | "security" | "analytics"
-  >("profile");
+  const [activeTab, setActiveTab] = useState<TabType>("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -88,23 +96,18 @@ const Account: React.FC = () => {
     location: "",
     niches: [],
     audienceLocation: "",
+    paymentType: "bank",
     bankName: "",
     accountNumber: "",
     accountName: "",
+    walletAddress: "",
+    network: "",
+    walletType: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
 
-  const [notifications, setNotifications] = useState<NotificationSettings>({
-    emailNotifications: true,
-    pushNotifications: false,
-    newCampaignAlerts: true,
-    paymentUpdates: true,
-    marketingEmails: false,
-  });
-
-  // Initialize form data when user data is available
   useEffect(() => {
     if (user) {
       setFormData({
@@ -115,9 +118,13 @@ const Account: React.FC = () => {
         location: user.location || "",
         niches: user.niches || [],
         audienceLocation: user.audienceLocation || "",
+        paymentType: user.paymentMethod || "bank",
         bankName: user.bankDetails?.bankName || "",
         accountNumber: user.bankDetails?.accountNumber || "",
         accountName: user.bankDetails?.accountName || "",
+        walletAddress: user.cryptoDetails?.walletAddress || "",
+        network: user.cryptoDetails?.network || "",
+        walletType: user.cryptoDetails?.walletType || "",
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
@@ -143,7 +150,6 @@ const Account: React.FC = () => {
   ) => {
     const { name, value } = e.target;
     if (name === "niches") {
-      // Handle niches as comma-separated values
       setFormData((prev) => ({
         ...prev,
         niches: value
@@ -159,36 +165,47 @@ const Account: React.FC = () => {
     }
   };
 
-  const handleBankDetailsUpdate = async (e: React.FormEvent) => {
+  const handlePaymentDetailsUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMessage("");
     setSuccessMessage("");
 
     try {
-      await updateInfluencerBankDetails({
-        bankName: formData.bankName || "",
-        accountNumber: formData.accountNumber || "",
-        accountName: formData.accountName || "",
-      });
+      if (formData.paymentType === "bank") {
+        await updateInfluencerBankDetails({
+          paymentType: "bank",
+          bankName: formData.bankName || "",
+          accountNumber: formData.accountNumber || "",
+          accountName: formData.accountName || "",
+        });
+        setSuccessMessage("Bank details updated successfully!");
+      } else {
+        await updateInfluencerBankDetails({
+          paymentType: "crypto",
+          walletAddress: formData.walletAddress || "",
+          network: formData.network || "",
+          walletType: formData.walletType || "",
+        });
+        setSuccessMessage("Crypto wallet details updated successfully!");
+      }
 
-      setSuccessMessage("Bank details updated successfully!");
       showToast({
         type: "success",
         title: "Success!",
-        message: "Bank details updated successfully!",
+        message: "Payment details updated successfully!",
         duration: 6000,
       });
       await fetchCurrentInfluencer();
       setIsEditing(false);
     } catch (error: any) {
       setErrorMessage(
-        error.message || "Failed to update bank details. Please try again."
+        error.message || "Failed to update payment details. Please try again."
       );
       showToast({
         type: "error",
         title: "Sorry!",
-        message: "Failed to update bank details. Please try again.",
+        message: "Failed to update payment details. Please try again.",
         duration: 6000,
       });
     } finally {
@@ -305,7 +322,7 @@ const Account: React.FC = () => {
             <Link href="/" className="text-blue-600 underline">
               login again
             </Link>{" "}
-            with your new password to prevent disruptions.
+            with your new password.
           </>
         ),
         duration: 12000,
@@ -318,15 +335,12 @@ const Account: React.FC = () => {
       }));
     } catch (error: any) {
       setErrorMessage(
-        error.message ||
-          "Failed to change password. Please check your current password and try again."
+        error.message || "Failed to change password. Please try again."
       );
-
       showToast({
         type: "error",
         title: "Sorry!",
-        message:
-          "Failed to change password. Please check your current password and try again.",
+        message: "Failed to change password. Please try again.",
         duration: 6000,
       });
     } finally {
@@ -391,7 +405,7 @@ const Account: React.FC = () => {
   const calculateAccountStats = () => {
     const totalCampaigns = assignedCampaigns.length;
     const completedCampaigns = assignedCampaigns.filter(
-      (c) => c.status === "approved"
+      (c: any) => c.status === "approved"
     ).length;
     const activeCampaigns = assignedCampaigns.filter(
       (c: any) => c.status === "active" || c.status === "pending"
@@ -497,7 +511,6 @@ const Account: React.FC = () => {
 
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
               Account Management
@@ -507,7 +520,6 @@ const Account: React.FC = () => {
             </p>
           </div>
 
-          {/* Status Messages */}
           {userError && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <span className="text-red-700">{userError}</span>
@@ -526,7 +538,6 @@ const Account: React.FC = () => {
             </div>
           )}
 
-          {/* Enhanced Account Overview */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-8 mb-6">
               <div className="flex items-center space-x-6 mb-6 lg:mb-0">
@@ -557,7 +568,7 @@ const Account: React.FC = () => {
               </div>
 
               <div className="flex-1">
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-wrap gap-2">
                   {user?.niches?.map((niche, index) => (
                     <span
                       key={index}
@@ -569,49 +580,27 @@ const Account: React.FC = () => {
                 </div>
               </div>
             </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-gray-200">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">
-                  {totalCampaigns}
-                </div>
-                <div className="text-gray-600 text-sm">Total Campaigns</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {completedCampaigns}
-                </div>
-                <div className="text-gray-600 text-sm">Completed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {activeCampaigns}
-                </div>
-                <div className="text-gray-600 text-sm">Active</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-indigo-600">
-                  {formatCurrency(totalEarnings)}
-                </div>
-                <div className="text-gray-600 text-sm">Est. Monthly</div>
-              </div>
-            </div>
           </div>
 
-          {/* Tab Navigation */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="border-b border-gray-200">
               <nav className="flex overflow-x-auto no-scrollbar">
                 {[
-                  { key: "profile", label: "Profile Details", icon: User },
-                  { key: "banking", label: "Bank Details", icon: CreditCard },
-                  { key: "security", label: "Security", icon: Shield },
-                  // { key: "analytics", label: "Analytics", icon: BiTrendingUp },
+                  {
+                    key: "profile" as const,
+                    label: "Profile Details",
+                    icon: User,
+                  },
+                  {
+                    key: "payment" as const,
+                    label: "Payment Details",
+                    icon: CreditCard,
+                  },
+                  { key: "security" as const, label: "Security", icon: Shield },
                 ].map(({ key, label, icon: Icon }) => (
                   <button
                     key={key}
-                    onClick={() => setActiveTab(key as typeof activeTab)}
+                    onClick={() => setActiveTab(key)}
                     className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors whitespace-nowrap ${
                       activeTab === key
                         ? "border-b-2 border-indigo-600 text-indigo-600 bg-indigo-50"
@@ -626,7 +615,6 @@ const Account: React.FC = () => {
             </div>
 
             <div className="p-8">
-              {/* Enhanced Profile Tab */}
               {activeTab === "profile" && (
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
@@ -653,7 +641,6 @@ const Account: React.FC = () => {
                   </div>
 
                   <form onSubmit={handleProfileUpdate} className="space-y-6">
-                    {/* Basic Information */}
                     <div className="bg-gray-50 rounded-lg p-6">
                       <h4 className="font-medium text-gray-900 mb-4">
                         Basic Information
@@ -780,21 +767,6 @@ const Account: React.FC = () => {
                             />
                           </div>
                         </div>
-
-                        <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Niches (comma-separated)
-                          </label>
-                          <input
-                            type="text"
-                            name="niches"
-                            value={formData.niches.join(", ")}
-                            onChange={handleInputChange}
-                            disabled={!isEditing}
-                            placeholder="e.g., Fashion, Beauty, Lifestyle, Technology"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
-                          />
-                        </div>
                       </div>
                     </div>
 
@@ -821,16 +793,16 @@ const Account: React.FC = () => {
                 </div>
               )}
 
-              {/* Banking Tab */}
-              {activeTab === "banking" && (
+              {activeTab === "payment" && (
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900">
-                        Bank Account Details
+                        Profile Information
                       </h3>
                       <p className="text-gray-600 text-sm mt-1">
-                        Add your bank account information for payments
+                        Update your personal information and professional
+                        details
                       </p>
                     </div>
                     <button
@@ -842,28 +814,68 @@ const Account: React.FC = () => {
                       }`}
                     >
                       <PencilSimple size={16} />
-                      <span>{isEditing ? "Cancel" : "Edit Bank Details"}</span>
+                      <span>{isEditing ? "Cancel" : "Edit Details"}</span>
                     </button>
                   </div>
 
                   <form
-                    onSubmit={handleBankDetailsUpdate}
+                    onSubmit={handlePaymentDetailsUpdate}
                     className="space-y-6"
                   >
                     <div className="bg-gray-50 rounded-lg p-6">
-                      <h4 className="font-medium text-gray-900 mb-4">
-                        Account Information
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Bank Name *
-                          </label>
-                          <div className="relative">
-                            <BiBuilding
-                              className="absolute left-3 top-3 text-gray-400"
-                              size={18}
-                            />
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Payment Method
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              paymentType: "bank",
+                            }))
+                          }
+                          disabled={!isEditing}
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                            formData.paymentType === "bank"
+                              ? "border-blue-500 bg-blue-50 text-blue-700"
+                              : "border-gray-300 bg-white text-gray-600"
+                          } disabled:opacity-50`}
+                        >
+                          <BiBuilding size={20} />
+                          <span className="font-medium">Bank Transfer</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              paymentType: "crypto",
+                            }))
+                          }
+                          disabled={!isEditing}
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                            formData.paymentType === "crypto"
+                              ? "border-blue-500 bg-blue-50 text-blue-700"
+                              : "border-gray-300 bg-white text-gray-600"
+                          } disabled:opacity-50`}
+                        >
+                          <CurrencyBtc size={20} />
+                          <span className="font-medium">Cryptocurrency</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {formData.paymentType === "bank" && (
+                      <div className="bg-gray-50 rounded-lg p-6">
+                        <h4 className="font-medium text-gray-900 mb-4">
+                          Bank Account Information
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Bank Name *
+                            </label>
                             <input
                               type="text"
                               name="bankName"
@@ -872,20 +884,14 @@ const Account: React.FC = () => {
                               disabled={!isEditing}
                               required
                               placeholder="e.g., First Bank of Nigeria"
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                             />
                           </div>
-                        </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Account Number *
-                          </label>
-                          <div className="relative">
-                            <CreditCard
-                              className="absolute left-3 top-3 text-gray-400"
-                              size={18}
-                            />
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Account Number *
+                            </label>
                             <input
                               type="text"
                               name="accountNumber"
@@ -894,20 +900,15 @@ const Account: React.FC = () => {
                               disabled={!isEditing}
                               required
                               placeholder="0123456789"
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
+                              maxLength={10}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                             />
                           </div>
-                        </div>
 
-                        <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Account Name *
-                          </label>
-                          <div className="relative">
-                            <User
-                              className="absolute left-3 top-3 text-gray-400"
-                              size={18}
-                            />
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Account Name *
+                            </label>
                             <input
                               type="text"
                               name="accountName"
@@ -916,24 +917,96 @@ const Account: React.FC = () => {
                               disabled={!isEditing}
                               required
                               placeholder="Account holder's full name"
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                             />
                           </div>
                         </div>
-                      </div>
 
-                      {/* Bank Details Status */}
-                      {user?.bankDetails && (
-                        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                          <div className="flex items-center space-x-2">
-                            <Check className="text-green-600" size={20} />
-                            <span className="text-green-800 font-medium">
-                              Bank details saved
-                            </span>
+                        {user?.bankDetails && !isEditing && (
+                          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <Check className="text-green-600" size={20} />
+                              <span className="text-green-800 font-medium">
+                                Bank details saved
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {formData.paymentType === "crypto" && (
+                      <div className="bg-gray-50 rounded-lg p-6">
+                        <h4 className="font-medium text-gray-900 mb-4">
+                          Cryptocurrency Wallet Information
+                        </h4>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Network/Currency *
+                            </label>
+                            <select
+                              name="network"
+                              value={formData.network}
+                              onChange={handleInputChange}
+                              disabled={!isEditing}
+                              required
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                            >
+                              <option value="">Select network</option>
+                              {CRYPTO_NETWORKS.map((network) => (
+                                <option key={network} value={network}>
+                                  {network}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Wallet Address *
+                            </label>
+                            <input
+                              type="text"
+                              name="walletAddress"
+                              value={formData.walletAddress}
+                              onChange={handleInputChange}
+                              disabled={!isEditing}
+                              required
+                              placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 font-mono text-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Wallet Type *
+                            </label>
+                            <input
+                              type="text"
+                              name="walletType"
+                              value={formData.walletType}
+                              onChange={handleInputChange}
+                              disabled={!isEditing}
+                              required
+                              placeholder="e.g., MetaMask, Trust Wallet"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                            />
                           </div>
                         </div>
-                      )}
-                    </div>
+
+                        {user?.cryptoDetails && !isEditing && (
+                          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <Check className="text-green-600" size={20} />
+                              <span className="text-green-800 font-medium">
+                                Crypto wallet details saved
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {isEditing && (
                       <div className="flex space-x-4 pt-4">
@@ -944,7 +1017,7 @@ const Account: React.FC = () => {
                         >
                           <FloppyDisk size={16} />
                           <span>
-                            {loading ? "Saving..." : "Save Bank Details"}
+                            {loading ? "Saving..." : "Save Payment Details"}
                           </span>
                         </button>
                         <button
@@ -960,7 +1033,6 @@ const Account: React.FC = () => {
                 </div>
               )}
 
-              {/* Security Tab */}
               {activeTab === "security" && (
                 <div className="space-y-8">
                   <div>
@@ -1076,7 +1148,6 @@ const Account: React.FC = () => {
                     </form>
                   </div>
 
-                  {/* Danger Zone */}
                   <div className="border-t border-gray-200 pt-8">
                     <h4 className="font-medium mb-4 text-red-600">
                       Danger Zone
@@ -1090,16 +1161,8 @@ const Account: React.FC = () => {
                           </h5>
                           <p className="text-red-700 text-sm mb-4">
                             Permanently delete your account and all associated
-                            data. This action cannot be undone and will remove:
+                            data. This action cannot be undone.
                           </p>
-                          <ul className="text-red-700 text-sm space-y-1 mb-4 list-disc list-inside">
-                            <li>All campaign history and data</li>
-                            <li>
-                              Profile information and social media connections
-                            </li>
-                            <li>Earnings history and analytics</li>
-                            <li>All saved preferences and settings</li>
-                          </ul>
                           <button
                             onClick={() => setShowDeleteModal(true)}
                             disabled={loading}
@@ -1110,95 +1173,6 @@ const Account: React.FC = () => {
                               {loading ? "Processing..." : "Delete Account"}
                             </span>
                           </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Analytics Tab */}
-              {activeTab === "analytics" && (
-                <div className="space-y-8">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      Analytics & Performance
-                    </h3>
-                    <p className="text-gray-600 text-sm mt-1">
-                      Track your campaign performance and earnings
-                    </p>
-                  </div>
-
-                  {/* Performance Overview */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
-                      <div className="flex items-center justify-between mb-2">
-                        <BiTrendingUp className="text-blue-600" size={24} />
-                        <span className="text-blue-600 text-sm font-medium">
-                          Total
-                        </span>
-                      </div>
-                      <div className="text-2xl font-bold text-blue-900">
-                        {totalCampaigns}
-                      </div>
-                      <div className="text-blue-700 text-sm">Campaigns</div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
-                      <div className="flex items-center justify-between mb-2">
-                        <Check className="text-green-600" size={24} />
-                        <span className="text-green-600 text-sm font-medium">
-                          Success
-                        </span>
-                      </div>
-                      <div className="text-2xl font-bold text-green-900">
-                        {completedCampaigns}
-                      </div>
-                      <div className="text-green-700 text-sm">Completed</div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
-                      <div className="flex items-center justify-between mb-2">
-                        <Clock className="text-purple-600" size={24} />
-                        <span className="text-purple-600 text-sm font-medium">
-                          Active
-                        </span>
-                      </div>
-                      <div className="text-2xl font-bold text-purple-900">
-                        {activeCampaigns}
-                      </div>
-                      <div className="text-purple-700 text-sm">In Progress</div>
-                    </div>
-                  </div>
-
-                  {/* Earnings Overview */}
-                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6">
-                    <h4 className="font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                      <CreditCard size={20} />
-                      <span>Earnings Overview</span>
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <div className="text-lg font-bold text-indigo-600">
-                          {formatCurrency(user?.earningsPerPostNaira || 0)}
-                        </div>
-                        <div className="text-gray-600 text-sm">Per Post</div>
-                      </div>
-                      <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <div className="text-lg font-bold text-purple-600">
-                          {formatCurrency(user?.maxMonthlyEarningsNaira || 0)}
-                        </div>
-                        <div className="text-gray-600 text-sm">Max Monthly</div>
-                      </div>
-                      <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <div className="text-lg font-bold text-green-600">
-                          {formatCurrency(
-                            completedCampaigns *
-                              (user?.earningsPerPostNaira || 0)
-                          )}
-                        </div>
-                        <div className="text-gray-600 text-sm">
-                          Estimated Earnings
                         </div>
                       </div>
                     </div>

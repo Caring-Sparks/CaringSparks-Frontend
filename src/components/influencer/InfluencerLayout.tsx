@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useInfluencerStore } from "@/stores/influencerStore";
 import { useRouter } from "next/navigation";
-import BankDetailsPopup, { BankDetails } from "./BankDetailsPopup";
+import PaymentDetailsPopup, { PaymentDetails } from "./BankDetailsPopup";
 import { useToast } from "@/utils/ToastNotification";
 
 interface InfluencerLayoutProps {
@@ -21,8 +21,9 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
     updateInfluencerBankDetails,
   } = useInfluencerStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showBankDetailsPopup, setShowBankDetailsPopup] = useState(false);
-  const [isBankDetailsSubmitting, setIsBankDetailsSubmitting] = useState(false);
+  const [showPaymentDetailsPopup, setShowPaymentDetailsPopup] = useState(false);
+  const [isPaymentDetailsSubmitting, setIsPaymentDetailsSubmitting] =
+    useState(false);
   const router = useRouter();
   const { showToast } = useToast();
 
@@ -30,70 +31,100 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // ⚠️ FIX: Wrap the function in useCallback
-  const shouldShowBankDetailsPopup = useCallback(() => {
+  const shouldShowPaymentDetailsPopup = useCallback(() => {
     if (!user) return false;
 
+    // Check for bank details
     const hasBankDetails =
       user.bankDetails &&
       user.bankDetails.bankName &&
       user.bankDetails.accountNumber &&
       user.bankDetails.accountName;
 
-    const hasFlag = user.hasBankDetails === true;
+    // Check for crypto details
+    const hasCryptoDetails =
+      user.cryptoDetails &&
+      user.cryptoDetails.walletAddress &&
+      user.cryptoDetails.network;
 
-    const hasSkipped = localStorage.getItem("bankDetailsSkipped");
-    const skipDate = localStorage.getItem("bankDetailsSkippedDate");
+    // Check if either payment method is set up
+    const hasPaymentMethod = hasBankDetails || hasCryptoDetails;
+    const hasFlag =
+      user.hasBankDetails === true || user.hasCryptoDetails === true;
+
+    const hasSkipped = localStorage.getItem("paymentDetailsSkipped");
+    const skipDate = localStorage.getItem("paymentDetailsSkippedDate");
     const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
 
     if (hasSkipped && skipDate && new Date(skipDate) < threeDaysAgo) {
-      localStorage.removeItem("bankDetailsSkipped");
-      localStorage.removeItem("bankDetailsSkippedDate");
+      localStorage.removeItem("paymentDetailsSkipped");
+      localStorage.removeItem("paymentDetailsSkippedDate");
     }
 
-    // The logic inside this function uses 'user'
-    return !(hasBankDetails || hasFlag) && !hasSkipped;
-  }, [user]); // ⚠️ Add 'user' to the dependency array
+    return !(hasPaymentMethod || hasFlag) && !hasSkipped;
+  }, [user]);
 
-  // Handle bank details submission using separate endpoint
-  const handleBankDetailsSubmit = async (bankDetails: BankDetails) => {
-    setIsBankDetailsSubmitting(true);
+  // Handle payment details submission
+  const handlePaymentDetailsSubmit = async (paymentDetails: PaymentDetails) => {
+    setIsPaymentDetailsSubmitting(true);
     try {
-      await updateInfluencerBankDetails({
-        bankName: bankDetails.bankName,
-        accountNumber: bankDetails.accountNumber,
-        accountName: bankDetails.accountName,
-      });
+      if (paymentDetails.paymentType === "bank" && paymentDetails.bankDetails) {
+        // Submit bank details
+        await updateInfluencerBankDetails({
+          paymentType: "bank",
+          bankName: paymentDetails.bankDetails.bankName,
+          accountNumber: paymentDetails.bankDetails.accountNumber,
+          accountName: paymentDetails.bankDetails.accountName,
+        });
 
-      localStorage.removeItem("bankDetailsSkipped");
-      localStorage.removeItem("bankDetailsSkippedDate");
+        showToast({
+          type: "success",
+          title: "Success",
+          message: "Bank details saved successfully!",
+          duration: 6000,
+        });
+      } else if (
+        paymentDetails.paymentType === "crypto" &&
+        paymentDetails.cryptoDetails
+      ) {
+        // Submit crypto details
+        await updateInfluencerBankDetails({
+          paymentType: "crypto",
+          walletAddress: paymentDetails.cryptoDetails.walletAddress,
+          network: paymentDetails.cryptoDetails.network,
+          walletType: paymentDetails.cryptoDetails.walletType,
+        });
 
-      setShowBankDetailsPopup(false);
+        showToast({
+          type: "success",
+          title: "Success",
+          message: "Crypto wallet details saved successfully!",
+          duration: 6000,
+        });
+      }
 
-      showToast({
-        type: "success",
-        title: "Success",
-        message: "Bank details updated successfully!.",
-        duration: 6000,
-      });
+      localStorage.removeItem("paymentDetailsSkipped");
+      localStorage.removeItem("paymentDetailsSkippedDate");
+
+      setShowPaymentDetailsPopup(false);
     } catch (error) {
       showToast({
         type: "error",
         title: "Error",
-        message: "We could not update your bank details. Please try again",
+        message: "Failed to save payment details. Please try again.",
         duration: 6000,
       });
       throw error;
     } finally {
-      setIsBankDetailsSubmitting(false);
+      setIsPaymentDetailsSubmitting(false);
     }
   };
 
   // Handle popup close (skip for now)
-  const handleBankDetailsClose = () => {
-    localStorage.setItem("bankDetailsSkipped", "true");
-    localStorage.setItem("bankDetailsSkippedDate", new Date().toISOString());
-    setShowBankDetailsPopup(false);
+  const handlePaymentDetailsClose = () => {
+    localStorage.setItem("paymentDetailsSkipped", "true");
+    localStorage.setItem("paymentDetailsSkippedDate", new Date().toISOString());
+    setShowPaymentDetailsPopup(false);
   };
 
   useEffect(() => {
@@ -101,13 +132,13 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
     fetchAssignedCampaigns();
   }, [fetchAssignedCampaigns, fetchCurrentInfluencer]);
 
-  // Check for bank details popup after user data is loaded
+  // Check for payment details popup after user data is loaded
   useEffect(() => {
     if (user && !userLoading) {
-      const shouldShow = shouldShowBankDetailsPopup();
-      setShowBankDetailsPopup(shouldShow);
+      const shouldShow = shouldShowPaymentDetailsPopup();
+      setShowPaymentDetailsPopup(shouldShow);
     }
-  }, [user, userLoading, shouldShowBankDetailsPopup]); // This now works correctly
+  }, [user, userLoading, shouldShowPaymentDetailsPopup]);
 
   if (userLoading) {
     return (
@@ -150,14 +181,14 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      {/* Bank Details Popup */}
+      {/* Payment Details Popup */}
       {user && (
-        <BankDetailsPopup
-          isOpen={showBankDetailsPopup}
-          onClose={handleBankDetailsClose}
-          onSubmit={handleBankDetailsSubmit}
+        <PaymentDetailsPopup
+          isOpen={showPaymentDetailsPopup}
+          onClose={handlePaymentDetailsClose}
+          onSubmit={handlePaymentDetailsSubmit}
           userName={user.name}
-          isSubmitting={isBankDetailsSubmitting}
+          isSubmitting={isPaymentDetailsSubmitting}
         />
       )}
     </div>
