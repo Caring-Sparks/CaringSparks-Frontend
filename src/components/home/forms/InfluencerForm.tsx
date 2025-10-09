@@ -179,7 +179,7 @@ const PhoneNumberInput: React.FC<{
       setFormattedDisplay("");
       setIsValid(false);
     }
-  }, [localNumber, selectedCountryCode, currentFormat]);
+  }, [localNumber, selectedCountryCode, currentFormat, validatePhoneNumber]);
 
   const handlePhoneChange = (e: any) => {
     const input = e.target.value;

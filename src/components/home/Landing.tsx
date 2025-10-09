@@ -346,7 +346,7 @@ export default function LandingPage() {
                 Whether you&apos;re a
               </motion.h3>
               <motion.div
-                className="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto"
+                className="w-24 h-1 background mx-auto"
                 initial={{ scaleX: 0 }}
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
