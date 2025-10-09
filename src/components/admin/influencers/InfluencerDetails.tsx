@@ -8,6 +8,7 @@ import { TbUserCancel } from "react-icons/tb";
 import { useAdminStore, useInitializeAdminData } from "@/stores/adminStore";
 import { Warning } from "phosphor-react";
 import { useToast } from "@/utils/ToastNotification";
+import BankDetailsDisplay from "./BankDetails";
 
 interface SocialMedia {
   impressions?: number;
@@ -422,6 +423,8 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
               </SectionCard>
             )}
           </div>
+
+          <BankDetailsDisplay selectedInfluencer={selectedInfluencer} />
 
           {/* Footer actions */}
           <div className="relative grid lg:grid-cols-3 grid-cols-1 gap-2 p-4 text-white font-semibold">
