@@ -57,18 +57,18 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
     : null;
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200">
+    <div className="w-full max-w-4xl mx-auto bg-black rounded-xl shadow-lg border border-gray-200">
       {/* Header */}
       <div className="text-center p-6 border-b border-gray-100">
-        <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-          <CheckCircle className="w-6 h-6 text-indigo-600" />
+        <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+          <CheckCircle className="w-6 h-6 text-yellow-600" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-gray-500 mb-2">
           {type === "brand"
             ? "Campaign Summary & Quotation"
             : "Application Summary"}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-500">
           {type === "brand"
             ? "Review your campaign details and estimated costs"
             : "Your influencer application has been submitted successfully"}
@@ -77,12 +77,12 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
 
       <div className="p-6 space-y-8">
         {/* Next Steps */}
-        <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-          <h3 className="text-lg font-semibold text-blue-900 mb-3">
+        <div className="bg-yellow-50 rounded-lg p-6 border border-yellow-200">
+          <h3 className="text-lg font-semibold text-yellow-900 mb-3">
             Next Steps
           </h3>
           {type === "brand" ? (
-            <div className="space-y-2 text-blue-800">
+            <div className="space-y-2 text-yellow-800">
               <p>
                 • Your password and registration details have been sent to your
                 email. You can use that to access your dashboard.
@@ -96,7 +96,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
               <p>• Campaign launch after final confirmation and payment</p>
             </div>
           ) : (
-            <div className="space-y-2 text-blue-800">
+            <div className="space-y-2 text-yellow-800">
               <p>
                 • Your password and registration details have been sent to your
                 email. You can use that to access your dashboard.
@@ -120,14 +120,14 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
             <div className="grid lg:grid-cols-2 gap-3">
               <button
                 onClick={onBack}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="px-4 py-2 border border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Form
               </button>
               <button
                 onClick={login}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white transition-colors flex items-center justify-center gap-2"
+                className="px-4 py-2 bg-yellow-500 hover:bg-yellow-700 rounded-lg text-white transition-colors flex items-center justify-center gap-2"
               >
                 <User className="w-4 h-4" />
                 Login
@@ -166,7 +166,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                       {data.platforms.map((platform) => (
                         <span
                           key={platform}
-                          className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"
+                          className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm"
                         >
                           {platform}
                         </span>
@@ -249,15 +249,15 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
 
             {/* Quotation */}
             {quotation && (
-              <div className="bg-indigo-50 rounded-lg p-6 border border-indigo-200">
-                <h3 className="text-lg font-semibold text-indigo-900 mb-4">
+              <div className="bg-yellow-50 rounded-lg p-6 border border-yellow-200">
+                <h3 className="text-lg font-semibold text-yellow-900 mb-4">
                   Campaign Quotation
                 </h3>
 
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                     <div className="bg-white rounded-lg p-4">
-                      <div className="text-2xl font-bold text-indigo-600">
+                      <div className="text-2xl font-bold text-yellow-600">
                         {quotation.avgInfluencers}
                       </div>
                       <div className="text-sm text-gray-600">
@@ -265,7 +265,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                       </div>
                     </div>
                     <div className="bg-white rounded-lg p-4">
-                      <div className="text-2xl font-bold text-indigo-600">
+                      <div className="text-2xl font-bold text-yellow-600">
                         {quotation.postCount}
                       </div>
                       <div className="text-sm text-gray-600">
@@ -273,7 +273,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                       </div>
                     </div>
                     <div className="bg-white rounded-lg p-4">
-                      <div className="text-2xl font-bold text-indigo-600">
+                      <div className="text-2xl font-bold text-yellow-600">
                         ₦{quotation.costPerInfluencerPerPost.toLocaleString()}
                       </div>
                       <div className="text-sm text-gray-600">
@@ -306,7 +306,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                         <span className="text-gray-900">
                           Total Campaign Cost:
                         </span>
-                        <span className="text-indigo-600 grid md:place-items-end">
+                        <span className="text-yellow-600 grid md:place-items-end">
                           ₦{quotation.totalCost.toLocaleString()}
                         </span>
                       </div>
@@ -343,7 +343,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
               </button>
               <button
                 onClick={login}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white transition-colors flex items-center justify-center gap-2"
+                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-white transition-colors flex items-center justify-center gap-2"
               >
                 <User className="w-4 h-4" />
                 Login
@@ -379,7 +379,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                       {data.niches.map((niche) => (
                         <span
                           key={niche}
-                          className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"
+                          className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm"
                         >
                           {niche}
                         </span>
@@ -455,15 +455,15 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
               </div>
 
               {earnings && (
-                <div className="bg-indigo-50 rounded-lg p-6 mt-4 border border-indigo-200">
-                  <h3 className="text-lg font-semibold text-indigo-900 mb-4">
+                <div className="bg-yellow-50 rounded-lg p-6 mt-4 border border-yellow-200">
+                  <h3 className="text-lg font-semibold text-yellow-900 mb-4">
                     Estimated Earnings
                   </h3>
 
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
                       <div className="bg-white rounded-lg p-4">
-                        <div className="text-2xl font-bold text-indigo-600">
+                        <div className="text-2xl font-bold text-yellow-600">
                           ${earnings.earningsPerPost.toFixed(2)}
                         </div>
                         <div className="text-lg font-semibold text-gray-800">
@@ -475,7 +475,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                         <div className="text-sm text-gray-600">Per Post</div>
                       </div>
                       <div className="bg-white rounded-lg p-4">
-                        <div className="text-2xl font-bold text-indigo-600">
+                        <div className="text-2xl font-bold text-yellow-600">
                           ${earnings.maxMonthlyEarnings.toFixed(2)}
                         </div>
                         <div className="text-lg font-semibold text-gray-800">
@@ -496,7 +496,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                       </h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div className="text-center">
-                          <div className="font-semibold text-indigo-600">
+                          <div className="font-semibold text-yellow-600">
                             ${earnings.followerFee}
                           </div>
                           <div className="text-gray-600">Follower Fee</div>
@@ -505,19 +505,19 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
                           </div>
                         </div>
                         <div className="text-center">
-                          <div className="font-semibold text-indigo-600">
+                          <div className="font-semibold text-yellow-600">
                             ${earnings.impressionFee}
                           </div>
                           <div className="text-gray-600">Impression Fee</div>
                         </div>
                         <div className="text-center">
-                          <div className="font-semibold text-indigo-600">
+                          <div className="font-semibold text-yellow-600">
                             ${earnings.locationFee}
                           </div>
                           <div className="text-gray-600">Location Fee</div>
                         </div>
                         <div className="text-center">
-                          <div className="font-semibold text-indigo-600">
+                          <div className="font-semibold text-yellow-600">
                             ${earnings.nicheFee}
                           </div>
                           <div className="text-gray-600">Niche Fee</div>

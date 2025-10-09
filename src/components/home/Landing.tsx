@@ -3,14 +3,16 @@
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, Lightning, List, Sparkle, Star, X } from "phosphor-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GetStarted from "./extras/GetStarted";
 import LoginPopup from "./extras/Login";
+import { jwtDecode } from "jwt-decode";
 
 export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [getStarted, setGetStarted] = useState<boolean>(false);
   const [login, setLogin] = useState<boolean>(false);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -60,6 +62,66 @@ export default function LandingPage() {
     setLogin(true);
   };
 
+  useEffect(() => {
+    const checkToken = () => {
+      const userStr = localStorage.getItem("user");
+
+      if (!userStr) {
+        setLoggedIn(false);
+        return;
+      }
+
+      try {
+        const userData = JSON.parse(userStr);
+        const token = userData?.data?.access_token || userData?.access_token;
+
+        if (!token) {
+          setLoggedIn(false);
+          return;
+        }
+
+        const decoded: any = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+
+        if (decoded.exp && decoded.exp > currentTime) {
+          setLoggedIn(true);
+        } else {
+          localStorage.removeItem("user");
+          setLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setLoggedIn(false);
+      }
+    };
+
+    checkToken();
+    window.addEventListener("storage", checkToken);
+    return () => window.removeEventListener("storage", checkToken);
+  }, []);
+
+  const handleDashboardLink = () => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        const role = userData?.data?.user?.role;
+
+        if (role === "admin") {
+          window.location.href = "/admin/";
+        } else if (role === "influencer") {
+          window.location.href = "/influencer/";
+        } else if (role === "brand") {
+          window.location.href = "/brand/";
+        } else {
+          window.location.href = "/";
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  };
+
   return (
     <>
       {getStarted && (
@@ -69,7 +131,7 @@ export default function LandingPage() {
         />
       )}
       {login && <LoginPopup onClose={() => setLogin(false)} isOpen={login} />}
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <div className="min-h-screen bg-black">
         {/* Navbar */}
         <motion.nav
           className="flex justify-between items-center p-6 md:px-12 relative"
@@ -77,41 +139,49 @@ export default function LandingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <motion.div
-            className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
-            whileHover={{ scale: 1.1 }}
-          >
-            CaringSparks
+          <motion.div className="w-20" whileHover={{ scale: 1.1 }}>
+            <Image src="/Logo.svg" width={100} height={50} alt="Logo" />
           </motion.div>
 
-          <motion.div className="hidden md:flex items-center space-x-8">
-            <motion.div
-              className="flex items-center space-x-4"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <motion.button
-                onClick={() => setLogin(true)}
-                className="text-gray-700 hover:text-purple-600 transition-colors px-4 py-2"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+          {loggedIn ? (
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <button
+                onClick={handleDashboardLink}
+                className="background text-black font-semibold cursor-pointer px-6 py-2 rounded-full"
               >
-                Login
-              </motion.button>
+                Dashboard
+              </button>
+            </motion.div>
+          ) : (
+            <motion.div className="hidden md:flex items-center space-x-8">
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="flex items-center space-x-4"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
               >
-                <button
-                  onClick={() => setGetStarted(true)}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-2 rounded-full"
+                <motion.button
+                  onClick={() => setLogin(true)}
+                  className="text-white cursor-pointer px-4 py-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  Get Started
-                </button>
+                  Login
+                </motion.button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <button
+                    onClick={() => setGetStarted(true)}
+                    className="background text-black font-semibold cursor-pointer px-6 py-2 rounded-full"
+                  >
+                    Get Started
+                  </button>
+                </motion.div>
               </motion.div>
             </motion.div>
-          </motion.div>
+          )}
 
           <motion.button
             className="md:hidden z-50 relative"
@@ -205,13 +275,13 @@ export default function LandingPage() {
               variants={fadeInUp}
               className="text-5xl md:text-7xl font-bold mb-6"
             >
-              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+              <span className="background bg-clip-text text-transparent">
                 Wanna trend?
               </span>
             </motion.h1>
 
             <motion.div variants={fadeInUp} className="relative">
-              <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-8">
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-8">
                 Then let&apos;s make you trend{" "}
                 <span className="relative">
                   overnight
@@ -237,11 +307,11 @@ export default function LandingPage() {
                   ease: "linear",
                 }}
               >
-                <Sparkle className="text-purple-500 w-8 h-8" />
+                <Sparkle className="txt w-8 h-8" />
               </motion.div>
               <p className="text-xl md:text-2xl text-gray-600">
-                Over <span className="font-bold text-purple-600">100k+</span>{" "}
-                micro influencers
+                Over <span className="font-bold txt">100k+</span> micro
+                influencers
               </p>
               <motion.div
                 animate={{ rotate: -360 }}
@@ -251,14 +321,14 @@ export default function LandingPage() {
                   ease: "linear",
                 }}
               >
-                <Star className="text-pink-500 w-8 h-8" />
+                <Star className="txt w-8 h-8" />
               </motion.div>
             </motion.div>
           </motion.div>
         </section>
 
         {/* Services Section */}
-        <section className="px-6 py-20 bg-gradient-to-b from-slate-50 to-white">
+        <section className="px-6 py-20 bg-gradient-to-b bg-black">
           <motion.div
             className="max-w-6xl mx-auto"
             initial={{ opacity: 0 }}
@@ -268,7 +338,7 @@ export default function LandingPage() {
           >
             <div className="text-center mb-16">
               <motion.h3
-                className="text-4xl md:text-5xl font-bold text-slate-800 mb-6"
+                className="text-4xl md:text-5xl font-bold text-slate-700 mb-6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -382,10 +452,10 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
             >
-              <h4 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+              <h4 className="text-3xl md:text-4xl font-bold text-slate-700 mb-4">
                 We have got you covered
               </h4>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              <p className="text-xl text-slate-500 max-w-2xl mx-auto">
                 Our comprehensive platform connects you with the right
                 influencers to achieve your unique goals
               </p>
@@ -407,9 +477,9 @@ export default function LandingPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <button className="text-xl px-12 py-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-full shadow-2xl group relative overflow-hidden">
+              <button className="text-xl px-12 py-6 background text-white rounded-full shadow-2xl group relative overflow-hidden">
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-pink-600 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute inset-0 background opacity-0 group-hover:opacity-100 transition-opacity"
                   layoutId="button-bg"
                 />
                 <span
@@ -461,68 +531,26 @@ export default function LandingPage() {
 
         {/* Footer */}
         <motion.footer
-          className="bg-gray-900 text-white py-12 px-6"
+          className="bg-black text-white py-12 px-6"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="flex flex-col text-center items-center justify-center">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <h5 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-                  CaringSparks
-                </h5>
+                <span className="flex items-center justify-center">
+                  <Image src="/Logo.svg" width={100} height={50} alt="Logo" />
+                </span>
                 <p className="text-gray-400">
                   Making brands trend overnight with our network of 100k+ micro
                   influencers.
                 </p>
               </motion.div>
-
-              {[
-                {
-                  title: "Services",
-                  items: [
-                    "Influencer Marketing",
-                    "Brand Campaigns",
-                    "Social Media",
-                    "Analytics",
-                  ],
-                },
-                {
-                  title: "Company",
-                  items: ["About Us", "Careers", "Contact", "Blog"],
-                },
-                {
-                  title: "Support",
-                  items: ["Help Center", "Terms", "Privacy", "FAQ"],
-                },
-              ].map((column, index) => (
-                <motion.div
-                  key={column.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <h6 className="font-semibold mb-4">{column.title}</h6>
-                  <ul className="space-y-2">
-                    {column.items.map((item) => (
-                      <li key={item}>
-                        <a
-                          href="#"
-                          className="text-gray-400 hover:text-white transition-colors"
-                        >
-                          {item}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
             </div>
 
             <motion.div
@@ -532,7 +560,7 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
             >
-              <p>&copy; 2025 CaringSparks. All rights reserved.</p>
+              <p>&copy; 2025 The•PR•God. All rights reserved.</p>
             </motion.div>
           </div>
         </motion.footer>
