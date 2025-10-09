@@ -59,7 +59,7 @@ const GetStarted: React.FC<GetStartedProps> = ({ onClose, login }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
+        className="bg-black shadow-2xl rounded-2xl p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
       >
         <button
           onClick={onClose}
@@ -76,7 +76,7 @@ const GetStarted: React.FC<GetStartedProps> = ({ onClose, login }) => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
             >
-              <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-center text-slate-500">
                 Get Started
               </h1>
               <p className="text-gray-600 text-center mt-2">
