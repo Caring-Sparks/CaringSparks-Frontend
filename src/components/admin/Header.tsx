@@ -27,8 +27,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationOffset, setNotificationOffset] = useState(0);
   const NOTIFICATIONS_PER_PAGE = 10;
-
-  // NEW: track unseen/seen using timestamps
   const [hasNewNotifications, setHasNewNotifications] = useState(false);
   const [lastSeen, setLastSeen] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
@@ -67,7 +65,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const hasNoActivity =
     influencers.length === 0 && brands.length === 0 && newPayments.length === 0;
 
-  // Combine and sort all notifications by creation date
   const allNotifications = useMemo(() => {
     const notifications: any[] = [];
 
@@ -104,11 +101,9 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       });
     });
 
-    // Sort by newest first
     return notifications.sort((a, b) => b.timestamp - a.timestamp);
   }, [influencers, brands, newPayments]);
 
-  // Get current page of notifications
   const currentNotifications = allNotifications.slice(
     notificationOffset,
     notificationOffset + NOTIFICATIONS_PER_PAGE
@@ -137,7 +132,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         {},
         {
           headers: {
-            Authorization: `Bearer: ${token}`, // keep as-is if your API expects this
+            Authorization: `Bearer: ${token}`,
           },
         }
       );
@@ -193,7 +188,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     }
   };
 
-  // NEW: compute latest activity timestamp across all sources
   const latestActivityTs = useMemo(() => {
     const times: number[] = [];
 
@@ -210,7 +204,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     return times.length ? Math.max(...times) : 0;
   }, [influencers, brands, newPayments]);
 
-  // NEW: only show the dot if there's something newer than the last time the user opened the panel
   useEffect(() => {
     if (latestActivityTs > lastSeen) {
       setHasNewNotifications(true);
@@ -220,12 +213,11 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const handleNotificationClick = () => {
     setShowNotifications((prev) => !prev);
 
-    // Mark as seen when opening the panel and reset offset
     if (!showNotifications) {
       const seen = Date.now();
       setLastSeen(seen);
       setHasNewNotifications(false);
-      setNotificationOffset(0); // Reset to show latest notifications
+      setNotificationOffset(0);
       if (typeof window !== "undefined") {
         localStorage.setItem("notif_last_seen", String(seen));
       }
@@ -310,16 +302,16 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex items-center justify-between relative">
+    <header className="bg-black shadow-sm shadow-slate-200/20 px-6 py-4 flex items-center justify-between relative">
       <div className="flex items-center space-x-4">
         <button
           onClick={toggleSidebar}
-          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="lg:hidden text-gray-500 p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
           {sidebarOpen ? <BiX size={20} /> : <BiMenu size={20} />}
         </button>
-        <h1 className="text-2xl font-bold lg:hidden block text-gray-900">
-          CaringSparks
+        <h1 className="text-2xl font-bold lg:hidden block text-gray-500">
+          The•PR•God
         </h1>
       </div>
 
@@ -329,7 +321,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={handleNotificationClick}
-            className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="relative p-2 text-gray-600 bg-slate-200/20 border hover:text-blue-500 hover:bg-gray-100 duration-300 ease-in-out rounded-lg transition-colors"
           >
             <BiBell size={20} />
             {hasNewNotifications && (
@@ -407,7 +399,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         {/* Logout */}
         <button
           onClick={() => setShowLogoutPopup(true)}
-          className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-gray-600 hover:text-red-600 bg-slate-200/20 border duration-300 ease-in-out hover:bg-gray-100 rounded-lg transition-colors"
         >
           <BiLogOut size={20} />
         </button>

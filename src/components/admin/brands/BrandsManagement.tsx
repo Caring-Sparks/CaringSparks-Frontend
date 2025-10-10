@@ -17,8 +17,6 @@ import {
 import { Eye, Trash } from "phosphor-react";
 import BrandDetails from "./BrandDetails";
 import { GiCheckMark } from "react-icons/gi";
-
-// Define the expected structure of brand data
 interface BrandData {
   _id: string;
   role?: string;
@@ -94,13 +92,10 @@ const BrandsManagement: React.FC = () => {
   const [customDateTo, setCustomDateTo] = useState<string>("");
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
-
-  // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const { fetchData } = useInitializeAdminData();
 
-  // Get data from store
   const { brands, removeBrand } = useAdminBrands();
   const { loading, refreshing, error, totalBrands, hasInitialized } =
     useAdminStats();
@@ -111,7 +106,6 @@ const BrandsManagement: React.FC = () => {
     }
   }, [fetchData, hasInitialized, loading]);
 
-  // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [
@@ -123,9 +117,7 @@ const BrandsManagement: React.FC = () => {
     customDateTo,
   ]);
 
-  // Enhanced filtering with all filters
   const filteredBrands = useMemo(() => {
-    // Date filtering logic
     const filterByDate = (date: string): boolean => {
       if (dateFilter === "all") return true;
 
@@ -152,7 +144,6 @@ const BrandsManagement: React.FC = () => {
     };
 
     return brands.filter((brand: Brand) => {
-      // Get brand data (could be nested in data property or at root level)
       const brandData: BrandData = brand || {};
       if (!brandData) return false;
 
@@ -195,7 +186,6 @@ const BrandsManagement: React.FC = () => {
     dateFilter,
   ]);
 
-  // Pagination calculations
   const totalPages = Math.ceil(filteredBrands.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -255,17 +245,6 @@ const BrandsManagement: React.FC = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
-  const formatCurrency = (amount?: number): string => {
-    if (!amount) return "₦0";
-    return `₦${new Intl.NumberFormat("en-NG").format(amount)}`;
-  };
-
-  const getPaymentStatusColor = (hasPaid?: boolean): string => {
-    return hasPaid
-      ? "bg-green-100 text-green-800 border-green-200"
-      : "bg-red-100 text-red-800 border-red-200";
-  };
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchTerm(e.target.value);
   };
@@ -303,7 +282,7 @@ const BrandsManagement: React.FC = () => {
     return (
       <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600"></div>
         </div>
       </div>
     );
@@ -335,11 +314,11 @@ const BrandsManagement: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
+    <div className="space-y-6 p-6 bg-black min-h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-gray-500">
             Brands Management
           </h2>
         </div>
@@ -347,7 +326,7 @@ const BrandsManagement: React.FC = () => {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            className="flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-slate-200/20 border border-gray-200/10 rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
             <BiRefresh
               size={16}
@@ -365,13 +344,13 @@ const BrandsManagement: React.FC = () => {
               placeholder="Search brands..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto min-w-[250px]"
+              className="pl-10 pr-4 py-2 border bg-slate-200/20 text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full sm:w-auto min-w-[250px]"
             />
           </div>
           <select
             value={paymentFilter}
             onChange={(e) => setPaymentFilter(e.target.value as PaymentFilter)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="px-4 py-2 border border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20 text-slate-500"
           >
             <option value="all">All Payments</option>
             <option value="paid">Paid</option>
@@ -382,7 +361,7 @@ const BrandsManagement: React.FC = () => {
             onChange={(e) =>
               setValidationFilter(e.target.value as ValidationFilter)
             }
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="px-4 py-2 border border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20 text-slate-500"
           >
             <option value="all">All Validation</option>
             <option value="validated">Validated</option>
@@ -391,7 +370,7 @@ const BrandsManagement: React.FC = () => {
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value as DateFilter)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="px-4 py-2 border border-gray-200/10 text-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
           >
             <option value="all">All Time</option>
             <option value="today">Today</option>
@@ -404,20 +383,20 @@ const BrandsManagement: React.FC = () => {
 
       {/* Custom date range inputs */}
       {dateFilter === "custom" && (
-        <div className="flex gap-4 items-center bg-white p-4 rounded-lg border border-gray-200">
-          <BiCalendar className="text-gray-400" size={18} />
+        <div className="flex gap-4 items-center bg-slate-200/20 p-4 rounded-lg border border-gray-200/10">
+          <BiCalendar className="text-gray-500" size={18} />
           <input
             type="date"
             value={customDateFrom}
             onChange={(e) => setCustomDateFrom(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
           <span className="text-gray-500">to</span>
           <input
             type="date"
             value={customDateTo}
             onChange={(e) => setCustomDateTo(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
         </div>
       )}
@@ -434,7 +413,7 @@ const BrandsManagement: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 overflow-hidden">
         {currentBrands.length === 0 ? (
           <div className="p-8 text-center">
             <div className="text-gray-500">
@@ -455,7 +434,7 @@ const BrandsManagement: React.FC = () => {
                   setCustomDateFrom("");
                   setCustomDateTo("");
                 }}
-                className="mt-2 text-blue-500 hover:text-blue-700 text-sm"
+                className="mt-2 text-yellow-500 hover:text-yellow-700 text-sm"
               >
                 Clear all filters
               </button>
@@ -463,8 +442,8 @@ const BrandsManagement: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+            <table className="w-full bg-black">
+              <thead className="bg-slate-200/20 border-b border-gray-200/10">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Brand
@@ -480,13 +459,13 @@ const BrandsManagement: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-slate-200/10 divide-y divide-gray-200/10">
                 {currentBrands.map((brand: Brand) => {
                   const brandData: BrandData = brand || {};
                   return (
                     <tr
                       key={brand._id}
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      className=""
                       // onClick={() => handleRowClick(brand)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -496,7 +475,7 @@ const BrandsManagement: React.FC = () => {
                               "?"}
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-gray-400">
                               {brandData.brandName || "Unknown Brand"}
                             </div>
                             <div className="text-sm text-gray-500">
@@ -506,7 +485,7 @@ const BrandsManagement: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">
+                        <span className="text-sm text-gray-500">
                           {brandData.role || "N/A"}
                         </span>
                       </td>
@@ -520,11 +499,7 @@ const BrandsManagement: React.FC = () => {
                         >
                           <button
                             type="button"
-                            className="text-green-600 hover:text-green-800 p-2 hover:bg-green-50 rounded-lg transition-colors"
-                            title="View brand details"
-                            aria-label={`View details for ${
-                              brandData.brandName || "brand"
-                            }`}
+                            className="text-green-600 rounded-lg transition-colors"
                             // onClick={() => handleRowClick(brand)}
                           >
                             <GiCheckMark size={16} />
@@ -559,7 +534,7 @@ const BrandsManagement: React.FC = () => {
                       onClick={() => handlePageChange(pageNum)}
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         currentPage === pageNum
-                          ? "bg-blue-600 text-white"
+                          ? "bg-yellow-600 text-white"
                           : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                       }`}
                     >

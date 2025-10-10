@@ -2,11 +2,12 @@
 
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
-import { ArrowRight, Lightning, List, Sparkle, Star, X } from "phosphor-react";
+import { ArrowRight, Lightning, Sparkle, Star, X } from "phosphor-react";
 import { useEffect, useState } from "react";
 import GetStarted from "./extras/GetStarted";
 import LoginPopup from "./extras/Login";
 import { jwtDecode } from "jwt-decode";
+import { FaBarsStaggered } from "react-icons/fa6";
 
 export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -201,7 +202,7 @@ export default function LandingPage() {
                   exit={{ rotate: 90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <X className="w-6 h-6 text-gray-700" />
+                  <X size={28} className="text-white" />
                 </motion.div>
               ) : (
                 <motion.div
@@ -211,7 +212,7 @@ export default function LandingPage() {
                   exit={{ rotate: -90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <List className="w-6 h-6 text-gray-700" />
+                  <FaBarsStaggered size={28} className="text-white" />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -220,7 +221,7 @@ export default function LandingPage() {
           <AnimatePresence>
             {isMobileMenuOpen && (
               <motion.div
-                className="absolute z-20 top-full left-0 right-0 bg-white backdrop-blur-md border-b border-gray-200 shadow-lg md:hidden"
+                className="absolute z-20 top-full left-0 right-0 bg-black backdrop-blur-md border-b border-gray-200 shadow-lg md:hidden"
                 variants={mobileMenuVariants}
                 initial="closed"
                 animate="open"
@@ -239,7 +240,7 @@ export default function LandingPage() {
                     transition={{ delay: 0.3 }}
                   >
                     <motion.button
-                      className="block w-full text-left text-gray-700 hover:text-purple-600 transition-colors py-2"
+                      className="block w-full text-center text-white border rounded-full transition-colors py-2"
                       whileHover={{ x: 10 }}
                       onClick={() => openLogin()}
                     >
@@ -250,7 +251,7 @@ export default function LandingPage() {
                       whileTap={{ scale: 0.98 }}
                     >
                       <button
-                        className="w-full bg-gradient-to-r from-purple-600 p-2 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-full"
+                        className="w-full background py-2 text-white rounded-full"
                         onClick={() => openPopup()}
                       >
                         Get Started

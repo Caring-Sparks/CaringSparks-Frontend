@@ -94,9 +94,9 @@ const SectionCard = ({
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.3 }}
-    className="bg-gray-50 rounded-xl p-5 shadow-sm border border-gray-100"
+    className="bg-slate-200/20 rounded-xl p-5 shadow-sm border border-gray-200/20"
   >
-    <h4 className="text-base font-semibold text-gray-800 mb-4">{title}</h4>
+    <h4 className="text-base font-semibold text-gray-500 mb-4">{title}</h4>
     <div className="space-y-3">{children}</div>
   </motion.div>
 );
@@ -220,13 +220,13 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-xl relative"
+          className="bg-black rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-xl relative"
         >
           {/* Loading Overlay */}
           {isLoading && (
             <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
               <div className="flex flex-col items-center gap-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
                 <p className="text-gray-600 font-medium">
                   {isDeleting && "Deleting influencer..."}
                   {isApproving && "Approving influencer..."}
@@ -237,8 +237,8 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
           )}
 
           {/* Header */}
-          <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
-            <h3 className="text-xl font-bold text-gray-900">
+          <div className="sticky top-0 bg-slate-200/20 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+            <h3 className="text-xl font-bold text-gray-500">
               Influencer Profile
             </h3>
             <button
@@ -457,12 +457,12 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
             {/* Delete confirmation */}
             <div className="relative inline-block">
               {confirm && (
-                <div className="absolute bottom-full left-0 mb-2 bg-white shadow-lg text-black border rounded-md border-slate-200 z-50">
+                <div className="absolute bottom-full left-0 mb-2 bg-slate-200/20 shadow-lg text-black border rounded-md border-slate-200/10 backdrop-blur-2xl z-50">
                   <div className="flex flex-col items-center gap-4 p-6">
                     <span className="bg-red-200 p-4 rounded-full">
                       <Warning size={28} className="text-red-600" />
                     </span>
-                    <h1 className="text-center text-sm font-medium">
+                    <h1 className="text-center text-white text-sm font-medium">
                       Are you sure you want to delete this influencer?
                     </h1>
                     <div className="flex items-center gap-4">
@@ -516,8 +516,8 @@ const Info = ({
   raw?: boolean;
 }) => (
   <div>
-    <p className="text-sm font-medium text-gray-500">{label}</p>
-    <div className="mt-0.5 text-gray-900 text-sm font-semibold">
+    <p className="text-sm font-medium text-gray-400">{label}</p>
+    <div className="mt-0.5 text-gray-500 text-sm font-semibold">
       {raw ? value : <span>{value}</span>}
     </div>
   </div>

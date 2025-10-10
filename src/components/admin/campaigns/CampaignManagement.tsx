@@ -377,7 +377,6 @@ const CampaignManagement: React.FC = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedCampaigns = filteredCampaigns.slice(startIndex, endIndex);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [filter, searchTerm, platformFilter, roleFilter]);
@@ -488,7 +487,7 @@ const CampaignManagement: React.FC = () => {
 
   if (campaignsLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-gray-200 rounded w-1/4"></div>
@@ -506,7 +505,7 @@ const CampaignManagement: React.FC = () => {
 
   if (campaignsError) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <div className="text-red-600 text-lg font-medium mb-2">
@@ -534,7 +533,7 @@ const CampaignManagement: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-8 z-50"
             onClick={() => setShowDeleteModal(false)}
           >
             <motion.div
@@ -543,13 +542,13 @@ const CampaignManagement: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              className="bg-slate-200/20 backdrop-blur-2xl border-slate-200/10 rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-white mb-4">
                 Delete Campaign
               </h2>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-white mb-6">
                 Are you sure you want to delete this campaign? This action
                 cannot be undone.
               </p>
@@ -578,7 +577,7 @@ const CampaignManagement: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-8 z-50"
             onClick={() => setShowApproveModal(false)}
           >
             <motion.div
@@ -587,13 +586,13 @@ const CampaignManagement: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              className="bg-slate-200/20 backdrop-blur-2xl border-slate-200/10 rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-white mb-4">
                 Approve Campaign
               </h2>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-white mb-6">
                 Are you sure you want to approve this campaign? The client will
                 be notified and can proceed with influencer matching.
               </p>
@@ -622,7 +621,7 @@ const CampaignManagement: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-8 z-50"
             onClick={() => setShowRejectModal(false)}
           >
             <motion.div
@@ -631,13 +630,13 @@ const CampaignManagement: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              className="bg-slate-200/20 border-slate-200/10 rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-white mb-4">
                 Reject Campaign
               </h2>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-white mb-6">
                 Are you sure you want to reject this campaign? The client will
                 be notified and may need to revise their requirements.
               </p>
@@ -672,14 +671,14 @@ const CampaignManagement: React.FC = () => {
         submittedJobs={selectedInfluencerJobs}
       />
 
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <div className="flex justify-between items-center gap-6 mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Campaigns</h1>
-                <p className="text-gray-600 mt-1">
-                  View what&apos;s happening with clients campaigns.
+                <h1 className="text-3xl font-bold text-gray-500">Campaigns</h1>
+                <p className="text-gray-500 mt-1">
+                  View what&apos;s happening with campaigns.
                 </p>
               </div>
             </div>
@@ -691,7 +690,7 @@ const CampaignManagement: React.FC = () => {
                   placeholder="Search by brand name, location, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-200/10 bg-slate-200/20 text-slate-400 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 />
               </div>
 
@@ -709,8 +708,8 @@ const CampaignManagement: React.FC = () => {
                     onClick={() => setFilter(status as typeof filter)}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                       filter === status
-                        ? "bg-indigo-600 text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-50"
+                        ? "bg-yellow-500 text-white"
+                        : "bg-slate-200/20 text-gray-500 hover:bg-gray-50 cursor-pointer"
                     }`}
                   >
                     {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -722,7 +721,7 @@ const CampaignManagement: React.FC = () => {
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="px-4 py-2 border border-gray-200/10 bg-slate-200/20 text-slate-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 >
                   <option value="all">All Roles</option>
                   <option value="Brand">Brand</option>
@@ -736,7 +735,7 @@ const CampaignManagement: React.FC = () => {
                 <select
                   value={platformFilter}
                   onChange={(e) => setPlatformFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="px-4 py-2 border border-gray-200/10 bg-slate-200/20 text-slate-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 >
                   <option value="all">All Platforms</option>
                   <option value="instagram">Instagram</option>
@@ -753,29 +752,29 @@ const CampaignManagement: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {campaigns.length}
                 </div>
-                <div className="text-gray-600">Total Campaigns</div>
+                <div className="text-gray-500">Total Campaigns</div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {campaigns.filter((c) => c.hasPaid).length}
                 </div>
-                <div className="text-gray-600">Paid Campaigns</div>
+                <div className="text-gray-500">Paid Campaigns</div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {campaigns.filter((c) => c.status === "pending").length}
                 </div>
-                <div className="text-gray-600">Pending Approval</div>
+                <div className="text-gray-500">Pending Approval</div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {campaigns.filter((c) => c.status === "approved").length}
                 </div>
-                <div className="text-gray-600">Approved Campaigns</div>
+                <div className="text-gray-500">Approved Campaigns</div>
               </div>
             </div>
 
@@ -791,7 +790,7 @@ const CampaignManagement: React.FC = () => {
 
           <div className="space-y-4">
             {paginatedCampaigns.length === 0 ? (
-              <div className="bg-white p-12 rounded-lg shadow-sm text-center">
+              <div className="bg-slate-200/20 p-12 rounded-lg shadow-sm text-center">
                 <div className="text-gray-400 text-lg mb-2">
                   No campaigns found
                 </div>
@@ -805,13 +804,13 @@ const CampaignManagement: React.FC = () => {
               paginatedCampaigns.map((campaign: any) => (
                 <div
                   key={campaign._id}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+                  className="bg-slate-200/20 backdrop-blur-2xl rounded-lg border-slate-200/10"
                 >
                   <div className="p-6">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 flex-wrap mb-2">
-                          <h3 className="text-xl font-semibold text-gray-900">
+                          <h3 className="text-xl font-semibold text-gray-500">
                             {campaign.brandName}
                           </h3>
                           <span
@@ -826,7 +825,7 @@ const CampaignManagement: React.FC = () => {
                           </span>
                         </div>
 
-                        <p className="text-gray-600 mb-4">
+                        <p className="text-gray-500 mb-4">
                           {campaign.platforms.join(", ")} • {campaign.location}
                           {campaign.additionalLocations &&
                             campaign.additionalLocations.length > 0 &&
@@ -835,37 +834,37 @@ const CampaignManagement: React.FC = () => {
 
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Influencers:
                             </span>
-                            <div className="text-gray-900">
+                            <div className="text-gray-500">
                               {campaign.influencersMin} -{" "}
                               {campaign.influencersMax}
                             </div>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Followers:
                             </span>
-                            <div className="text-gray-900">
+                            <div className="text-gray-500">
                               {campaign.followersRange || "Any"}
                             </div>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Budget:
                             </span>
-                            <div className="text-gray-900">
+                            <div className="text-gray-500">
                               {campaign.totalCost
                                 ? formatCurrency(campaign.totalCost)
                                 : "TBD"}
                             </div>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Created:
                             </span>
-                            <div className="text-gray-900">
+                            <div className="text-gray-500">
                               {formatDate(campaign.createdAt)}
                             </div>
                           </div>
@@ -876,20 +875,20 @@ const CampaignManagement: React.FC = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm">
                               {campaign.postFrequency && (
                                 <div>
-                                  <span className="font-medium text-gray-700">
+                                  <span className="font-medium text-gray-400">
                                     Post Frequency:
                                   </span>
-                                  <div className="text-gray-900">
+                                  <div className="text-gray-500">
                                     {campaign.postFrequency}
                                   </div>
                                 </div>
                               )}
                               {campaign.postDuration && (
                                 <div>
-                                  <span className="font-medium text-gray-700">
+                                  <span className="font-medium text-gray-400">
                                     Duration:
                                   </span>
-                                  <div className="text-gray-900">
+                                  <div className="text-gray-500">
                                     {campaign.postDuration}
                                   </div>
                                 </div>
@@ -900,7 +899,7 @@ const CampaignManagement: React.FC = () => {
 
                         {campaign.assignedInfluencers?.length > 0 && (
                           <div className="mt-4 pt-4 border-t border-gray-200">
-                            <h4 className="font-medium text-gray-700 mb-3">
+                            <h4 className="font-medium text-gray-400 mb-3">
                               Assigned Influencers
                             </h4>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -917,7 +916,7 @@ const CampaignManagement: React.FC = () => {
                                   return (
                                     <div
                                       key={inf._id || idx}
-                                      className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition cursor-pointer relative"
+                                      className="flex items-start gap-3 p-3 bg-slate-200/10 rounded-xl border border-gray-200/10 hover:shadow-md transition cursor-pointer relative"
                                       onClick={() =>
                                         assignedInfluencer &&
                                         handleInfluencerClick(
@@ -949,10 +948,10 @@ const CampaignManagement: React.FC = () => {
                                           "I"}
                                       </div>
                                       <div className="flex flex-col">
-                                        <span className="font-medium text-gray-900">
+                                        <span className="font-medium text-gray-300">
                                           {inf.name}
                                         </span>
-                                        <span className="text-gray-600 text-sm">
+                                        <span className="text-gray-300 text-sm">
                                           {inf.email}
                                         </span>
                                         {isCompleted && (

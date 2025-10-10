@@ -39,7 +39,6 @@ const Stats = () => {
   const calculateGrowthPercentage = () => {
     const totalUsers = totalBrands + totalInfluencers;
     if (totalUsers === 0) return 0;
-    // This seems like a placeholder calculation - you may want to adjust this
     const growthRate = Math.min((totalUsers / 100) * 94.3, 100);
     return growthRate;
   };
@@ -49,14 +48,13 @@ const Stats = () => {
     return ((current - previous) / previous) * 100;
   };
 
-  // These would typically come from historical data or previous period stats
   const previousStats = {
-    totalInfluencers: Math.max(0, totalInfluencers - Math.floor(totalInfluencers * 0.1)), // Mock 10% less
-    totalBrands: Math.max(0, totalBrands - Math.floor(totalBrands * 0.1)), // Mock 10% less
-    activeBrands: Math.max(0, activeBrands - Math.floor(activeBrands * 0.05)), // Mock 5% less
-    verifiedInfluencers: Math.max(0, verifiedInfluencers - Math.floor(verifiedInfluencers * 0.08)), // Mock 8% less
-    revenue: Math.max(0, calculateRevenue() - (calculateRevenue() * 0.15)), // Mock 15% less
-    growthRate: Math.max(0, calculateGrowthPercentage() - 5), // Mock 5% less
+    totalInfluencers: Math.max(0, totalInfluencers - Math.floor(totalInfluencers * 0.1)),
+    totalBrands: Math.max(0, totalBrands - Math.floor(totalBrands * 0.1)),
+    activeBrands: Math.max(0, activeBrands - Math.floor(activeBrands * 0.05)),
+    verifiedInfluencers: Math.max(0, verifiedInfluencers - Math.floor(verifiedInfluencers * 0.08)),
+    revenue: Math.max(0, calculateRevenue() - (calculateRevenue() * 0.15)),
+    growthRate: Math.max(0, calculateGrowthPercentage() - 5),
   };
 
   function formatRevenue(value: number): string {
@@ -147,16 +145,16 @@ const Stats = () => {
   return (
     <div className="space-y-6 p-6">
       <span className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+        <h2 className="text-2xl font-bold text-gray-500">Dashboard Overview</h2>
         <button
           onClick={handleRefresh}
           disabled={loading}
-          className={`p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition
+          className={`p-2 rounded-full bg-slate-200/20 hover:bg-gray-300 transition
               ${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
         >
           <IoReload
             className={`text-xl ${
-              loading ? "animate-spin text-blue-500" : "text-gray-700"
+              loading ? "animate-spin text-yellow-500" : "text-gray-500"
             }`}
           />
         </button>

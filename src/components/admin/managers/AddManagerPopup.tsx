@@ -125,7 +125,7 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
         setIsLoading(false);
       }
     },
-    [token, showToast] // dependencies
+    [token, showToast]
   );
 
   // Load manager data when in edit mode
@@ -141,7 +141,6 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
         }
       });
     } else if (isOpen && !isEditMode) {
-      // Reset form for add mode
       setInitialValues({
         name: "",
         email: "",
@@ -215,7 +214,6 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
       const result = await submitManagerData(values);
 
       if (result.success) {
-        // Success handling
         showToast({
           type: "success",
           title: isEditMode
@@ -231,9 +229,8 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
           resetForm();
         }
 
-        fetchAdmins(); // Refresh the admin list
+        fetchAdmins();
 
-        // Call success callback if provided
         if (onSuccess) {
           onSuccess(result.data);
         }
@@ -252,7 +249,6 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
         });
       }
     } catch (error) {
-      // Unexpected error handling
       showToast({
         type: "error",
         title: "Unexpected Error",
@@ -285,10 +281,10 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-xl relative"
+          className="bg-slate-200/10 border border-slate-200/10 backdrop-blur-2xl rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-xl relative"
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200/10">
             <div className="flex items-center space-x-3">
               <div
                 className={`p-2 rounded-lg ${
@@ -301,7 +297,7 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
                   <Plus className="w-5 h-5 text-blue-600" />
                 )}
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-400">
                 {isEditMode ? "Edit Manager" : "Add New Manager"}
               </h2>
             </div>
@@ -319,7 +315,7 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
           {isLoading && isEditMode && (
             <div className="p-6 flex items-center justify-center">
               <div className="flex items-center space-x-3">
-                <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-yellow-600 border-t-transparent rounded-full animate-spin" />
                 <span className="text-gray-600">
                   Loading manager details...
                 </span>
@@ -331,11 +327,11 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
           {(!isLoading || !isEditMode) && (
             <div className="p-6">
               <Formik
-                key={`${managerId}-${initialValues.email}`} // Force re-render when data changes
+                key={`${managerId}-${initialValues.email}`}
                 initialValues={initialValues}
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
-                enableReinitialize // Allow form to reinitialize when initialValues change
+                enableReinitialize
               >
                 {({ isValid, dirty, values }) => (
                   <Form className="space-y-5">
@@ -343,7 +339,7 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
                     <div>
                       <label
                         htmlFor="name"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-sm font-medium text-gray-500 mb-2"
                       >
                         Full Name
                       </label>
@@ -355,7 +351,7 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
                           type="text"
                           id="name"
                           name="name"
-                          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                          className="block w-full pl-10 pr-3 py-2 border border-gray-200/10 bg-slate-200/10 text-gray-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-colors"
                           placeholder="Enter full name"
                           disabled={isSubmitting}
                         />
@@ -371,7 +367,7 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
                     <div>
                       <label
                         htmlFor="email"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-sm font-medium text-gray-400 mb-2"
                       >
                         Email Address
                       </label>
@@ -383,7 +379,7 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
                           type="email"
                           id="email"
                           name="email"
-                          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                          className="block w-full pl-10 pr-3 py-2 border border-gray-200/10 bg-slate-200/10 text-gray-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-colors"
                           placeholder="Enter email address"
                           disabled={isSubmitting}
                         />
@@ -399,7 +395,7 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
                     <div>
                       <label
                         htmlFor="phoneNumber"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-sm font-medium text-gray-400 mb-2"
                       >
                         Phone Number
                       </label>
@@ -411,7 +407,7 @@ const AddEditManagerPopup: React.FC<AddEditManagerPopupProps> = ({
                           type="tel"
                           id="phoneNumber"
                           name="phoneNumber"
-                          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                          className="block w-full pl-10 pr-3 py-2 border border-gray-200/10 bg-slate-200/10 text-gray-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-colors"
                           placeholder="Enter phone number"
                           disabled={isSubmitting}
                         />

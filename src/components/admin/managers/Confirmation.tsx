@@ -23,7 +23,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed h-screen w-full flex justify-center items-center top-0 right-0 z-50 bg-slate-200/20 backdrop-blur-md"
+        className="fixed h-screen w-full flex justify-center items-center top-0 right-0 z-50 bg-black/20 backdrop-blur-md"
         onClick={() => setConfirmation(false)}
       >
         <motion.div
@@ -31,7 +31,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex flex-col bg-white shadow-lg text-black border rounded-md border-slate-200 items-center gap-4 p-6"
+          className="flex flex-col bg-slate-200/10 shadow-lg text-white border rounded-md border-slate-200/10 items-center gap-4 p-6"
           onClick={(e) => e.stopPropagation()}
         >
           <span className="bg-red-200 p-4 rounded-full">
@@ -41,17 +41,17 @@ const Confirmation: React.FC<ConfirmationProps> = ({
             Are you sure you want to delete this Administrator?
           </h1>
           <small>This action cannot be reversed.</small>
-          <div className="flex items-center gap-4">
+          <div className="grid md:grid-cols-2 w-full items-center gap-4">
             <button
               onClick={() => handleDelete(id, name)}
               disabled={deleting}
-              className="px-3 py-1 bg-red-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className="py-2 bg-red-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {deleting ? "deleting..." : "Yes, delete"}
             </button>
             <button
               onClick={() => setConfirmation(false)}
-              className="px-3 py-1 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className="py-2 bg-gray-200 text-black rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               No, cancel
             </button>
