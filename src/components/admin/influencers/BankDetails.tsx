@@ -33,10 +33,12 @@ const BankDetailsDisplay: React.FC<InfluencerDetailsProps> = ({
 
   if (!hasBankDetails && !hasCryptoDetails) {
     return (
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <p className="text-gray-500 text-center">
-          No payment details available
-        </p>
+      <div className="p-6">
+        <div className="bg-slate-200/20 border border-gray-200 rounded-lg p-6">
+          <p className="text-gray-500 text-center">
+            No payment details available
+          </p>
+        </div>
       </div>
     );
   }

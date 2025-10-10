@@ -2,10 +2,17 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useBrandStore } from "@/stores/brandStore";
-import { FaPlus, FaUpload, FaTimes, FaSpinner } from "react-icons/fa";
+import {
+  FaPlus,
+  FaUpload,
+  FaTimes,
+  FaSpinner,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 import NewCampaign from "./NewCampaign";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/utils/ToastNotification";
@@ -147,7 +154,7 @@ interface Campaign {
   status: "pending" | "approved" | "rejected";
   createdAt?: string;
   updatedAt?: string;
-  assignedInfluencers: AssignedInfluencer[]; // Updated to use AssignedInfluencer interface
+  assignedInfluencers: AssignedInfluencer[];
 }
 
 interface CampaignMaterial {
@@ -197,6 +204,10 @@ const Campaigns: React.FC = () => {
   const [isProcessingPayment, setIsProcessingPayment] =
     useState<boolean>(false);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
   // Modal states
   const [showInfluencerDetails, setShowInfluencerDetails] =
     useState<boolean>(false);
@@ -244,7 +255,6 @@ const Campaigns: React.FC = () => {
     document.head.appendChild(script);
 
     return () => {
-      // Cleanup script if needed
       const existingScript = document.querySelector(
         'script[src="https://checkout.flutterwave.com/v3.js"]'
       );
@@ -297,7 +307,7 @@ const Campaigns: React.FC = () => {
             (inf) => inf._id === influencer._id
           );
 
-          if (alreadyAdded) return prev; // Correctly skips if already found
+          if (alreadyAdded) return prev;
 
           return {
             ...prev,
@@ -315,12 +325,10 @@ const Campaigns: React.FC = () => {
     influencer: Influencer,
     campaign: Campaign
   ) => {
-    // Find the assigned influencer data for this specific influencer and campaign
     const assignedInfluencerData = campaign.assignedInfluencers?.find(
       (assigned) => assigned.influencerId === influencer._id
     );
 
-    // Always show the influencer details modal, with job submissions if available
     setSelectedInfluencer(influencer);
     setSelectedInfluencerJobs({
       influencer,
@@ -334,19 +342,13 @@ const Campaigns: React.FC = () => {
   const closeInfluencerDetailsModal = () => {
     setShowInfluencerDetails(false);
     setSelectedInfluencer(null);
-    setSelectedInfluencerJobs(null); // Clear job submissions when closing
+    setSelectedInfluencerJobs(null);
   };
 
   const closeAllInfluencersModal = () => {
     setShowAllInfluencers(false);
     setSelectedCampaignInfluencers(null);
   };
-
-  // Removed the old job submissions modal - now integrated into InfluencerDetailsModal
-  // const closeJobSubmissionsModal = () => {
-  //   setShowJobSubmissionsModal(false)
-  //   setSelectedInfluencerJobs(null)
-  // }
 
   const handleOpenMaterialsModal = (campaign: Campaign) => {
     setSelectedCampaignForMaterials(campaign);
@@ -399,6 +401,22 @@ const Campaigns: React.FC = () => {
     );
   };
 
+  const getAuthToken = () => {
+    if (typeof window !== "undefined") {
+      try {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          return user?.data?.token || user?.token || null;
+        }
+      } catch (err) {
+        console.error("Error parsing user token:", err);
+      }
+    }
+    return null;
+  };
+  const token = getAuthToken();
+
   const handleUploadMaterials = async () => {
     if (!selectedCampaignForMaterials) return;
 
@@ -422,14 +440,11 @@ const Campaigns: React.FC = () => {
     try {
       const formData = new FormData();
 
-      // Add campaign ID
       formData.append("campaignId", selectedCampaignForMaterials._id || "");
 
       validMaterials.forEach((material, index) => {
         if (material.file) {
-          // Add images to the 'images' field that multer expects
           formData.append("images", material.file);
-          // Add descriptions with indexed format that the backend parses
           formData.append(
             `materials[${index}][description]`,
             material.description
@@ -463,7 +478,6 @@ const Campaigns: React.FC = () => {
 
       closeMaterialsModal();
 
-      // Refresh campaigns to show updated materials
       if (user?.email) {
         await fetchCampaignsByEmail(user.email);
       } else {
@@ -510,8 +524,8 @@ const Campaigns: React.FC = () => {
     setIsProcessingPayment(true);
 
     const config: FlutterwaveConfig = {
-      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "", // Add your Flutterwave public key to env
-      tx_ref: `campaign_${campaign._id}_${Date.now()}`, // Unique transaction reference
+      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
+      tx_ref: `campaign_${campaign._id}_${Date.now()}`,
       amount: campaign.totalCost,
       currency: "NGN",
       payment_options: "card,mobilemoney,ussd,banktransfer",
@@ -558,7 +572,6 @@ const Campaigns: React.FC = () => {
   const handlePaymentCallback = async (response: any, campaign: Campaign) => {
     try {
       if (response.status === "successful") {
-        // Verify payment on your backend (recommended)
         const verificationResult = await verifyPayment(response.transaction_id);
 
         if (verificationResult.success) {
@@ -578,7 +591,6 @@ const Campaigns: React.FC = () => {
             duration: 8000,
           });
 
-          // Refresh campaigns list
           if (user?.email) {
             await fetchCampaignsByEmail(user.email);
           } else {
@@ -604,30 +616,14 @@ const Campaigns: React.FC = () => {
     }
   };
 
-  const getAuthToken = () => {
-    if (typeof window !== "undefined") {
-      try {
-        const userStr = localStorage.getItem("user");
-        if (userStr) {
-          const user = JSON.parse(userStr);
-          return user?.data?.token || user?.token || null;
-        }
-      } catch (err) {
-        console.error("Error parsing user token:", err);
-      }
-    }
-    return null;
-  };
-  const token = getAuthToken();
-
-  // Verify payment on backend (you'll need to implement this endpoint)
+  // Verify payment on backend
   const verifyPayment = async (transactionId: string) => {
     try {
       const response = await fetch("/api/verify-payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Assuming you have user token
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ transactionId }),
       });
@@ -640,53 +636,110 @@ const Campaigns: React.FC = () => {
   };
 
   // Filter campaigns based on current filters
-  const filteredCampaigns = campaigns.filter((campaign) => {
-    // Status filter
-    let matchesFilter = true;
-    if (filter === "paid") matchesFilter = campaign.hasPaid === true;
-    else if (filter === "unpaid") matchesFilter = campaign.hasPaid !== true;
-    else if (filter === "approved")
-      matchesFilter = campaign.status === "approved";
-    else if (filter === "rejected")
-      matchesFilter = campaign.status === "rejected";
-    else if (filter === "pending")
-      matchesFilter = campaign.status === "pending";
+  const filteredCampaigns = useMemo(() => {
+    return campaigns.filter((campaign) => {
+      let matchesFilter = true;
+      if (filter === "paid") matchesFilter = campaign.hasPaid === true;
+      else if (filter === "unpaid") matchesFilter = campaign.hasPaid !== true;
+      else if (filter === "approved")
+        matchesFilter = campaign.status === "approved";
+      else if (filter === "rejected")
+        matchesFilter = campaign.status === "rejected";
+      else if (filter === "pending")
+        matchesFilter = campaign.status === "pending";
 
-    // Search filter
-    const matchesSearch =
-      campaign.brandName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      campaign.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      campaign.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch =
+        campaign.brandName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        campaign.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        campaign.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Platform filter
-    const matchesPlatform =
-      platformFilter === "all" ||
-      campaign.platforms.some(
-        (p) => p.toLowerCase() === platformFilter.toLowerCase()
-      );
+      const matchesPlatform =
+        platformFilter === "all" ||
+        campaign.platforms.some(
+          (p) => p.toLowerCase() === platformFilter.toLowerCase()
+        );
 
-    // Role filter
-    const matchesRole = roleFilter === "all" || campaign.role === roleFilter;
+      const matchesRole = roleFilter === "all" || campaign.role === roleFilter;
 
-    return matchesFilter && matchesSearch && matchesPlatform && matchesRole;
-  });
+      return matchesFilter && matchesSearch && matchesPlatform && matchesRole;
+    });
+  }, [campaigns, filter, searchTerm, platformFilter, roleFilter]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCampaigns = filteredCampaigns.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchTerm, platformFilter, roleFilter]);
+
+  // Pagination handlers
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePageClick = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) pages.push(i);
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push("...");
+        pages.push(currentPage - 1);
+        pages.push(currentPage);
+        pages.push(currentPage + 1);
+        pages.push("...");
+        pages.push(totalPages);
+      }
+    }
+
+    return pages;
+  };
 
   const getStatusColor = (campaign: Campaign) => {
     switch (campaign.status) {
       case "approved":
         if (campaign.hasPaid) {
-          return "bg-green-100 text-green-800"; // Active (Approved & Paid)
+          return "bg-green-100 text-green-800";
         } else {
-          return "bg-blue-100 text-blue-800"; // Approved but Unpaid
+          return "bg-blue-100 text-blue-800";
         }
       case "rejected":
-        return "bg-red-100 text-red-800"; // Rejected
+        return "bg-red-100 text-red-800";
       case "pending":
       default:
         if (campaign.hasPaid) {
-          return "bg-yellow-100 text-yellow-800"; // Paid but Pending Approval
+          return "bg-yellow-100 text-yellow-800";
         } else {
-          return "bg-gray-100 text-gray-800"; // Pending & Unpaid
+          return "bg-gray-100 text-gray-800";
         }
     }
   };
@@ -695,18 +748,18 @@ const Campaigns: React.FC = () => {
     switch (campaign.status) {
       case "approved":
         if (campaign.hasPaid) {
-          return "Active"; // Approved & Paid
+          return "Active";
         } else {
-          return "Approved - Payment Required"; // Approved but not paid
+          return "Approved - Payment Required";
         }
       case "rejected":
         return "Rejected";
       case "pending":
       default:
         if (campaign.hasPaid) {
-          return "Paid - Pending Approval"; // Paid but waiting for approval
+          return "Paid - Pending Approval";
         } else {
-          return "Pending"; // Not paid and not approved
+          return "Pending";
         }
     }
   };
@@ -811,7 +864,6 @@ const Campaigns: React.FC = () => {
         throw new Error(result.message || "Failed to delete material");
       }
 
-      // Remove the deleted material from the list
       setUploadedMaterials((prev) =>
         prev.filter((material) => material._id !== materialId)
       );
@@ -836,7 +888,6 @@ const Campaigns: React.FC = () => {
     }
   };
 
-  // Helper function to check if an influencer has completed all their assigned jobs
   const isInfluencerCompleted = (
     campaign: Campaign,
     influencerId: string
@@ -847,7 +898,6 @@ const Campaigns: React.FC = () => {
     return assigned?.isCompleted ?? false;
   };
 
-  // Handler to show all influencers for a campaign
   const handleShowAllInfluencers = (campaign: Campaign) => {
     const influencersForCampaign = assignedInf[campaign._id!] || [];
     setSelectedCampaignInfluencers({
@@ -857,17 +907,14 @@ const Campaigns: React.FC = () => {
     setShowAllInfluencers(true);
   };
 
-  // Handler to open influencer details or job submissions from the AllInfluencersModal
   const handleInfluencerClickFromModal = (
     influencer: Influencer,
     campaign: Campaign
   ) => {
-    // Find the assigned influencer data for this specific influencer and campaign
     const assignedInfluencerData = campaign.assignedInfluencers?.find(
       (assigned) => assigned.influencerId === influencer._id
     );
 
-    // Always show the influencer details modal, with job submissions if available
     setSelectedInfluencer(influencer);
     setSelectedInfluencerJobs({
       influencer,
@@ -1043,7 +1090,7 @@ const Campaigns: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Existing Upload Materials Modal */}
+      {/* Upload Materials Modal */}
       <AnimatePresence>
         {showMaterialsModal && (
           <motion.div
@@ -1105,7 +1152,6 @@ const Campaigns: React.FC = () => {
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* File Upload */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Upload Image
@@ -1155,7 +1201,6 @@ const Campaigns: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* Description */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Description
@@ -1177,7 +1222,6 @@ const Campaigns: React.FC = () => {
                     </div>
                   ))}
 
-                  {/* Add Another Material Button */}
                   <button
                     onClick={addNewMaterial}
                     className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
@@ -1286,7 +1330,6 @@ const Campaigns: React.FC = () => {
 
             {/* Filters and Search */}
             <div className="space-y-4 mb-6">
-              {/* Search */}
               <div className="flex-1">
                 <input
                   type="text"
@@ -1297,9 +1340,7 @@ const Campaigns: React.FC = () => {
                 />
               </div>
 
-              {/* Filter buttons */}
               <div className="flex flex-wrap gap-2">
-                {/* Status filters */}
                 {[
                   "all",
                   "paid",
@@ -1322,9 +1363,7 @@ const Campaigns: React.FC = () => {
                 ))}
               </div>
 
-              {/* Additional filters */}
               <div className="flex flex-wrap gap-4">
-                {/* Role filter */}
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
@@ -1339,7 +1378,6 @@ const Campaigns: React.FC = () => {
                   <option value="Other">Other</option>
                 </select>
 
-                {/* Platform filter */}
                 <select
                   value={platformFilter}
                   onChange={(e) => setPlatformFilter(e.target.value)}
@@ -1363,9 +1401,11 @@ const Campaigns: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="text-2xl font-bold text-gray-900">
-                  {campaigns.length}
+                  {filteredCampaigns.length}
                 </div>
-                <div className="text-gray-600">Total Campaigns</div>
+                <div className="text-gray-600">
+                  {filter === "all" ? "Total" : "Filtered"} Campaigns
+                </div>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="text-2xl font-bold text-gray-900">
@@ -1386,11 +1426,20 @@ const Campaigns: React.FC = () => {
                 <div className="text-gray-600">Approved Campaigns</div>
               </div>
             </div>
+
+            {/* Pagination Info */}
+            {filteredCampaigns.length > 0 && (
+              <div className="text-sm text-gray-600 mb-4">
+                Showing {startIndex + 1} -{" "}
+                {Math.min(endIndex, filteredCampaigns.length)} of{" "}
+                {filteredCampaigns.length} campaigns
+              </div>
+            )}
           </div>
 
           {/* Campaigns List */}
-          <div className="space-y-4">
-            {filteredCampaigns.length === 0 ? (
+          <div className="space-y-4 mb-8">
+            {paginatedCampaigns.length === 0 ? (
               <div className="bg-white p-12 rounded-lg shadow-sm text-center">
                 <div className="text-gray-400 text-lg mb-2">
                   No campaigns found
@@ -1402,7 +1451,7 @@ const Campaigns: React.FC = () => {
                 </p>
               </div>
             ) : (
-              filteredCampaigns.map((campaign: any) => (
+              paginatedCampaigns.map((campaign: any) => (
                 <div
                   key={campaign._id}
                   className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
@@ -1506,7 +1555,7 @@ const Campaigns: React.FC = () => {
                             </h4>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               {assignedInf[campaign._id!]
-                                ?.slice(0, 3) // show only first 3
+                                ?.slice(0, 3)
                                 .map((inf, idx) => {
                                   const isCompleted = isInfluencerCompleted(
                                     campaign,
@@ -1561,7 +1610,6 @@ const Campaigns: React.FC = () => {
                                   );
                                 })}
 
-                              {/* Show "+N more" if influencers exceed 3 */}
                               {assignedInf[campaign._id!] &&
                                 assignedInf[campaign._id!].length > 3 && (
                                   <div
@@ -1636,6 +1684,79 @@ const Campaigns: React.FC = () => {
               ))
             )}
           </div>
+
+          {/* Pagination Controls */}
+          {filteredCampaigns.length > itemsPerPage && (
+            <div className="bg-white rounded-lg shadow-sm p-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-sm text-gray-600">
+                  Page {currentPage} of {totalPages}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {/* Previous Button */}
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="Previous page"
+                  >
+                    <FaChevronLeft className="w-4 h-4 text-gray-600" />
+                  </button>
+
+                  {/* Page Numbers */}
+                  <div className="flex items-center gap-1">
+                    {getPageNumbers().map((page, index) => (
+                      <button
+                        key={index}
+                        onClick={() =>
+                          typeof page === "number" && handlePageClick(page)
+                        }
+                        disabled={page === "..."}
+                        className={`min-w-[40px] h-10 px-3 rounded-lg text-sm font-medium transition-colors ${
+                          page === currentPage
+                            ? "bg-indigo-600 text-white"
+                            : page === "..."
+                            ? "cursor-default text-gray-400"
+                            : "border border-gray-300 hover:bg-gray-50 text-gray-700"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="Next page"
+                  >
+                    <FaChevronRight className="w-4 h-4 text-gray-600" />
+                  </button>
+                </div>
+
+                {/* Go to page input (optional) */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Go to:</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max={totalPages}
+                    value={currentPage}
+                    onChange={(e) => {
+                      const page = parseInt(e.target.value);
+                      if (page >= 1 && page <= totalPages) {
+                        handlePageClick(page);
+                      }
+                    }}
+                    className="w-16 px-2 py-1 border border-gray-300 rounded-lg text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

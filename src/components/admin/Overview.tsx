@@ -8,7 +8,6 @@ import Link from "next/link";
 const Overview = () => {
   const { campaigns, influencers } = useAdminStore();
 
-  // ✅ Add safety checks for campaigns array
   const safeCampaigns = campaigns && Array.isArray(campaigns) ? campaigns : [];
 
   const newInfluencer = [...influencers]
@@ -18,7 +17,6 @@ const Overview = () => {
     )
     .at(0);
 
-  // ✅ Use campaigns instead of brands
   const newCampaign = [...safeCampaigns]
     .sort(
       (a, b) =>
@@ -31,7 +29,6 @@ const Overview = () => {
     (influencer) => influencer.status === "pending"
   );
 
-  // ✅ Use campaigns for payment info
   const newPayment = safeCampaigns
     .filter((campaign) => campaign.hasPaid === true)
     .sort(
@@ -80,8 +77,8 @@ const Overview = () => {
   return (
     <div className="space-y-8 mt-8 p-6">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-slate-200/10 backdrop-blur-2xl rounded-xl shadow-sm border border-gray-200/10 p-6">
+          <h3 className="text-lg font-semibold text-gray-500 mb-4">
             Recent Activity
           </h3>
           {!recentActivity ? (
@@ -99,17 +96,17 @@ const Overview = () => {
               {/* for influencer */}
               {newInfluencer && (
                 <Link href="/admin/influencers">
-                  <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center space-x-3 p-3 bg-slate-200/20 rounded-lg">
                     <BiUserCheck className="text-blue-600" size={20} />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-gray-300">
                         New influencer joined!
                       </p>
-                      <p className="text-xs text-gray-600">
+                      <p className="text-xs text-gray-300">
                         {newInfluencer.name} joined as an influencer
                       </p>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-300">
                       {formatDate(newInfluencer.createdAt)}
                     </span>
                   </div>
@@ -119,18 +116,18 @@ const Overview = () => {
               {/* for payment */}
               {newPayment && (
                 <Link href="/admin/campaigns">
-                  <div className="flex items-center space-x-3 mt-2 p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center space-x-3 mt-2 p-3 bg-slate-200/20 rounded-lg">
                     <FaDollarSign className="text-green-600" size={20} />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-gray-300">
                         Campaign payment processed!
                       </p>
-                      <p className="text-xs text-gray-600">
+                      <p className="text-xs text-gray-300">
                         ₦{newPayment.totalCost?.toLocaleString() || "0"} has
                         been paid for {newPayment.brandName}&apos;s campaign
                       </p>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-300">
                       {formatDate(
                         newPayment.updatedAt || newPayment.createdAt || ""
                       )}
@@ -142,17 +139,17 @@ const Overview = () => {
               {/* for new campaign */}
               {newCampaign && (
                 <Link href="/admin/campaigns">
-                  <div className="flex items-center space-x-3 p-3 mt-2 bg-purple-50 rounded-lg">
+                  <div className="flex items-center space-x-3 p-3 mt-2 bg-slate-200/20 rounded-lg">
                     <BiTrendingUp className="text-purple-600" size={20} />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-gray-300">
                         New campaign created!
                       </p>
-                      <p className="text-xs text-gray-600">
+                      <p className="text-xs text-gray-300">
                         {newCampaign.brandName} created a new campaign
                       </p>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-300">
                       {formatDate(newCampaign.createdAt || "")}
                     </span>
                   </div>
@@ -162,8 +159,8 @@ const Overview = () => {
           )}
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-slate-200/10 backdrop-blur-2xl rounded-xl shadow-sm border border-gray-200/10 p-6">
+          <h3 className="text-lg font-semibold text-gray-500 mb-4">
             Pending Approvals
           </h3>
           {pendingApprovals.length > 0 ? (
@@ -171,16 +168,16 @@ const Overview = () => {
               {pendingApprovals.map((user, index) => (
                 <Link key={index} href="/admin/influencers">
                   <div className="space-y-3" key={user._id}>
-                    <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-slate-200/20 rounded-lg">
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                           <Users size={16} className="text-yellow-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium text-gray-300">
                             {user.name}
                           </p>
-                          <p className="text-xs text-gray-600 truncate max-w-[200px]">
+                          <p className="text-xs text-gray-300 truncate max-w-[200px]">
                             {user?.niches?.length ? user.niches.join(", ") : ""}
                           </p>
                         </div>

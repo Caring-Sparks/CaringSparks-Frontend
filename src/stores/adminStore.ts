@@ -273,7 +273,6 @@ export const useAdminStore = create<AdminState>()(
             loading: false,
             hasInitialized: true,
           });
-          console.log(influencerRes.data.data)
         } catch (error: any) {
           const errorMessage =
             error.response?.data?.message ||

@@ -21,8 +21,6 @@ import {
 import Image from "next/image";
 import InfluencerDetails from "./InfluencerDetails";
 import { useToast } from "@/utils/ToastNotification";
-
-// Types for processed influencer data
 interface SocialMedia {
   impressions?: number;
   followers?: number;
@@ -106,19 +104,16 @@ const InfluencersManagement: React.FC = () => {
     (state) => state.updateInfluencerStatus
   );
 
-  // Initialize data on component mount
   useEffect(() => {
     if (!hasInitialized && !loading) {
       fetchData();
     }
   }, [fetchData, hasInitialized, loading]);
 
-  // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, statusFilter, dateFilter, customDateFrom, customDateTo]);
 
-  // Extract influencer data from the store format
   const processedInfluencers = useMemo<ProcessedInfluencer[]>(() => {
     return influencers.map((influencer) => ({
       id: influencer._id,
@@ -168,9 +163,7 @@ const InfluencersManagement: React.FC = () => {
     }));
   }, [influencers]);
 
-  // Filtered influencers based on search, status, and date
   const filteredInfluencers = useMemo<ProcessedInfluencer[]>(() => {
-    // Date filtering logic
     const filterByDate = (date: string): boolean => {
       if (dateFilter === "all") return true;
 
@@ -379,7 +372,6 @@ const InfluencersManagement: React.FC = () => {
     return pages;
   };
 
-  // Show loading only if we haven't initialized AND we're loading
   if (loading && !hasInitialized) {
     return (
       <div className="flex justify-center flex-col items-center h-screen">
@@ -399,7 +391,7 @@ const InfluencersManagement: React.FC = () => {
           </div>
         </>
       )}
-      <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
+      <div className="space-y-6 p-6 bg-black min-h-screen">
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex">
@@ -417,14 +409,14 @@ const InfluencersManagement: React.FC = () => {
         )}
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-gray-500">
             Influencers Management
           </h2>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-slate-200/20 border border-gray-200/10 rounded-lg hover:bg-gray-50 disabled:opacity-50"
             >
               <BiRefresh
                 size={16}
@@ -444,7 +436,7 @@ const InfluencersManagement: React.FC = () => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSearchTerm(e.target.value)
                 }
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="pl-10 pr-4 py-2 border border-gray-200/20 text-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
               />
             </div>
             <select
@@ -452,7 +444,7 @@ const InfluencersManagement: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setStatusFilter(e.target.value as StatusFilter)
               }
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="px-4 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
@@ -464,7 +456,7 @@ const InfluencersManagement: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setDateFilter(e.target.value as DateFilter)
               }
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="px-4 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
             >
               <option value="all">All Time</option>
               <option value="today">Today</option>
@@ -477,45 +469,45 @@ const InfluencersManagement: React.FC = () => {
 
         {/* Custom date range inputs */}
         {dateFilter === "custom" && (
-          <div className="flex gap-4 items-center bg-white p-4 rounded-lg border border-gray-200">
+          <div className="flex gap-4 items-center bg-slate-200/20 p-4 rounded-lg border border-gray-200/10">
             <BiCalendar className="text-gray-400" size={18} />
             <input
               type="date"
               value={customDateFrom}
               onChange={(e) => setCustomDateFrom(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border text-gray-500 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
             <span className="text-gray-500">to</span>
             <input
               type="date"
               value={customDateTo}
               onChange={(e) => setCustomDateTo(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border text-gray-500 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
           </div>
         )}
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-gray-900">
+          <div className="bg-slate-200/20 backdrop-blur-2xl p-4 rounded-lg border border-gray-200/10">
+            <div className="text-2xl font-bold text-gray-500">
               {totalInfluencers}
             </div>
             <div className="text-sm text-gray-500">Total Influencers</div>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <div className="bg-slate-200/20 backdrop-blur-2xl p-4 rounded-lg border border-gray-200/10">
             <div className="text-2xl font-bold text-green-600">
               {statusCounts.approved}
             </div>
             <div className="text-sm text-gray-500">Approved</div>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <div className="bg-slate-200/20 backdrop-blur-2xl p-4 rounded-lg border border-gray-200/10">
             <div className="text-2xl font-bold text-yellow-600">
               {statusCounts.pending}
             </div>
             <div className="text-sm text-gray-500">Pending</div>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <div className="bg-slate-200/20 backdrop-blur-2xl p-4 rounded-lg border border-gray-200/10">
             <div className="text-2xl font-bold text-red-600">
               {statusCounts.rejected}
             </div>
@@ -535,10 +527,10 @@ const InfluencersManagement: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="rounded-xl shadow-sm border border-gray-200/20 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-slate-200/20 border-b border-gray-200">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Influencer
@@ -557,12 +549,12 @@ const InfluencersManagement: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-slate-200/10 divide-y divide-gray-200">
                 {currentInfluencers.length > 0 ? (
                   currentInfluencers.map((influencer) => (
                     <tr
                       key={influencer.id}
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="hover:bg-slate-200/20 transition-colors cursor-pointer"
                       onClick={() => handleRowClick(influencer)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -581,7 +573,7 @@ const InfluencersManagement: React.FC = () => {
                             </div>
                           )}
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-gray-500">
                               {influencer.name}
                             </div>
                             <div className="text-sm text-gray-500">
@@ -591,7 +583,7 @@ const InfluencersManagement: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900 max-w-[110px] truncate block">
+                        <span className="text-sm text-gray-500 max-w-[110px] truncate block">
                           {influencer.category}
                         </span>
                       </td>
@@ -666,7 +658,7 @@ const InfluencersManagement: React.FC = () => {
                         onClick={() => handlePageChange(pageNum)}
                         className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           currentPage === pageNum
-                            ? "bg-blue-600 text-white"
+                            ? "bg-yellow-600 text-white"
                             : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                         }`}
                       >

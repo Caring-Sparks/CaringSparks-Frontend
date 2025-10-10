@@ -50,7 +50,6 @@ interface Influencer {
   isActive: boolean;
 }
 
-// Updated interfaces to match new schema
 interface AssignedInfluencer {
   _id: string;
   influencerId: string;
@@ -117,7 +116,6 @@ const InfluencerAssignment: React.FC = () => {
   const [nicheFilter, setNicheFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  // All available platforms based on your enum
   const availablePlatforms = [
     "Instagram",
     "X",
@@ -147,7 +145,6 @@ const InfluencerAssignment: React.FC = () => {
     return null;
   };
 
-  // Fix: Updated function signature to handle both new and old data formats.
   const getAssignedInfluencerIds = (
     assignedInfluencers?: (AssignedInfluencer | string)[]
   ): string[] => {
@@ -158,13 +155,13 @@ const InfluencerAssignment: React.FC = () => {
     return assignedInfluencers
       .map((item: any) => {
         if (typeof item === "string") {
-          return item; // Old format
+          return item;
         }
         return item.influencerId?._id || item._id;
       })
       .filter(Boolean);
   };
-  // Initialize data and find campaign
+
   useEffect(() => {
     const initializeData = async () => {
       if (!hasInitialized) {
@@ -176,12 +173,10 @@ const InfluencerAssignment: React.FC = () => {
         return;
       }
 
-      // Find campaign from store
       const foundCampaign = campaigns.find((c) => c._id === campaignId);
       if (foundCampaign) {
         setCampaign(foundCampaign);
 
-        // Extract influencer IDs from the new structure
         const assignedIds = getAssignedInfluencerIds(
           foundCampaign.assignedInfluencers
         );
@@ -200,7 +195,6 @@ const InfluencerAssignment: React.FC = () => {
     initializeData();
   }, [campaignId, campaigns, hasInitialized, fetchData, router, showToast]);
 
-  // Handle store errors
   useEffect(() => {
     if (error) {
       showToast({
@@ -213,7 +207,6 @@ const InfluencerAssignment: React.FC = () => {
     }
   }, [error, showToast, clearError]);
 
-  // Convert store influencers to component format and apply filters
   useEffect(() => {
     if (!influencers || influencers.length === 0) {
       setFilteredInfluencers([]);
@@ -222,11 +215,9 @@ const InfluencerAssignment: React.FC = () => {
 
     const convertedInfluencers: Influencer[] = influencers
       .filter((inf) => {
-        // Only include approved influencers
         return inf.status === "approved";
       })
       .map((inf) => {
-        // Helper function to safely parse follower counts
         const parseFollowers = (
           followers: string | number | undefined | null
         ): number => {
@@ -236,7 +227,6 @@ const InfluencerAssignment: React.FC = () => {
           return isNaN(parsed) ? 0 : parsed;
         };
 
-        // Calculate total followers from all platforms
         const platformFollowers = [
           parseFollowers(inf.instagram?.followers),
           parseFollowers(inf.twitter?.followers),
@@ -254,10 +244,8 @@ const InfluencerAssignment: React.FC = () => {
           0
         );
 
-        // Build social media accounts array
         const socialMediaAccounts: SocialMediaAccount[] = [];
 
-        // Helper function to add platform if it has followers
         const addPlatform = (platformName: string, platformData: any) => {
           if (
             platformData?.followers &&
@@ -272,7 +260,6 @@ const InfluencerAssignment: React.FC = () => {
           }
         };
 
-        // Add all platforms
         addPlatform("Instagram", inf.instagram);
         addPlatform("X", inf.twitter);
         addPlatform("TikTok", inf.tiktok);
@@ -283,7 +270,6 @@ const InfluencerAssignment: React.FC = () => {
         addPlatform("Threads", inf.threads);
         addPlatform("Snapchat", inf.snapchat);
 
-        // Split name into first and last name
         const nameParts = (inf.name || "Unknown User").split(" ");
         const firstName = nameParts[0] || "Unknown";
         const lastName = nameParts.slice(1).join(" ") || "";
@@ -311,7 +297,6 @@ const InfluencerAssignment: React.FC = () => {
 
     // Apply filters
     let filtered = convertedInfluencers.filter((influencer) => {
-      // Search filter
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch =
         !searchTerm ||
@@ -321,7 +306,6 @@ const InfluencerAssignment: React.FC = () => {
         influencer.location.toLowerCase().includes(searchLower) ||
         influencer.niche.some((n) => n.toLowerCase().includes(searchLower));
 
-      // Platform filter
       const matchesPlatform =
         platformFilter === "all" ||
         influencer.socialMediaAccounts.some(
@@ -329,7 +313,6 @@ const InfluencerAssignment: React.FC = () => {
             account.platform.toLowerCase() === platformFilter.toLowerCase()
         );
 
-      // Location filter (now supports typing/searching)
       const matchesLocation =
         !locationFilter ||
         influencer.location
@@ -390,7 +373,6 @@ const InfluencerAssignment: React.FC = () => {
       );
     });
 
-    // Sort by rating and total followers
     filtered.sort((a, b) => {
       if (a.rating !== b.rating) return b.rating - a.rating;
       return b.totalFollowers - a.totalFollowers;
@@ -413,7 +395,6 @@ const InfluencerAssignment: React.FC = () => {
     if (newSelected.has(influencerId)) {
       newSelected.delete(influencerId);
     } else {
-      // Check if we haven't exceeded the maximum number of influencers
       if (campaign && newSelected.size < campaign.influencersMax) {
         newSelected.add(influencerId);
       } else {
@@ -433,12 +414,10 @@ const InfluencerAssignment: React.FC = () => {
   const handleAssignInfluencers = async () => {
     if (!campaignId || selectedInfluencers.size === 0) return;
 
-    // Get currently assigned influencer IDs
     const currentlyAssignedIds = getAssignedInfluencerIds(
       campaign?.assignedInfluencers
     );
 
-    // Filter out already assigned influencers from selection
     const newInfluencerIds = Array.from(selectedInfluencers).filter(
       (id) => !currentlyAssignedIds.includes(id)
     );
@@ -496,10 +475,8 @@ const InfluencerAssignment: React.FC = () => {
         duration: 6000,
       });
 
-      // Refresh data to get updated campaign info
       await fetchData();
 
-      // Navigate back to campaigns list
       router.push("/admin/campaigns");
     } catch (error: any) {
       console.error("Error assigning influencers:", error);
@@ -573,7 +550,7 @@ const InfluencerAssignment: React.FC = () => {
 
   if (loading || !hasInitialized) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-gray-200 rounded w-1/4"></div>
@@ -591,14 +568,14 @@ const InfluencerAssignment: React.FC = () => {
 
   if (!campaign) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto text-center">
           <div className="text-red-600 text-lg font-medium">
             Campaign not found
           </div>
           <button
             onClick={() => router.push("/admin/campaigns")}
-            className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg"
+            className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg"
           >
             Back to Campaigns
           </button>
@@ -610,7 +587,7 @@ const InfluencerAssignment: React.FC = () => {
   const assignmentSummary = getAssignmentSummary();
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-black p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -619,13 +596,13 @@ const InfluencerAssignment: React.FC = () => {
               onClick={() => router.push("/admin/campaigns")}
               className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
             >
-              <FaArrowLeft className="w-5 h-5" />
+              <FaArrowLeft className="w-5 h-5 text-slate-500" />
             </button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-500">
                 Assign Influencers
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-500 mt-1">
                 Campaign:{" "}
                 <span className="font-medium">{campaign.brandName}</span>
               </p>
@@ -633,57 +610,57 @@ const InfluencerAssignment: React.FC = () => {
           </div>
 
           {/* Campaign Info */}
-          <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
+          <div className="bg-slate-200/20 border-slate-200/10 rounded-lg p-6 shadow-sm mb-6">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
               <div>
-                <span className="font-medium text-gray-700">Location:</span>
-                <div className="text-gray-900">
+                <span className="font-medium text-gray-400">Location:</span>
+                <div className="text-gray-500">
                   {campaign.location || "Any"}
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-gray-400">
                   Required Influencers:
                 </span>
-                <div className="text-gray-900">
+                <div className="text-gray-500">
                   {campaign.influencersMin} - {campaign.influencersMax}
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-gray-400">
                   Currently Assigned:
                 </span>
-                <div className="text-gray-900">
+                <div className="text-gray-500">
                   {assignmentSummary.currentlyAssigned}
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-700">Selected:</span>
-                <div className="text-gray-900">
+                <span className="font-medium text-gray-400">Selected:</span>
+                <div className="text-gray-500">
                   {assignmentSummary.totalSelected}
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-gray-400">
                   New Assignments:
                 </span>
-                <div className="text-gray-900">
+                <div className="text-gray-500">
                   {assignmentSummary.newSelections}
                 </div>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="font-medium text-gray-700">Platforms:</span>
-                <div className="text-gray-900">
+                <span className="font-medium text-gray-400">Platforms:</span>
+                <div className="text-gray-500">
                   {campaign.platforms.join(", ")}
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-gray-400">
                   Followers Range:
                 </span>
-                <div className="text-gray-900">
+                <div className="text-gray-500">
                   {campaign.followersRange || "Any"}
                 </div>
               </div>
@@ -700,15 +677,15 @@ const InfluencerAssignment: React.FC = () => {
                   placeholder="Search influencers..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 text-slate-400 bg-slate-200/20 border border-gray-200/20 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-lg border-slate-200/10 font-medium transition-colors duration-200 flex items-center gap-2 ${
                   showFilters
-                    ? "bg-indigo-600 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50"
+                    ? "bg-yellow-500 text-white"
+                    : "bg-slate-200/20 text-gray-500 hover:bg-gray-50"
                 }`}
               >
                 <FaFilter className="w-4 h-4" />
@@ -724,17 +701,17 @@ const InfluencerAssignment: React.FC = () => {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-white rounded-lg p-6 shadow-sm overflow-hidden"
+                  className="bg-slate-200/20 rounded-lg p-6 shadow-sm overflow-hidden"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-400 mb-1">
                         Platform
                       </label>
                       <select
                         value={platformFilter}
                         onChange={(e) => setPlatformFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       >
                         <option value="all">All Platforms</option>
                         {availablePlatforms.map((platform) => (
@@ -746,7 +723,7 @@ const InfluencerAssignment: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-400 mb-1">
                         Location
                       </label>
                       <input
@@ -754,18 +731,18 @@ const InfluencerAssignment: React.FC = () => {
                         placeholder="Type to filter location..."
                         value={locationFilter}
                         onChange={(e) => setLocationFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-400 mb-1">
                         Followers
                       </label>
                       <select
                         value={followersFilter}
                         onChange={(e) => setFollowersFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       >
                         <option value="all">All Followers</option>
                         <option value="1k-3k">1K - 3K</option>
@@ -777,13 +754,13 @@ const InfluencerAssignment: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-400 mb-1">
                         Niche
                       </label>
                       <select
                         value={nicheFilter}
                         onChange={(e) => setNicheFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       >
                         <option value="all">All Niches</option>
                         {getUniqueNiches().map((niche) => (
@@ -802,14 +779,14 @@ const InfluencerAssignment: React.FC = () => {
 
         {/* Results Count */}
         <div className="mb-6 flex justify-between items-center">
-          <p className="text-gray-600">
+          <p className="text-gray-500">
             {filteredInfluencers.length} influencers found
           </p>
           {assignmentSummary.newSelections > 0 && (
             <button
               onClick={handleAssignInfluencers}
               disabled={assignLoading}
-              className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+              className="bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-400 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
             >
               {assignLoading
                 ? "Assigning..."
@@ -820,8 +797,8 @@ const InfluencerAssignment: React.FC = () => {
 
         {/* Assignment Status Info */}
         {assignmentSummary.currentlyAssigned > 0 && (
-          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-blue-800">
+          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 text-yellow-800">
               <div className="text-sm">
                 <strong>{assignmentSummary.currentlyAssigned}</strong>{" "}
                 influencers already assigned. Selecting additional influencers
@@ -842,8 +819,8 @@ const InfluencerAssignment: React.FC = () => {
             return (
               <div
                 key={influencer._id}
-                className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer relative ${
-                  isSelected ? "ring-2 ring-indigo-500 border-indigo-500" : ""
+                className={`bg-slate-200/20 border-slate-200/10 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer relative ${
+                  isSelected ? "ring-2 ring-yellow-500 border-yellow-500" : ""
                 } ${isAlreadyAssigned ? "opacity-75" : ""}`}
                 onClick={() => handleInfluencerSelect(influencer._id)}
               >
@@ -876,17 +853,17 @@ const InfluencerAssignment: React.FC = () => {
                         </div>
                       )}
                       <div>
-                        <h3 className="font-semibold text-gray-900">
+                        <h3 className="font-semibold text-gray-400">
                           {influencer.firstName} {influencer.lastName}
                         </h3>
-                        <p className="text-gray-600 text-sm">
+                        <p className="text-gray-500 text-sm">
                           {influencer.location}
                         </p>
                       </div>
                     </div>
                     <div
                       className={`p-2 rounded-full ${
-                        isSelected ? "bg-indigo-600" : "bg-gray-100"
+                        isSelected ? "bg-yellow-500" : "bg-gray-100"
                       }`}
                     >
                       {isSelected ? (
@@ -909,13 +886,13 @@ const InfluencerAssignment: React.FC = () => {
                               className="flex items-center gap-1 text-sm"
                             >
                               {getPlatformIcon(account.platform)}
-                              <span className="text-gray-700">
+                              <span className="text-gray-500">
                                 {formatFollowers(account.followerCount)}
                               </span>
                             </div>
                           ))}
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-500">
                         Total:{" "}
                         <span className="font-medium">
                           {formatFollowers(influencer.totalFollowers)} followers
@@ -926,7 +903,7 @@ const InfluencerAssignment: React.FC = () => {
                     {/* Niches */}
                     {influencer.niche.length > 0 && (
                       <div>
-                        <span className="text-gray-600 text-sm">Niches:</span>
+                        <span className="text-gray-500 text-sm">Niches:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {influencer.niche.slice(0, 3).map((niche, index) => (
                             <span
@@ -943,13 +920,6 @@ const InfluencerAssignment: React.FC = () => {
                           )}
                         </div>
                       </div>
-                    )}
-
-                    {/* Bio */}
-                    {influencer.bio && (
-                      <p className="text-gray-600 text-sm line-clamp-2">
-                        {influencer.bio}
-                      </p>
                     )}
                   </div>
                 </div>
