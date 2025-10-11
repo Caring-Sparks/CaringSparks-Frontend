@@ -337,12 +337,12 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded-lg border border-gray-200 z-50"
+                className="absolute right-0 mt-2 w-72 bg-slate-200/20 backdrop-blur-2xl shadow-lg rounded-lg border border-gray-200/10 z-50"
               >
-                <div className="p-3 bg-slate-200/50 font-semibold text-gray-700 flex items-center justify-between">
+                <div className="p-3 bg-slate-200/10 font-semibold text-gray-400 flex items-center justify-between">
                   <span>Notifications</span>
                   {allNotifications.length > 0 && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-400">
                       Showing{" "}
                       {Math.min(
                         notificationOffset + NOTIFICATIONS_PER_PAGE,
@@ -413,7 +413,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-8 z-50"
             onClick={() => setShowLogoutPopup(false)}
           >
             <motion.div
@@ -422,13 +422,13 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              className="bg-slate-200/20 backdrop-blur-2xl border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-gray-500 mb-4">
                 Confirm Logout
               </h2>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-gray-400 mb-6">
                 Are you sure you want to logout?
               </p>
               <div className="flex space-x-3">
