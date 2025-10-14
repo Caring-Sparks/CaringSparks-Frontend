@@ -66,9 +66,9 @@ export default function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-black p-4">
       <motion.div
-        className="bg-black text-gray-800 rounded-3xl shadow-2xl w-full max-w-md p-8"
+        className="bg-black text-gray-800 rounded-3xl border border-slate-200/10 shadow-2xl w-full max-w-md p-8"
         initial={{ scale: 0.9, y: 50, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
         transition={{ type: "spring", damping: 20, stiffness: 300 }}
@@ -107,7 +107,7 @@ export default function ResetPasswordForm() {
                       <Field
                         type={showPassword ? "text" : "password"}
                         name="password"
-                        className="w-full pl-10 pr-12 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all"
+                        className="frm2"
                         placeholder="New password"
                       />
                       <button
@@ -136,7 +136,7 @@ export default function ResetPasswordForm() {
                       <Field
                         type={showConfirmPassword ? "text" : "password"}
                         name="confirmPassword"
-                        className="w-full pl-10 pr-12 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all"
+                        className="frm2"
                         placeholder="Confirm new password"
                       />
                       <button

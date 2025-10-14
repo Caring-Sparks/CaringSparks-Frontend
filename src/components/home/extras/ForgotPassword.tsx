@@ -47,13 +47,13 @@ export default function ForgotPassword({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-center justify-center bg-slate-200/20 backdrop-blur-md z-50 p-4"
+          className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-2xl z-50 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-black text-gray-800 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
+            className="bg-black text-gray-800 border border-slate-200/10 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
             initial={{ scale: 0.9, y: 50, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 50, opacity: 0 }}
@@ -113,7 +113,7 @@ export default function ForgotPassword({
                             <Field
                               type="email"
                               name="email"
-                              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all"
+                              className="frm2"
                               placeholder="Enter your email address"
                             />
                           </div>
@@ -128,11 +128,7 @@ export default function ForgotPassword({
                         <div>
                           <div className="relative">
                             <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <Field
-                              as="select"
-                              name="role"
-                              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:border-yellow-500 transition-all appearance-none cursor-pointer"
-                            >
+                            <Field as="select" name="role" className="frm2">
                               <option
                                 value=""
                                 disabled
@@ -144,22 +140,6 @@ export default function ForgotPassword({
                               <option value="brand">Brand</option>
                               <option value="admin">Admin</option>
                             </Field>
-                            {/* Custom dropdown arrow */}
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                              <svg
-                                className="w-5 h-5 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 9l-7 7-7-7"
-                                />
-                              </svg>
-                            </div>
                           </div>
                           <ErrorMessage
                             name="role"
