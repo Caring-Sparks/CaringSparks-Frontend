@@ -24,8 +24,6 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState("overview");
-
-  // Get user data from store
   const { userLoading, user } = useBrandStore();
   const menuItems = useMemo(
     () => [
@@ -56,7 +54,6 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
     if (found) {
       setActiveTab(found.id);
     } else {
-      // Handle nested routes or catch-all scenarios
       const foundNested = menuItems.find((item) =>
         pathname.startsWith(item.route + "/")
       );
@@ -66,7 +63,6 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
     }
   }, [pathname, menuItems]);
 
-  // Get user initials for avatar
   const getUserInitials = (name?: string, email?: string) => {
     if (name) {
       return name
@@ -82,7 +78,6 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
     return "A";
   };
 
-  // Get display name
   const getDisplayName = () => {
     if (user?.brandName) return user.brandName;
     if (user?.email) return user.email.split("@")[0];
@@ -101,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-64 bg-white transform transition-transform duration-300 ease-in-out
+          fixed inset-y-0 left-0 z-50 w-64 bg-black transform transition-transform duration-300 ease-in-out
           ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
           }
@@ -111,13 +106,11 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           {/* Header */}
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <Activity className="text-white" size={24} />
+              <div className="flex items-center justify-center">
+                <Image src="/Logo.svg" width={100} height={50} alt="Logo" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">
-                  CaringSparks
-                </h2>
+                <h2 className="text-xl font-bold text-gray-500">The•PR•God</h2>
                 <p className="text-sm text-gray-500">Brand Panel</p>
               </div>
             </div>
@@ -134,12 +127,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   key={item.id}
                   onClick={() => {
                     router.push(item.route);
-                    setSidebarOpen(false); // Close sidebar on mobile after clicking
+                    setSidebarOpen(false);
                   }}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 ${
                     isActive
-                      ? "bg-gradient-to-r from-blue-50 to-purple-50 text-blue-600 border-r-2 border-blue-600"
-                      : "text-gray-700 hover:bg-gray-50"
+                      ? "text-yellow-600 border-s-2 border-yellow-600 bg-slate-200/20"
+                      : "text-gray-500 hover:bg-slate-200/10"
                   }`}
                 >
                   <Icon size={20} />
@@ -176,14 +169,14 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-gray-500 truncate">
                       {getDisplayName()}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
                       {user.email}
                     </p>
                     {user.role && (
-                      <p className="text-xs text-blue-600 font-medium">
+                      <p className="text-xs text-yellow-600 font-medium">
                         {user.role}
                       </p>
                     )}
@@ -201,7 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   </p>
                   <button
                     onClick={() => router.push("/")}
-                    className="text-xs text-blue-600 hover:text-blue-700"
+                    className="text-xs text-yellow-500 hover:text-yellow-700"
                   >
                     Click to login
                   </button>

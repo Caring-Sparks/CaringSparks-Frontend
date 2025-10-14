@@ -22,7 +22,6 @@ import AllInfluencersModal from "./AllInfluencers";
 import axios from "axios";
 import Image from "next/image";
 
-// Flutterwave types
 interface FlutterwaveConfig {
   public_key: string;
   tx_ref: string;
@@ -49,7 +48,6 @@ declare global {
   }
 }
 
-// Platform data interface matching your schema
 interface PlatformData {
   followers: string;
   url: string;
@@ -57,7 +55,6 @@ interface PlatformData {
   proofUrl?: string;
 }
 
-// Influencer interface matching your schema
 interface Influencer {
   _id: string;
   name: string;
@@ -123,7 +120,6 @@ interface AssignedInfluencer {
   _id: string;
 }
 
-// Updated Campaign interface to match the brand store
 interface Campaign {
   _id?: string;
   role: "Brand" | "Business" | "Person" | "Movie" | "Music" | "Other";
@@ -203,12 +199,8 @@ const Campaigns: React.FC = () => {
   const [payingCampaign, setPayingCampaign] = useState<string>("");
   const [isProcessingPayment, setIsProcessingPayment] =
     useState<boolean>(false);
-
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-
-  // Modal states
   const [showInfluencerDetails, setShowInfluencerDetails] =
     useState<boolean>(false);
   const [showAllInfluencers, setShowAllInfluencers] = useState<boolean>(false);
@@ -247,7 +239,6 @@ const Campaigns: React.FC = () => {
 
   const { showToast } = useToast();
 
-  // Load Flutterwave script
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.flutterwave.com/v3.js";
@@ -264,7 +255,6 @@ const Campaigns: React.FC = () => {
     };
   }, []);
 
-  // Fetch campaigns on component mount
   useEffect(() => {
     const loadCampaigns = async () => {
       if (user?.email) {
@@ -453,7 +443,7 @@ const Campaigns: React.FC = () => {
       });
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/brands/campaigns/upload-materials`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/brands/upload-materials`,
         {
           method: "POST",
           headers: {
@@ -635,7 +625,6 @@ const Campaigns: React.FC = () => {
     }
   };
 
-  // Filter campaigns based on current filters
   const filteredCampaigns = useMemo(() => {
     return campaigns.filter((campaign) => {
       let matchesFilter = true;
@@ -957,7 +946,7 @@ const Campaigns: React.FC = () => {
                   ? fetchCampaignsByEmail(user.email)
                   : fetchCampaigns()
               }
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+              className="bg-red-600 hover:bg-red-400 text-white px-4 py-2 rounded-lg"
             >
               Retry
             </button>
@@ -985,6 +974,7 @@ const Campaigns: React.FC = () => {
         onInfluencerClick={handleInfluencerClickFromModal}
       />
 
+      {/* View Materials Modal */}
       <AnimatePresence>
         {showViewMaterialsModal && (
           <motion.div
@@ -992,7 +982,7 @@ const Campaigns: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
             onClick={closeViewMaterialsModal}
           >
             <motion.div
@@ -1001,13 +991,13 @@ const Campaigns: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden"
+              className="bg-black rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-gray-200">
+              <div className="p-6 border-b border-slate-200/10">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">
+                    <h2 className="text-xl font-semibold text-gray-400">
                       Campaign Materials
                     </h2>
                     <p className="text-sm text-gray-600 mt-1">
@@ -1027,7 +1017,7 @@ const Campaigns: React.FC = () => {
               <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
                 {isLoadingMaterials ? (
                   <div className="flex items-center justify-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500"></div>
                     <span className="ml-3 text-gray-600">
                       Loading materials...
                     </span>
@@ -1046,7 +1036,7 @@ const Campaigns: React.FC = () => {
                     {uploadedMaterials.map((material) => (
                       <div
                         key={material._id}
-                        className="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-slate-200/20 border border-slate-200/10 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                       >
                         <div className="aspect-square relative">
                           <Image
@@ -1065,7 +1055,7 @@ const Campaigns: React.FC = () => {
                           </button>
                         </div>
                         <div className="p-4">
-                          <p className="text-gray-800 text-sm leading-relaxed mb-2">
+                          <p className="text-gray-400 text-sm leading-relaxed mb-2">
                             {material.postDescription}
                           </p>
                         </div>
@@ -1075,11 +1065,11 @@ const Campaigns: React.FC = () => {
                 )}
               </div>
 
-              <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="p-6 border-t border-slate-200/10 bg-slate-200/20">
                 <div className="flex justify-end">
                   <button
                     onClick={closeViewMaterialsModal}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors"
+                    className="px-4 py-2 bg-slate-200/10 hover:bg-gray-50/10 rounded-lg text-gray-400 transition-colors"
                   >
                     Close
                   </button>
@@ -1098,7 +1088,7 @@ const Campaigns: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
             onClick={closeMaterialsModal}
           >
             <motion.div
@@ -1107,13 +1097,13 @@ const Campaigns: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+              className="bg-black border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">
+                    <h2 className="text-xl font-semibold text-gray-400">
                       Add Campaign Materials
                     </h2>
                     <p className="text-sm text-gray-600 mt-1">
@@ -1135,16 +1125,16 @@ const Campaigns: React.FC = () => {
                   {campaignMaterials.map((material, index) => (
                     <div
                       key={material.id}
-                      className="border border-gray-200 rounded-lg p-4"
+                      className="border border-slate-200/10 rounded-lg p-4"
                     >
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-medium text-gray-900">
+                        <h3 className="font-medium text-gray-400">
                           Material {index + 1}
                         </h3>
                         {campaignMaterials.length > 1 && (
                           <button
                             onClick={() => removeMaterial(material.id)}
-                            className="text-red-500 hover:text-red-700 p-1"
+                            className="text-red-500 hover:text-red-400 p-1"
                           >
                             <FaTimes className="w-4 h-4" />
                           </button>
@@ -1153,10 +1143,10 @@ const Campaigns: React.FC = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Upload Image
                           </label>
-                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-indigo-400 transition-colors">
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-yellow-400 transition-colors">
                             <input
                               type="file"
                               accept="image/*"
@@ -1202,7 +1192,7 @@ const Campaigns: React.FC = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Description
                           </label>
                           <textarea
@@ -1215,7 +1205,7 @@ const Campaigns: React.FC = () => {
                             }
                             placeholder="Describe this campaign material..."
                             rows={6}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                            className="w-full px-3 py-2 border text-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
                           />
                         </div>
                       </div>
@@ -1224,7 +1214,7 @@ const Campaigns: React.FC = () => {
 
                   <button
                     onClick={addNewMaterial}
-                    className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
+                    className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-yellow-400 hover:bg-yellow-50 transition-colors"
                   >
                     <FaPlus className="w-5 h-5 text-gray-400 mx-auto mb-2" />
                     <span className="text-sm text-gray-600">
@@ -1234,18 +1224,18 @@ const Campaigns: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="p-6 border-t border-slate-200/10 bg-slate-200/20">
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={closeMaterialsModal}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors"
+                    className="px-4 py-2 bg-slate-200/20 hover:bg-gray-50/10 rounded-lg text-gray-400 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleUploadMaterials}
                     disabled={isUploadingMaterials}
-                    className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isUploadingMaterials ? "Uploading..." : "Upload Materials"}
                   </button>
@@ -1273,7 +1263,7 @@ const Campaigns: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-8 z-50"
             onClick={() => setShowDeleteModal(false)}
           >
             <motion.div
@@ -1282,25 +1272,25 @@ const Campaigns: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              className="bg-slate-200/20 border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-gray-400 mb-4">
                 Confirm Action
               </h2>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-gray-400 mb-6">
                 Are you sure you want to delete this campaign?
               </p>
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition"
+                  className="flex-1 px-4 py-2 bg-gray-50/10 hover:bg-gray-50/5 rounded-lg text-gray-400 transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleDeleteCampaign(deletingID)}
-                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition"
+                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-400 rounded-lg text-white transition"
                 >
                   {isDeleting ? "Deleting..." : "Delete"}
                 </button>
@@ -1309,20 +1299,20 @@ const Campaigns: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <div className="flex justify-between items-center gap-6 mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Campaigns</h1>
-                <p className="text-gray-600 mt-1">
+                <h1 className="text-3xl font-bold text-gray-500">Campaigns</h1>
+                <p className="text-gray-500 mt-1">
                   View what&apos;s happening with your campaigns.
                 </p>
               </div>
               <button
                 onClick={() => setNewCampaign(true)}
-                className="bg-indigo-600 flex items-center gap-3 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm"
+                className="bg-yellow-500 flex items-center gap-3 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm"
               >
                 <FaPlus /> New
               </button>
@@ -1336,7 +1326,7 @@ const Campaigns: React.FC = () => {
                   placeholder="Search by brand name, location, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-200/10 bg-slate-200/20 text-gray-400 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 />
               </div>
 
@@ -1354,8 +1344,8 @@ const Campaigns: React.FC = () => {
                     onClick={() => setFilter(status as typeof filter)}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                       filter === status
-                        ? "bg-indigo-600 text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-50"
+                        ? "bg-yellow-500 text-white"
+                        : "bg-slate-200/20 text-gray-400 hover:bg-gray-50/10 border border-slate-200/10"
                     }`}
                   >
                     {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -1367,7 +1357,7 @@ const Campaigns: React.FC = () => {
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="px-4 py-2 border border-slate-200/10 rounded-lg bg-slate-200/20 text-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 >
                   <option value="all">All Roles</option>
                   <option value="Brand">Brand</option>
@@ -1381,7 +1371,7 @@ const Campaigns: React.FC = () => {
                 <select
                   value={platformFilter}
                   onChange={(e) => setPlatformFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="px-4 py-2 border border-slate-200/10 rounded-lg bg-slate-200/20 text-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 >
                   <option value="all">All Platforms</option>
                   <option value="instagram">Instagram</option>
@@ -1399,37 +1389,37 @@ const Campaigns: React.FC = () => {
 
             {/* Stats Overview */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {filteredCampaigns.length}
                 </div>
-                <div className="text-gray-600">
+                <div className="text-gray-400">
                   {filter === "all" ? "Total" : "Filtered"} Campaigns
                 </div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {campaigns.filter((c) => c.hasPaid).length}
                 </div>
-                <div className="text-gray-600">Paid Campaigns</div>
+                <div className="text-gray-400">Paid Campaigns</div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {campaigns.filter((c) => c.status === "pending").length}
                 </div>
-                <div className="text-gray-600">Pending Approval</div>
+                <div className="text-gray-400">Pending Approval</div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {campaigns.filter((c) => c.status === "approved").length}
                 </div>
-                <div className="text-gray-600">Approved Campaigns</div>
+                <div className="text-gray-400">Approved Campaigns</div>
               </div>
             </div>
 
             {/* Pagination Info */}
             {filteredCampaigns.length > 0 && (
-              <div className="text-sm text-gray-600 mb-4">
+              <div className="text-sm text-gray-400 mb-4">
                 Showing {startIndex + 1} -{" "}
                 {Math.min(endIndex, filteredCampaigns.length)} of{" "}
                 {filteredCampaigns.length} campaigns
@@ -1440,7 +1430,7 @@ const Campaigns: React.FC = () => {
           {/* Campaigns List */}
           <div className="space-y-4 mb-8">
             {paginatedCampaigns.length === 0 ? (
-              <div className="bg-white p-12 rounded-lg shadow-sm text-center">
+              <div className="bg-slate-200/10 border border-slate-200/10 p-12 rounded-lg shadow-sm text-center">
                 <div className="text-gray-400 text-lg mb-2">
                   No campaigns found
                 </div>
@@ -1454,13 +1444,13 @@ const Campaigns: React.FC = () => {
               paginatedCampaigns.map((campaign: any) => (
                 <div
                   key={campaign._id}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+                  className="bg-slate-200/20 border border-slate-200/10 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
                 >
                   <div className="p-6">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 flex-wrap mb-2">
-                          <h3 className="text-xl font-semibold text-gray-900">
+                          <h3 className="text-xl font-semibold text-gray-400">
                             {campaign.brandName}
                           </h3>
                           <span
@@ -1470,12 +1460,12 @@ const Campaigns: React.FC = () => {
                           >
                             {getStatusText(campaign)}
                           </span>
-                          <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                          <span className="px-2 py-1 bg-gray-100 text-gray-900 text-xs rounded">
                             {campaign.role}
                           </span>
                         </div>
 
-                        <p className="text-gray-600 mb-4">
+                        <p className="text-gray-400 mb-4">
                           {campaign.platforms.join(", ")} • {campaign.location}
                           {campaign.additionalLocations &&
                             campaign.additionalLocations.length > 0 &&
@@ -1484,37 +1474,37 @@ const Campaigns: React.FC = () => {
 
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Influencers:
                             </span>
-                            <div className="text-gray-900">
+                            <div className="text-gray-400">
                               {campaign.influencersMin} -{" "}
                               {campaign.influencersMax}
                             </div>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Followers:
                             </span>
-                            <div className="text-gray-900">
+                            <div className="text-gray-400">
                               {campaign.followersRange || "Any"}
                             </div>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Budget:
                             </span>
-                            <div className="text-gray-900">
+                            <div className="text-gray-400">
                               {campaign.totalCost
                                 ? formatCurrency(campaign.totalCost)
                                 : "TBD"}
                             </div>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Created:
                             </span>
-                            <div className="text-gray-900">
+                            <div className="text-gray-400">
                               {formatDate(campaign.createdAt)}
                             </div>
                           </div>
@@ -1525,20 +1515,20 @@ const Campaigns: React.FC = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm">
                               {campaign.postFrequency && (
                                 <div>
-                                  <span className="font-medium text-gray-700">
+                                  <span className="font-medium text-gray-400">
                                     Post Frequency:
                                   </span>
-                                  <div className="text-gray-900">
+                                  <div className="text-gray-400">
                                     {campaign.postFrequency}
                                   </div>
                                 </div>
                               )}
                               {campaign.postDuration && (
                                 <div>
-                                  <span className="font-medium text-gray-700">
+                                  <span className="font-medium text-gray-400">
                                     Duration:
                                   </span>
-                                  <div className="text-gray-900">
+                                  <div className="text-gray-400">
                                     {campaign.postDuration}
                                   </div>
                                 </div>
@@ -1549,7 +1539,7 @@ const Campaigns: React.FC = () => {
 
                         {campaign.assignedInfluencers?.length > 0 && (
                           <div className="mt-4 pt-4 border-t border-gray-200">
-                            <h4 className="font-medium text-gray-700 mb-3">
+                            <h4 className="font-medium text-gray-400 mb-3">
                               Assigned Influencers (
                               {campaign.assignedInfluencers.length})
                             </h4>
@@ -1565,7 +1555,7 @@ const Campaigns: React.FC = () => {
                                   return (
                                     <div
                                       key={inf._id || idx}
-                                      className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md hover:bg-gray-100 transition cursor-pointer relative"
+                                      className="flex items-start gap-3 p-3 bg-slate-200/10 rounded-xl border border-slate-200/10 hover:shadow-md hover:bg-gray-50/10 transition cursor-pointer relative"
                                       onClick={() =>
                                         handleInfluencerClick(inf, campaign)
                                       }
@@ -1586,18 +1576,18 @@ const Campaigns: React.FC = () => {
                                         </div>
                                       )}
 
-                                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-semibold">
+                                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600 font-semibold">
                                         {inf.name?.charAt(0).toUpperCase() ||
                                           "I"}
                                       </div>
                                       <div className="flex flex-col">
-                                        <span className="font-medium text-gray-900">
+                                        <span className="font-medium text-gray-400">
                                           {inf.name}
                                         </span>
-                                        <span className="text-gray-600 text-sm">
+                                        <span className="text-gray-400 text-sm">
                                           {inf.email}
                                         </span>
-                                        <span className="text-gray-500 text-xs">
+                                        <span className="text-gray-400 text-xs">
                                           📍 {inf.location}
                                         </span>
                                         {isCompleted && (
@@ -1687,7 +1677,7 @@ const Campaigns: React.FC = () => {
 
           {/* Pagination Controls */}
           {filteredCampaigns.length > itemsPerPage && (
-            <div className="bg-white rounded-lg shadow-sm p-4">
+            <div className="bg-slate-200/20 border border-slate-200/10 rounded-lg shadow-sm p-4">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="text-sm text-gray-600">
                   Page {currentPage} of {totalPages}
@@ -1718,7 +1708,7 @@ const Campaigns: React.FC = () => {
                             ? "bg-indigo-600 text-white"
                             : page === "..."
                             ? "cursor-default text-gray-400"
-                            : "border border-gray-300 hover:bg-gray-50 text-gray-700"
+                            : "border border-gray-300 hover:bg-gray-50 text-gray-400"
                         }`}
                       >
                         {page}

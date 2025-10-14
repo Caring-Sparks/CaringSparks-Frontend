@@ -18,7 +18,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/utils/ToastNotification";
 
-// Type definitions
 interface Campaign {
   _id?: string;
   role: "Brand" | "Business" | "Person" | "Movie" | "Music" | "Other";
@@ -59,53 +58,6 @@ interface PlatformData {
   proofUrl?: string;
 }
 
-interface Influencer {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  whatsapp: string;
-  location: string;
-  niches: string[];
-  audienceLocation?: string;
-  malePercentage?: string;
-  femalePercentage?: string;
-  audienceProofUrl?: string;
-
-  // Platform data
-  instagram?: PlatformData;
-  twitter?: PlatformData;
-  tiktok?: PlatformData;
-  youtube?: PlatformData;
-  facebook?: PlatformData;
-  linkedin?: PlatformData;
-  discord?: PlatformData;
-  threads?: PlatformData;
-  snapchat?: PlatformData;
-
-  // Calculated earnings
-  followerFee?: number;
-  impressionFee?: number;
-  locationFee?: number;
-  nicheFee?: number;
-  earningsPerPost?: number;
-  earningsPerPostNaira?: number;
-  maxMonthlyEarnings?: number;
-  maxMonthlyEarningsNaira?: number;
-  followersCount?: number;
-
-  // Legacy fields
-  amountPerPost?: string;
-  amountPerMonth?: string;
-
-  // Metadata
-  status: "pending" | "approved" | "rejected";
-  emailSent: boolean;
-  isValidated: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 interface Notification {
   id: string;
   type: "approval" | "assignment" | "rejection";
@@ -130,7 +82,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const [notificationOffset, setNotificationOffset] = useState<number>(0);
   const NOTIFICATIONS_PER_PAGE = 10;
 
-  // Track unseen/seen using timestamps
   const [hasNewNotifications, setHasNewNotifications] =
     useState<boolean>(false);
   const [lastSeen, setLastSeen] = useState<number>(() => {
@@ -138,19 +89,12 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     const stored = localStorage.getItem("notif_last_seen");
     return stored ? Number(stored) : 0;
   });
-
   const [showLogoutPopup, setShowLogoutPopup] = useState<boolean>(false);
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
-
-  // Use both stores
-  const { influencers } = useAdminStore();
   const { campaigns } = useBrandStore();
-
-  // Router and toast hooks
   const router = useRouter();
   const { showToast } = useToast();
 
-  // Filter campaigns for different notification types
   const approvedCampaigns = campaigns.filter(
     (campaign: Campaign) => campaign.status === "approved"
   );
@@ -186,11 +130,9 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const hasNoActivity =
     approvedCampaigns.length === 0 && campaignsWithInfluencers.length === 0;
 
-  // Combine and sort all notifications by creation date
   const allNotifications = useMemo((): Notification[] => {
     const notifications: Notification[] = [];
 
-    // Add approved campaigns notifications
     approvedCampaigns.forEach((campaign: Campaign) => {
       notifications.push({
         id: `approval-${campaign._id}`,
@@ -201,7 +143,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       });
     });
 
-    // Add rejected campaigns notifications
     rejectedCampaigns.forEach((campaign: Campaign) => {
       notifications.push({
         id: `rejection-${campaign._id}`,
@@ -212,7 +153,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       });
     });
 
-    // Add influencer assignment notifications
     campaignsWithInfluencers.forEach((campaign: Campaign) => {
       notifications.push({
         id: `assignment-${campaign._id}`,
@@ -223,7 +163,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       });
     });
 
-    // Sort by newest first and remove duplicates
     const uniqueNotifications = notifications.reduce(
       (acc: Notification[], current: Notification) => {
         const existingIndex = acc.findIndex(
@@ -241,7 +180,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     return uniqueNotifications.sort((a, b) => b.timestamp - a.timestamp);
   }, [approvedCampaigns, campaignsWithInfluencers, rejectedCampaigns]);
 
-  // Get current page of notifications
   const currentNotifications = allNotifications.slice(
     notificationOffset,
     notificationOffset + NOTIFICATIONS_PER_PAGE
@@ -326,7 +264,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     }
   };
 
-  // Compute latest activity timestamp across all sources
   const latestActivityTs = useMemo((): number => {
     const times: number[] = [];
     approvedCampaigns.forEach((c: Campaign) => {
@@ -343,7 +280,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     return times.length ? Math.max(...times) : 0;
   }, [approvedCampaigns, campaignsWithInfluencers]);
 
-  // Only show the dot if there's something newer than the last time the user opened the panel
   useEffect(() => {
     if (latestActivityTs > lastSeen) {
       setHasNewNotifications(true);
@@ -353,12 +289,11 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const handleNotificationClick = (): void => {
     setShowNotifications((prev) => !prev);
 
-    // Mark as seen when opening the panel and reset offset
     if (!showNotifications) {
       const seen = Date.now();
       setLastSeen(seen);
       setHasNewNotifications(false);
-      setNotificationOffset(0); // Reset to show latest notifications
+      setNotificationOffset(0);
       if (typeof window !== "undefined") {
         localStorage.setItem("notif_last_seen", String(seen));
       }
@@ -447,16 +382,16 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex items-center justify-between relative">
+    <header className="bg-black shadow-sm shadow-slate-200/20 px-6 py-4 flex items-center justify-between relative">
       <div className="flex items-center space-x-4">
         <button
           onClick={toggleSidebar}
-          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="lg:hidden text-gray-500 p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
           {sidebarOpen ? <BiX size={20} /> : <BiMenu size={20} />}
         </button>
-        <h1 className="text-2xl font-bold lg:hidden block text-gray-900">
-          CaringSparks
+        <h1 className="text-2xl font-bold lg:hidden block text-gray-500">
+          The•PR•God
         </h1>
       </div>
 
@@ -466,7 +401,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={handleNotificationClick}
-            className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="relative p-2 text-gray-600 bg-slate-200/20 border hover:text-blue-500 hover:bg-gray-100 duration-300 ease-in-out rounded-lg transition-colors"
           >
             <BiBell size={20} />
             {hasNewNotifications && (
@@ -482,9 +417,9 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded-lg border border-gray-200 z-50"
+                className="absolute right-0 mt-2 w-72 bg-slate-200/20 backdrop-blur-2xl shadow-lg rounded-lg border border-gray-200/10 z-50"
               >
-                <div className="p-3 bg-slate-200/50 font-semibold text-gray-700 flex items-center justify-between">
+                <div className="p-3 bg-slate-200/10 font-semibold text-gray-400 flex items-center justify-between">
                   <span>Notifications</span>
                   {allNotifications.length > 0 && (
                     <span className="text-xs text-gray-500">
@@ -544,7 +479,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         {/* Logout */}
         <button
           onClick={() => setShowLogoutPopup(true)}
-          className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-gray-600 hover:text-red-600 bg-slate-200/20 border duration-300 ease-in-out hover:bg-gray-100 rounded-lg transition-colors"
         >
           <BiLogOut size={20} />
         </button>
@@ -558,7 +493,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-8 z-50"
             onClick={() => setShowLogoutPopup(false)}
           >
             <motion.div
@@ -567,13 +502,13 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              className="bg-slate-200/20 backdrop-blur-2xl border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-gray-500 mb-4">
                 Confirm Logout
               </h2>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-gray-400 mb-6">
                 Are you sure you want to logout?
               </p>
               <div className="flex space-x-3">

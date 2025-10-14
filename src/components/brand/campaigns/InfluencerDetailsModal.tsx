@@ -25,7 +25,6 @@ import {
 } from "react-icons/fa";
 import { SiThreads, SiDiscord } from "react-icons/si";
 
-// Platform data interface matching your schema
 interface PlatformData {
   followers: string;
   url: string;
@@ -33,14 +32,12 @@ interface PlatformData {
   proofUrl?: string;
 }
 
-// SubmittedJob interface for job submissions
 interface SubmittedJob {
   _id: string;
   description: string;
   submittedAt: string;
 }
 
-// Influencer interface matching your schema
 interface Influencer {
   _id: string;
   name: string;
@@ -152,7 +149,6 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
     return new Date(dateString).toLocaleDateString();
   };
 
-  // Get platforms with data
   const getPlatformsWithData = () => {
     const platforms = [
       "instagram",
@@ -196,7 +192,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
           onClick={onClose}
         >
           <motion.div
@@ -204,12 +200,12 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+            className="bg-black rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">
+            <div className="sticky top-0 bg-slate-200/20 border-b backdrop-blur-2xl border-slate-200/10 px-6 py-4 rounded-t-2xl flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-400">
                 Influencer Details
               </h2>
               <button
@@ -229,7 +225,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
-                    <h3 className="text-2xl font-semibold text-gray-900">
+                    <h3 className="text-2xl font-semibold text-gray-400">
                       {influencer.name}
                     </h3>
                     <span
@@ -271,12 +267,12 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
               {/* Niches */}
               <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-3">Niches</h4>
+                <h4 className="font-semibold text-gray-400 mb-3">Niches</h4>
                 <div className="flex flex-wrap gap-2">
                   {influencer.niches.map((niche, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm"
+                      className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm"
                     >
                       {niche}
                     </span>
@@ -289,16 +285,16 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                 influencer.malePercentage ||
                 influencer.femalePercentage) && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">
+                  <h4 className="font-semibold text-gray-400 mb-3">
                     Audience Demographics
                   </h4>
-                  <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="bg-slate-200/20 border border-slate-200/10 p-4 rounded-lg">
                     {influencer.audienceLocation && (
                       <div className="mb-2">
-                        <span className="font-medium text-gray-700">
+                        <span className="font-medium text-gray-400">
                           Location:{" "}
                         </span>
-                        <span className="text-gray-900">
+                        <span className="text-gray-400">
                           {influencer.audienceLocation}
                         </span>
                       </div>
@@ -308,20 +304,20 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                       <div className="flex gap-4">
                         {influencer.malePercentage && (
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Male:{" "}
                             </span>
-                            <span className="text-gray-900">
+                            <span className="text-gray-400">
                               {influencer.malePercentage}%
                             </span>
                           </div>
                         )}
                         {influencer.femalePercentage && (
                           <div>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-gray-400">
                               Female:{" "}
                             </span>
-                            <span className="text-gray-900">
+                            <span className="text-gray-400">
                               {influencer.femalePercentage}%
                             </span>
                           </div>
@@ -334,7 +330,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                           href={influencer.audienceProofUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-indigo-600 hover:text-indigo-800 underline text-sm"
+                          className="text-yellow-600 hover:text-yellow-800 underline text-sm"
                         >
                           View Audience Proof
                         </a>
@@ -347,7 +343,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
               {/* Social Media Platforms */}
               {activePlatforms.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">
+                  <h4 className="font-semibold text-gray-400 mb-3">
                     Social Media Platforms
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -358,11 +354,11 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                       return (
                         <div
                           key={platform}
-                          className="p-4 bg-gray-50 rounded-lg border"
+                          className="p-4 bg-slate-200/20 border-slate-200/10 rounded-lg border"
                         >
                           <div className="flex items-center gap-3 mb-3">
                             {getPlatformIcon(platform)}
-                            <span className="font-medium text-gray-900 capitalize">
+                            <span className="font-medium text-gray-400 capitalize">
                               {platform}
                             </span>
                           </div>
@@ -370,20 +366,20 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                           <div className="space-y-2 text-sm">
                             {platformData.followers && (
                               <div className="flex justify-between">
-                                <span className="text-gray-600">
+                                <span className="text-gray-400">
                                   Followers:
                                 </span>
-                                <span className="font-medium">
+                                <span className="font-medium text-gray-500">
                                   {formatNumber(platformData.followers)}
                                 </span>
                               </div>
                             )}
                             {platformData.impressions && (
                               <div className="flex justify-between">
-                                <span className="text-gray-600">
+                                <span className="text-gray-400">
                                   Impressions:
                                 </span>
-                                <span className="font-medium">
+                                <span className="font-medium text-gray-500">
                                   {formatNumber(platformData.impressions)}
                                 </span>
                               </div>
@@ -394,7 +390,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                   href={platformData.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-indigo-600 hover:text-indigo-800 underline text-sm"
+                                  className="text-yellow-600 hover:text-yellow-800 underline text-sm"
                                 >
                                   View Profile
                                 </a>
@@ -426,13 +422,13 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                 influencer.amountPerPost ||
                 influencer.amountPerMonth) && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">
+                  <h4 className="font-semibold text-gray-400 mb-3">
                     Earnings Information
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {influencer.earningsPerPostNaira && (
-                      <div className="p-4 bg-green-50 rounded-lg">
-                        <h5 className="font-medium text-green-900 mb-1">
+                      <div className="p-4 bg-green-50/10 border border-slate-200/10 rounded-lg">
+                        <h5 className="font-medium text-green-600 mb-1">
                           Earnings Per Post
                         </h5>
                         <p className="text-2xl font-bold text-green-600">
@@ -441,8 +437,8 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                       </div>
                     )}
                     {influencer.maxMonthlyEarningsNaira && (
-                      <div className="p-4 bg-blue-50 rounded-lg">
-                        <h5 className="font-medium text-blue-900 mb-1">
+                      <div className="p-4 bg-blue-50/10 border border-slate-200/10 rounded-lg">
+                        <h5 className="font-medium text-blue-700 mb-1">
                           Max Monthly Earnings
                         </h5>
                         <p className="text-2xl font-bold text-blue-600">
@@ -451,8 +447,8 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                       </div>
                     )}
                     {influencer.amountPerPost && (
-                      <div className="p-4 bg-purple-50 rounded-lg">
-                        <h5 className="font-medium text-purple-900 mb-1">
+                      <div className="p-4 bg-purple-50/10 border border-slate-200/10 rounded-lg">
+                        <h5 className="font-medium text-purple-700 mb-1">
                           Amount Per Post (Legacy)
                         </h5>
                         <p className="text-lg font-semibold text-purple-600">
@@ -461,8 +457,8 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                       </div>
                     )}
                     {influencer.amountPerMonth && (
-                      <div className="p-4 bg-orange-50 rounded-lg">
-                        <h5 className="font-medium text-orange-900 mb-1">
+                      <div className="p-4 bg-orange-50/10 border border-slate-200/10 rounded-lg">
+                        <h5 className="font-medium text-orange-700 mb-1">
                           Amount Per Month (Legacy)
                         </h5>
                         <p className="text-lg font-semibold text-orange-600">
@@ -476,8 +472,8 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
               {/* Additional Stats */}
               <div className="grid grid-cols-1 gap-4">
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h5 className="font-medium text-gray-900 mb-1">
+                <div className="p-4 bg-gray-50/10 border border-slate-200/10 rounded-lg">
+                  <h5 className="font-medium text-gray-400 mb-1">
                     Member Since
                   </h5>
                   <p className="text-gray-600 font-medium">
@@ -490,11 +486,11 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
               {submittedJobs.length > 0 && (
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                      <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                    <h4 className="text-xl font-semibold text-gray-400 flex items-center gap-2">
+                      <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
                       Submitted Jobs
                     </h4>
-                    <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
                       {submittedJobs.length}{" "}
                       {submittedJobs.length === 1 ? "Job" : "Jobs"}
                     </span>
@@ -502,7 +498,6 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
                   <div className="space-y-4">
                     {submittedJobs.map((job, index) => {
-                      // Parse job description to extract structured data
                       const parseJobDescription = (description: string) => {
                         const lines = description
                           .split("\n")
@@ -525,13 +520,13 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                       return (
                         <div
                           key={job._id}
-                          className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
+                          className="bg-slate-200/20 border border-slate-200/10 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
                         >
                           {/* Job Header */}
-                          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
+                          <div className="px-6 py-4 border-b border-gray-100/10 bg-gradient-to-r from-yellow-50 to-yellow-50">
                             <div className="flex justify-between items-center">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                <div className="w-8 h-8 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
                                   {index + 1}
                                 </div>
                                 <h5 className="text-lg font-semibold text-gray-900">
@@ -551,10 +546,8 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
                           {/* Job Content */}
                           <div className="p-6">
-                            {/* Structured Data Display */}
                             {Object.keys(jobData).length > 0 ? (
                               <div className="space-y-6">
-                                {/* Metrics Section */}
                                 {Object.entries(jobData).some(
                                   ([key]) =>
                                     key.toLowerCase().includes("reach") ||
@@ -567,7 +560,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                 ) && (
                                   <div>
                                     <h6 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                      <FaChartLine className="text-indigo-600" />
+                                      <FaChartLine className="text-yellow-600" />
                                       Performance Metrics
                                     </h6>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -664,7 +657,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                                 );
                                               return numValue.toString();
                                             }
-                                            return val; // fallback to original if not a number
+                                            return val;
                                           };
 
                                           return (
@@ -706,7 +699,6 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                           .includes("impressions")
                                     )
                                     .map(([key, value]) => {
-                                      // Special handling for different field types
                                       const isUrl = value.startsWith("http");
                                       const isPlatform = key
                                         .toLowerCase()
@@ -725,7 +717,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                                 href={value}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-indigo-600 hover:text-indigo-800 underline break-all"
+                                                className="text-yellow-600 hover:text-yellow-800 underline break-all"
                                               >
                                                 View Post
                                               </a>
@@ -758,7 +750,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                           </div>
 
                           {/* Job Footer */}
-                          <div className="px-6 py-3 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+                          <div className="px-6 py-3 bg-slate-200/20 border-t border-slate-200/10 rounded-b-xl">
                             <div className="flex items-center justify-between text-xs text-gray-500">
                               <span>Job ID: {job._id}</span>
                               <span className="flex items-center gap-1">
@@ -776,10 +768,10 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-2xl flex justify-end">
+            <div className="sticky bottom-0 bg-slate-200/20 backdrop-blur-2xl border-t border-slate-200/10 px-6 py-4 rounded-b-2xl flex justify-end">
               <button
                 onClick={onClose}
-                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium transition-colors"
               >
                 Close
               </button>

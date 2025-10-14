@@ -1,11 +1,7 @@
 "use client";
 
 import { Users, Briefcase, Clock, ArrowClockwise } from "phosphor-react";
-import {
-  BiCalendar,
-  BiChart,
-  BiTrendingUp,
-} from "react-icons/bi";
+import { BiCalendar, BiChart, BiTrendingUp } from "react-icons/bi";
 import { MdOutlineNotificationsPaused } from "react-icons/md";
 import Link from "next/link";
 import { useBrandStore } from "@/stores/brandStore";
@@ -14,7 +10,6 @@ import { useEffect, useMemo, useState } from "react";
 import { FaNairaSign } from "react-icons/fa6";
 import { TbMoneybag } from "react-icons/tb";
 
-// Updated Campaign interface to match the store
 interface Campaign {
   _id?: string;
   role: "Brand" | "Business" | "Person" | "Movie" | "Music" | "Other";
@@ -56,11 +51,9 @@ const Overview: React.FC = () => {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  // Defensive checks with fallbacks (moved to top level)
   const safeCampaigns: Campaign[] = useMemo(() => campaigns || [], [campaigns]);
   const safeUser = user || null;
 
-  // All useMemo hooks must be at the top level, before any conditional returns
   const newPayments = useMemo(() => {
     return safeCampaigns.filter((campaign) => campaign.hasPaid === true);
   }, [safeCampaigns]);
@@ -72,10 +65,9 @@ const Overview: React.FC = () => {
         const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return dateB - dateA;
       })
-      .slice(0, 3); // Get 3 most recent payments
+      .slice(0, 3);
   }, [newPayments]);
 
-  // Get most recent campaign
   const recentCampaign = useMemo((): Campaign | undefined => {
     return [...safeCampaigns]
       .sort((a: Campaign, b: Campaign) => {
@@ -86,7 +78,6 @@ const Overview: React.FC = () => {
       .at(0);
   }, [safeCampaigns]);
 
-  // Calculate campaign statistics
   const campaignStats = useMemo(() => {
     const totalCampaigns = safeCampaigns.length;
     const paidCampaigns = safeCampaigns.filter(
@@ -99,12 +90,10 @@ const Overview: React.FC = () => {
       (c: Campaign) => c.status === "approved"
     ).length;
 
-    // Calculate total spending
     const totalSpent: number = safeCampaigns
       .filter((c: Campaign) => c.hasPaid && c.totalCost)
       .reduce((sum: number, c: Campaign) => sum + (c.totalCost || 0), 0);
 
-    // Calculate average campaign cost
     const averageCampaignCost: number =
       totalCampaigns > 0
         ? safeCampaigns.reduce(
@@ -123,7 +112,6 @@ const Overview: React.FC = () => {
     };
   }, [safeCampaigns]);
 
-  // Fetch campaigns on component mount
   useEffect(() => {
     if (user?.email && campaigns.length === 0) {
       fetchCampaignsByEmail(user.email);
@@ -190,20 +178,19 @@ const Overview: React.FC = () => {
     }).format(amount);
   };
 
-  // Now conditional returns come after all hooks
-  // Show loading state
+  // loading state
   if (userLoading || campaignsLoading || refreshing) {
     return (
       <div className="flex items-center justify-center min-h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent mx-auto mb-4"></div>
-          <div className="text-lg text-gray-600">Loading brand data...</div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-yellow-500 border-t-transparent mx-auto mb-4"></div>
+          <div className="text-lg text-gray-400">Loading brand data...</div>
         </div>
       </div>
     );
   }
 
-  // Show error state
+  // error state
   if (userError || campaignsError) {
     return (
       <div className="flex items-center justify-center min-h-96">
@@ -214,7 +201,7 @@ const Overview: React.FC = () => {
           </div>
           <button
             onClick={handleRefresh}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
           >
             Retry
           </button>
@@ -223,7 +210,6 @@ const Overview: React.FC = () => {
     );
   }
 
-  // Destructure computed values for easier use
   const {
     totalCampaigns,
     paidCampaigns,
@@ -238,31 +224,31 @@ const Overview: React.FC = () => {
       {/* Header with user info and refresh */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-500">
             Welcome back{safeUser?.brandName ? `, ${safeUser.brandName}` : ""}!
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-500">
             Here&apos;s what&apos;s happening with your campaigns
           </p>
         </div>
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="bg-slate-300 p-2 text-white rounded-full hover:bg-slate-700 transition-colors disabled:opacity-50"
+          className="bg-slate-200/20 p-2 text-slate-400 border border-slate-200/10 rounded-full hover:bg-slate-700 transition-colors disabled:opacity-50"
         >
           <ArrowClockwise size={20} />
         </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-400">
                 Total Campaigns
               </p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-gray-400">
                 {totalCampaigns}
               </p>
             </div>
@@ -272,13 +258,13 @@ const Overview: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-400">
                 Paid Campaigns
               </p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-gray-400">
                 {paidCampaigns}
               </p>
             </div>
@@ -288,13 +274,13 @@ const Overview: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-400">
                 Pending Payment
               </p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-gray-400">
                 {unpaidCampaigns}
               </p>
             </div>
@@ -304,11 +290,11 @@ const Overview: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-400">Total Spent</p>
+              <p className="text-2xl font-bold text-gray-400">
                 {formatCurrency(totalSpent)}
               </p>
             </div>
@@ -321,14 +307,14 @@ const Overview: React.FC = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-gray-400">
               Recent Activity
             </h3>
             <Link
               href="/brand/campaigns"
-              className="text-sm text-indigo-600 hover:text-purple-800"
+              className="text-sm text-yellow-500 hover:text-yellow-800"
             >
               View all campaigns
             </Link>
@@ -336,13 +322,13 @@ const Overview: React.FC = () => {
 
           {!recentCampaign && recentPayments.length === 0 ? (
             <div className="flex flex-col items-center justify-center text-gray-500 py-12">
-              <div className="p-4 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 mb-4">
+              <div className="p-4 rounded-full bg-gradient-to-br from-yellow-100/20 to-yellow-100/20 mb-4">
                 <div className="flex items-center space-x-2">
-                  <MdOutlineNotificationsPaused className="text-2xl text-purple-500" />
-                  <FaNairaSign className="text-xl text-indigo-500" />
+                  <MdOutlineNotificationsPaused className="text-2xl text-yellow-500" />
+                  <FaNairaSign className="text-xl text-yellow-500" />
                 </div>
               </div>
-              <p className="text-lg font-medium text-gray-700 mb-2">
+              <p className="text-lg font-medium text-gray-500 mb-2">
                 Get Started with Your First Campaign
               </p>
               <p className="text-sm text-gray-500 text-center max-w-sm mb-6">
@@ -350,7 +336,7 @@ const Overview: React.FC = () => {
                 payments all in one place.
               </p>
               <Link href="/brand/campaigns">
-                <button className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md">
+                <button className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-600 text-white rounded-lg hover:from-yellow-700 hover:to-yellow-700 transition-all duration-200 shadow-sm hover:shadow-md">
                   Create Your First Campaign
                 </button>
               </Link>
@@ -358,13 +344,13 @@ const Overview: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {recentCampaign && (
-                <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <Briefcase className="text-blue-600" size={24} />
+                <div className="flex items-center space-x-3 p-4 bg-blue-50/10 rounded-lg border border-blue-200/10">
+                  <Briefcase className="text-yellow-500" size={24} />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-gray-400">
                       Latest Campaign
                     </p>
-                    <p className="text-lg font-semibold text-gray-800">
+                    <p className="text-lg font-semibold text-gray-400">
                       {recentCampaign.brandName}
                     </p>
                     <div className="flex items-center space-x-4 mt-2">
@@ -383,10 +369,10 @@ const Overview: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-gray-400">
                       {formatCurrency(recentCampaign.totalCost || 0)}
                     </p>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-400">
                       {formatDate(recentCampaign.createdAt)}
                     </span>
                   </div>
@@ -396,8 +382,8 @@ const Overview: React.FC = () => {
           )}
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
+          <h3 className="text-lg font-semibold text-gray-400 mb-4">
             Campaign Analytics
           </h3>
 
@@ -413,38 +399,38 @@ const Overview: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-slate-200/20 border border-slate-200/10 rounded-lg">
                 <div className="flex items-center space-x-3">
                   <BiTrendingUp className="text-green-600" size={20} />
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-gray-400">
                     Average Campaign Cost
                   </span>
                 </div>
-                <span className="text-lg font-semibold text-gray-900">
+                <span className="text-lg font-semibold text-gray-400">
                   {formatCurrency(averageCampaignCost)}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-slate-200/20 border border-slate-200/10 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <Users className="text-blue-600" size={20} />
-                  <span className="text-sm font-medium text-gray-700">
+                  <Users className="text-yellow-500" size={20} />
+                  <span className="text-sm font-medium text-gray-400">
                     Approved Campaigns
                   </span>
                 </div>
-                <span className="text-lg font-semibold text-gray-900">
+                <span className="text-lg font-semibold text-gray-400">
                   {validatedCampaigns}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-slate-200/20 border-slate-200/10 border rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <BiCalendar className="text-purple-600" size={20} />
-                  <span className="text-sm font-medium text-gray-700">
+                  <BiCalendar className="text-indigo-700" size={20} />
+                  <span className="text-sm font-medium text-gray-400">
                     Payment Success Rate
                   </span>
                 </div>
-                <span className="text-lg font-semibold text-gray-900">
+                <span className="text-lg font-semibold text-gray-400">
                   {totalCampaigns > 0
                     ? Math.round((paidCampaigns / totalCampaigns) * 100)
                     : 0}
