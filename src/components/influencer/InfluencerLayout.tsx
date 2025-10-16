@@ -34,20 +34,17 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
   const shouldShowPaymentDetailsPopup = useCallback(() => {
     if (!user) return false;
 
-    // Check for bank details
     const hasBankDetails =
       user.bankDetails &&
       user.bankDetails.bankName &&
       user.bankDetails.accountNumber &&
       user.bankDetails.accountName;
 
-    // Check for crypto details
     const hasCryptoDetails =
       user.cryptoDetails &&
       user.cryptoDetails.walletAddress &&
       user.cryptoDetails.network;
 
-    // Check if either payment method is set up
     const hasPaymentMethod = hasBankDetails || hasCryptoDetails;
     const hasFlag =
       user.hasBankDetails === true || user.hasCryptoDetails === true;
@@ -64,12 +61,11 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
     return !(hasPaymentMethod || hasFlag) && !hasSkipped;
   }, [user]);
 
-  // Handle payment details submission
+  // payment details submission
   const handlePaymentDetailsSubmit = async (paymentDetails: PaymentDetails) => {
     setIsPaymentDetailsSubmitting(true);
     try {
       if (paymentDetails.paymentType === "bank" && paymentDetails.bankDetails) {
-        // Submit bank details
         await updateInfluencerBankDetails({
           paymentType: "bank",
           bankName: paymentDetails.bankDetails.bankName,
@@ -87,7 +83,6 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
         paymentDetails.paymentType === "crypto" &&
         paymentDetails.cryptoDetails
       ) {
-        // Submit crypto details
         await updateInfluencerBankDetails({
           paymentType: "crypto",
           walletAddress: paymentDetails.cryptoDetails.walletAddress,
@@ -120,7 +115,6 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
     }
   };
 
-  // Handle popup close (skip for now)
   const handlePaymentDetailsClose = () => {
     localStorage.setItem("paymentDetailsSkipped", "true");
     localStorage.setItem("paymentDetailsSkippedDate", new Date().toISOString());
@@ -132,7 +126,6 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
     fetchAssignedCampaigns();
   }, [fetchAssignedCampaigns, fetchCurrentInfluencer]);
 
-  // Check for payment details popup after user data is loaded
   useEffect(() => {
     if (user && !userLoading) {
       const shouldShow = shouldShowPaymentDetailsPopup();
@@ -142,7 +135,7 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
 
   if (userLoading) {
     return (
-      <div className="flex justify-center flex-col items-center h-screen">
+      <div className="flex justify-center flex-col bg-black items-center h-screen">
         <div className="loaderr"></div>
         <p className="mt-4">Loading Influencer data...</p>
       </div>
@@ -151,7 +144,7 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
 
   if (userError && !user) {
     return (
-      <div className="flex justify-center flex-col items-center h-screen bg-gray-50">
+      <div className="flex justify-center flex-col items-center h-screen bg-black">
         <div className="text-center">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -160,7 +153,7 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
           <p className="text-gray-600 mb-4">{userError}</p>
           <button
             onClick={() => router.push("/")}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
           >
             Back to login
           </button>
@@ -170,7 +163,7 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       <div className="flex w-full">
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 

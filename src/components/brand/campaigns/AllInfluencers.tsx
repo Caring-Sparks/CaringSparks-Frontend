@@ -101,7 +101,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
       case "threads":
         return <SiThreads className="text-black text-sm" />;
       case "discord":
-        return <SiDiscord className="text-indigo-600 text-sm" />;
+        return <SiDiscord className="text-yellow-600 text-sm" />;
       default:
         return null;
     }
@@ -237,7 +237,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black/50 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
           onClick={onClose}
         >
           <motion.div
@@ -245,11 +245,11 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[85vh] overflow-hidden"
+            className="bg-black border border-slate-200/10 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[85vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+            <div className="bg-slate-200/20 border-b border-slate-200/10 backdrop-blur-2xl px-6 py-4 flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
                   Assigned Influencers
@@ -281,12 +281,12 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 hover:border-gray-300 cursor-pointer transition-all duration-200 hover:shadow-md"
+                      className="p-4 bg-slate-200/20 hover:bg-gray-100/10 rounded-xl border border-slate-200/10 hover:border-gray-300 cursor-pointer transition-all duration-200 hover:shadow-md"
                       onClick={() => onInfluencerClick(influencer)}
                     >
                       <div className="flex items-start gap-4">
                         {/* Profile Picture */}
-                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold">
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-500 to-purple-600 text-white font-bold">
                           {influencer.name.charAt(0).toUpperCase()}
                         </div>
 
@@ -323,7 +323,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
                             {influencer.niches.slice(0, 2).map((niche, idx) => (
                               <span
                                 key={idx}
-                                className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded"
+                                className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded"
                               >
                                 {niche}
                               </span>
@@ -404,7 +404,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
               </div>
               <button
                 onClick={onClose}
-                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium transition-colors"
               >
                 Close
               </button>

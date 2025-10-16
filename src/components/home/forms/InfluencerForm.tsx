@@ -216,7 +216,7 @@ const PhoneNumberInput: React.FC<{
         <select
           value={selectedCountryCode}
           onChange={handleCountryChange}
-          className="px-3 py-2 bg-gray-100 rounded-l-xl border border-r-0 border-gray-300 text-gray-800 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all min-w-[140px]"
+          className="px-3 py-2 bg-slate-200/20 rounded-l-xl border border-r-0 border-slate-200/10 text-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all min-w-[140px]"
         >
           {countryCodes.map((country) => (
             <option key={country.code} value={country.code}>
@@ -232,7 +232,7 @@ const PhoneNumberInput: React.FC<{
             value={formattedDisplay}
             onChange={handlePhoneChange}
             onBlur={handleBlur}
-            className={`w-full px-3 py-2 bg-gray-100 rounded-r-xl border border-l-0 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all ${
+            className={`w-full px-3 py-2 bg-slate-200/20 rounded-r-xl border border-slate-200/10 border-l-1 text-gray-400 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all ${
               (isTouched || touched[name]) && !isValid && localNumber
                 ? "border-red-500 focus:ring-red-500"
                 : (isTouched || touched[name]) && isValid
@@ -430,7 +430,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
           type="influencer"
         />
       ) : (
-        <div className="w-full max-w-4xl mx-auto bg-black rounded-xl shadow-lg border border-gray-200">
+        <div className="w-full max-w-4xl mx-auto bg-black rounded-xl shadow-lg border border-slate-200/10">
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -537,7 +537,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                     <button
                       type="button"
                       onClick={onBack}
-                      className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-slate-200/20 border border-slate-200/10 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <ArrowLeft /> Back
                     </button>
@@ -561,7 +561,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         <span>Profile Completion</span>
                         <span>{Math.round(progress)}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-slate-200/10 rounded-full h-2">
                         <div
                           className="bg-yellow-600 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${progress}%` }}
@@ -590,7 +590,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-all ${
                                 selectedPlatforms.includes(key)
                                   ? "bg-yellow-50 border-yellow-400 text-yellow-700"
-                                  : "bg-gray-50 border-gray-300 text-gray-500 hover:bg-gray-100"
+                                  : "bg-slate-200/20 border-slate-200/10 text-gray-500 hover:bg-gray-50/10"
                               }`}
                             >
                               <Icon className="w-8 h-8 mb-2" />
@@ -629,7 +629,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                   type="number"
                                   min="0"
                                   placeholder="e.g., 10000"
-                                  className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                  className="frm"
                                 />
                                 <ErrorMessage
                                   name={`${platformKey}.followers`}
@@ -645,7 +645,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                   name={`${platformKey}.url`}
                                   type="url"
                                   placeholder={getUrlPlaceholder(platformKey)}
-                                  className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                  className="frm"
                                 />
                                 <ErrorMessage
                                   name={`${platformKey}.url`}
@@ -669,7 +669,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                     ? "Total message interactions in the last 30 days"
                                     : "Total impressions in the last 30 days"
                                 }
-                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                className="frm"
                               />
                               <ErrorMessage
                                 name={`${platformKey}.impressions`}
@@ -741,7 +741,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                           as="select"
                           name="niches"
                           multiple
-                          className="w-full px-4 py-2 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors bg-white hover:border-yellow-400"
+                          className="w-full px-4 py-2 rounded-xl border border-slate-200/10 text-gray-400 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors bg-slate-200/20 hover:border-yellow-400"
                           onChange={(
                             e: React.ChangeEvent<HTMLSelectElement>
                           ) => {
@@ -765,11 +765,11 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                         <p className="text-xs text-gray-500">
                           Hold{" "}
-                          <kbd className="px-1 py-0.5 bg-gray-200 rounded">
+                          <kbd className="px-1 py-0.5 bg-slate-200/20 border border-slate-200/10 rounded">
                             Ctrl
                           </kbd>{" "}
                           (or{" "}
-                          <kbd className="px-1 py-0.5 bg-gray-200 rounded">
+                          <kbd className="px-1 py-0.5 bg-slate-200/20 border border-slate-200/10 rounded">
                             Cmd
                           </kbd>{" "}
                           on Mac) to select multiple.
@@ -792,7 +792,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                           name="location"
                           type="text"
                           placeholder="City, State, Country"
-                          className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
+                          className={`frm ${
                             errors.location && touched.location
                               ? "border-red-500"
                               : "border-gray-300"
@@ -821,7 +821,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             name="audienceLocation"
                             placeholder="Top 3 countries, top 3 towns/cities, top 3 age ranges"
                             rows={4}
-                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                            className="frm"
                           />
                         </div>
 
@@ -840,7 +840,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                 min="0"
                                 max="100"
                                 placeholder="e.g., 45"
-                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                className="frm"
                               />
                             </div>
                             <div className="space-y-2">
@@ -853,7 +853,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                 min="0"
                                 max="100"
                                 placeholder="e.g., 55"
-                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                className="frm"
                               />
                             </div>
                           </div>
@@ -914,7 +914,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               name="name"
                               type="text"
                               placeholder="Enter your full name"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
+                              className={`frm ${
                                 errors.name && touched.name
                                   ? "border-red-500"
                                   : "border-gray-300"
@@ -936,7 +936,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               name="email"
                               type="email"
                               placeholder="Enter your email"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
+                              className={`frm ${
                                 errors.email && touched.email
                                   ? "border-red-500"
                                   : "border-gray-300"

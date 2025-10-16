@@ -197,14 +197,14 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
     <>
       <AnimatePresence>
         <motion.div
-          className="z-50 fixed inset-0 bg-slate-200/20 backdrop-blur-md flex justify-center items-center p-4 lg:p-10"
+          className="z-50 fixed inset-0 bg-black/40 backdrop-blur-2xl flex justify-center items-center p-4 lg:p-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onBack}
         >
           <motion.div
-            className="relative w-[90%] lg:w-[80%] max-h-[90vh] overflow-y-auto mx-auto bg-white rounded-xl shadow-lg border border-gray-200"
+            className="relative w-[90%] lg:w-[80%] max-h-[90vh] overflow-y-auto mx-auto bg-black rounded-xl shadow-lg border border-slate-200/10"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
@@ -225,7 +225,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                   <button
                     type="button"
                     onClick={onBack}
-                    className="px-4 flex items-center gap-2 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 flex items-center gap-2 py-2 bg-slate-200/20 border border-slate-200/10 text-gray-400 rounded-lg hover:bg-gray-50/10 transition-colors"
                   >
                     <ArrowLeft /> Back
                   </button>
@@ -233,10 +233,10 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
 
                 {/* Header */}
                 <div className="text-center p-6 border-b border-gray-100">
-                  <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-                    <Buildings className="w-6 h-6 text-indigo-600" />
+                  <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                    <Buildings className="w-6 h-6 text-yellow-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h2 className="text-2xl font-bold text-gray-400 mb-2">
                     Create New Campaign
                   </h2>
                   <p className="text-gray-600">
@@ -254,13 +254,13 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                       <Form className="space-y-6">
                         {/* Role Selection */}
                         <div className="space-y-2 ">
-                          <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
                             <User className="w-4 h-4" />I am a:
                           </label>
                           <Field
                             as="select"
                             name="role"
-                            className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                            className={`frm ${
                               errors.role && touched.role
                                 ? "border-red-500"
                                 : "border-gray-300"
@@ -282,7 +282,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
 
                         {/* Platform Selection */}
                         <div className="space-y-3">
-                          <label className="text-sm font-medium text-gray-700">
+                          <label className="text-sm font-medium text-gray-400">
                             I want to advertise & promote my brand on:
                           </label>
                           <div className="mt-2 flex flex-wrap items-center gap-4">
@@ -309,9 +309,9 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                                       );
                                     }
                                   }}
-                                  className="w-4 h-4 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-indigo-500"
+                                  className="w-4 h-4 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-yellow-500"
                                 />
-                                <span className="text-sm text-gray-700">
+                                <span className="text-sm text-gray-400">
                                   {platform}
                                 </span>
                               </label>
@@ -325,29 +325,29 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                         </div>
 
                         <div className="space-y-3">
-                          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
                             <Users className="w-4 h-4" />
                             Number of influencers needed:
                           </label>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="text-gray-700">Minimum</label>
+                              <label className="text-gray-400">Minimum</label>
                               <Field
                                 name="influencersMin"
                                 type="number"
                                 min="1"
                                 placeholder="Minimum"
-                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="frm"
                               />
                             </div>
                             <div>
-                              <label className="text-gray-700">Maximum</label>
+                              <label className="text-gray-400">Maximum</label>
                               <Field
                                 name="influencersMax"
                                 type="number"
                                 min="1"
                                 placeholder="Maximum"
-                                className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="frm"
                               />
                             </div>
                           </div>
@@ -361,7 +361,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                           <Field
                             as="select"
                             name="followersRange"
-                            className="w-full mt-2 px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="frm"
                           >
                             <option value="">Select followers range...</option>
                             {followerRanges.map((range) => (
@@ -374,7 +374,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
 
                         {/* Location */}
                         <div className="space-y-3">
-                          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
                             <MapPin className="w-4 h-4" />
                             Target location:
                           </label>
@@ -382,7 +382,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                             name="location"
                             type="text"
                             placeholder="e.g., Ikeja, Lagos, Nigeria"
-                            className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                            className={`frm ${
                               errors.location && touched.location
                                 ? "border-red-500"
                                 : "border-gray-300"
@@ -436,7 +436,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                                         }
                                       }
                                     }}
-                                    className="flex-1 px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="frm"
                                   />
                                   <button
                                     type="button"
@@ -447,7 +447,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                                         setNewLocation("");
                                       }
                                     }}
-                                    className="px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 hover:bg-gray-50"
+                                    className="px-3 py-2 bg-yellow-100 rounded-xl border border-yellow-300 text-yellow-800 placeholder-yellow-400 hover:bg-yellow-50"
                                     aria-label="Add location"
                                     title="Add location"
                                   >
@@ -461,14 +461,14 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
 
                         {/* Posting Frequency */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
                             Posting frequency:
                           </label>
                           <Field
                             as="select"
                             name="postFrequency"
-                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="frm"
                           >
                             <option value="">
                               Select posting frequency...
@@ -483,14 +483,14 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
 
                         {/* Post Duration */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
                             <Clock className="w-4 h-4" />
                             Post stays on page for:
                           </label>
                           <Field
                             as="select"
                             name="postDuration"
-                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="frm"
                           >
                             <option value="">Select duration...</option>
                             {postDurations.map((duration) => (
@@ -503,12 +503,12 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
 
                         {/* Brand Information */}
                         <div className="space-y-4 pt-4 border-t border-gray-200">
-                          <h3 className="text-lg font-semibold text-gray-900">
+                          <h3 className="text-lg font-semibold text-gray-400">
                             Brand Information
                           </h3>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label className="text-sm font-medium text-gray-400">
                               Brand name *
                             </label>
                             <Field
@@ -516,7 +516,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                               type="text"
                               disabled
                               placeholder="Enter your brand name"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                              className={`frm ${
                                 errors.brandName && touched.brandName
                                   ? "border-red-500"
                                   : "border-gray-300"
@@ -530,7 +530,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
                               <Phone className="w-4 h-4" />
                               Brand phone number *
                             </label>
@@ -539,7 +539,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                               type="tel"
                               disabled
                               placeholder="Enter your phone number"
-                              className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                              className={`frm ${
                                 errors.brandPhone && touched.brandPhone
                                   ? "border-red-500"
                                   : "border-gray-300"
@@ -556,7 +556,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                         {loading ? (
                           <button
                             disabled
-                            className="w-full flex justify-center px-4 py-2 bg-indigo-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
+                            className="w-full flex justify-center px-4 py-2 bg-yellow-600 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
                           >
                             <div className="loader">
                               <span className="bar"></span>
@@ -567,7 +567,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
                         ) : (
                           <button
                             type="submit"
-                            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                            className="w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
                           >
                             Create Campaign & Get Quotation
                           </button>

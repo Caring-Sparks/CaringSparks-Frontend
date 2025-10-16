@@ -26,7 +26,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center flex-col items-center h-screen">
+      <div className="flex bg-black text-white justify-center flex-col items-center h-screen">
         <div className="loaderr"></div>
         <p className="mt-4">Loading Admin data...</p>
       </div>

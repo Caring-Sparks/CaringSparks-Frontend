@@ -439,7 +439,7 @@ const CampaignManagement: React.FC = () => {
           onClick={() => handlePageChange(i)}
           className={`px-4 py-2 rounded-lg border transition ${
             currentPage === i
-              ? "bg-indigo-600 text-white border-indigo-600"
+              ? "bg-yellow-500 text-white border-yellow-500"
               : "border-gray-300 text-gray-700 hover:bg-gray-50"
           }`}
         >

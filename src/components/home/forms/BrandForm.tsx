@@ -186,7 +186,7 @@ const PhoneNumberInput = ({
         <select
           value={selectedCountryCode}
           onChange={handleCountryChange}
-          className="px-3 py-2 bg-gray-100 rounded-l-xl border border-r-0 border-gray-300 text-gray-800 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+          className="px-3 py-2 bg-slate-200/20 rounded-l-xl border border-r-0 border-slate-200/10 text-gray-500 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
           style={{ minWidth: "140px" }}
         >
           {countryCodes.map((country) => (
@@ -203,7 +203,7 @@ const PhoneNumberInput = ({
             value={formattedDisplay}
             onChange={handlePhoneChange}
             onBlur={handleBlur}
-            className={`w-full px-3 py-2 bg-gray-100 rounded-r-xl border border-l-0 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all ${
+            className={`w-full px-3 py-2 bg-slate-200/20 rounded-r-xl border border-slate-200/10 border-l-1 text-gray-500 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all ${
               (isTouched || touched.brandPhone) && !isValid && localNumber
                 ? "border-red-500 focus:ring-red-500"
                 : (isTouched || touched.brandPhone) && isValid
@@ -303,7 +303,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
 
   return (
     <>
-      <div className="w-full mx-auto bg-black rounded-xl shadow-lg border border-gray-200">
+      <div className="w-full mx-auto bg-black rounded-xl shadow-lg border border-slate-200/10">
         {/* SUMMARY POPUP */}
         {submittedData ? (
           <CampaignSummary
@@ -321,14 +321,14 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
               <button
                 type="button"
                 onClick={onBack}
-                className="px-4 flex items-center gap-2 py-2 border border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 flex items-center gap-2 py-2 border bg-slate-200/20 border-slate-200/10 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <ArrowLeft /> Back
               </button>
             </div>
 
             {/* Header */}
-            <div className="text-center p-6 border-b border-gray-100">
+            <div className="text-center p-6 border-b border-slate-200/10">
               <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                 <Buildings className="w-6 h-6 text-yellow-600" />
               </div>
@@ -385,7 +385,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                       <Field
                         as="select"
                         name="role"
-                        className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
+                        className={`frm ${
                           errors.role && touched.role
                             ? "border-red-500"
                             : "border-gray-300"
@@ -462,7 +462,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                             type="number"
                             min="1"
                             placeholder="Minimum"
-                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                            className="frm"
                           />
                         </div>
                         <div>
@@ -472,7 +472,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                             type="number"
                             min="1"
                             placeholder="Maximum"
-                            className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                            className="frm"
                           />
                         </div>
                       </div>
@@ -486,7 +486,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                       <Field
                         as="select"
                         name="followersRange"
-                        className="w-full mt-2 px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                        className="frm"
                       >
                         <option value="">Select followers range...</option>
                         {followerRanges.map((range) => (
@@ -507,7 +507,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                         name="location"
                         type="text"
                         placeholder="e.g., Ikeja, Lagos, Nigeria"
-                        className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
+                        className={`frm ${
                           errors.location && touched.location
                             ? "border-red-500"
                             : "border-gray-300"
@@ -555,7 +555,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                                     }
                                   }
                                 }}
-                                className="flex-1 px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                className="flex-1 frm"
                               />
                               <button
                                 type="button"
@@ -566,7 +566,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                                     setNewLocation("");
                                   }
                                 }}
-                                className="px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 hover:bg-gray-50"
+                                className="px-3 py-2 bg-yellow-100 rounded-xl border border-yellow-300 text-yellow-800 placeholder-yellow-400 hover:bg-yellow-50"
                                 aria-label="Add location"
                                 title="Add location"
                               >
@@ -587,7 +587,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                       <Field
                         as="select"
                         name="postFrequency"
-                        className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                        className="frm"
                         onChange={(e: any) => {
                           const value = e.target.value;
                           setFieldValue("postFrequency", value);
@@ -718,7 +718,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                       <Field
                         as="select"
                         name="postDuration"
-                        className="w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                        className="frm"
                       >
                         <option value="">Select duration...</option>
                         {postDurations.map((duration) => (
@@ -743,7 +743,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                           name="brandName"
                           type="text"
                           placeholder="Enter your brand name"
-                          className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
+                          className={`frm ${
                             errors.brandName && touched.brandName
                               ? "border-red-500"
                               : "border-gray-300"
@@ -765,7 +765,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                           name="email"
                           type="email"
                           placeholder="Enter your brand email"
-                          className={`w-full px-3 py-2 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 ${
+                          className={`frm ${
                             errors.email && touched.email
                               ? "border-red-500"
                               : "border-gray-300"
