@@ -1705,7 +1705,7 @@ const Campaigns: React.FC = () => {
                         disabled={page === "..."}
                         className={`min-w-[40px] h-10 px-3 rounded-lg text-sm font-medium transition-colors ${
                           page === currentPage
-                            ? "bg-indigo-600 text-white"
+                            ? "bg-yellow-500 text-white"
                             : page === "..."
                             ? "cursor-default text-gray-400"
                             : "border border-gray-300 hover:bg-gray-50 text-gray-400"
@@ -1741,7 +1741,7 @@ const Campaigns: React.FC = () => {
                         handlePageClick(page);
                       }
                     }}
-                    className="w-16 px-2 py-1 border border-gray-300 rounded-lg text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-16 px-2 py-1 border border-gray-300 rounded-lg text-sm text-center focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   />
                 </div>
               </div>

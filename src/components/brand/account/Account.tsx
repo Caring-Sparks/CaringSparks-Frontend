@@ -521,8 +521,8 @@ const Account: React.FC = () => {
                     onClick={() => setActiveTab(key as typeof activeTab)}
                     className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
                       activeTab === key
-                        ? "border-b-2 border-yellow-600 text-yellow-600 bg-yellow-50"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50/10"
+                        ? "border-b-2 border-yellow-600 text-yellow-600 bg-yellow-50/10"
+                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50/10"
                     }`}
                   >
                     <Icon size={18} />

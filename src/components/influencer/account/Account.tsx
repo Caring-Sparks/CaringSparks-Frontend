@@ -450,11 +450,11 @@ const Account: React.FC = () => {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-4xl mx-auto">
           <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-8 bg-slate-200/20 rounded w-1/4"></div>
+            <div className="h-64 bg-slate-200/20 rounded"></div>
           </div>
         </div>
       </div>
@@ -509,10 +509,10 @@ const Account: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-500">
               Account Management
             </h1>
             <p className="text-gray-600 mt-1">
@@ -538,22 +538,22 @@ const Account: React.FC = () => {
             </div>
           )}
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
+          <div className="bg-slate-200/20 rounded-xl shadow-sm border border-slate-200/10 p-8 mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-8 mb-6">
               <div className="flex items-center space-x-6 mb-6 lg:mb-0">
                 <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
                   <User className="text-white" size={28} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold text-gray-400">
                     {user?.name || "Influencer Account"}
                   </h2>
-                  <div className="flex items-center space-x-2 text-gray-600 mb-2">
+                  <div className="flex items-center space-x-2 text-gray-500 mb-2">
                     <CgMail size={16} />
                     <span>{user?.email}</span>
                   </div>
                   {user?.location && (
-                    <div className="flex items-center space-x-2 text-gray-600 mb-2">
+                    <div className="flex items-center space-x-2 text-gray-500 mb-2">
                       <MapPin size={16} />
                       <span>{user.location}</span>
                     </div>
@@ -572,7 +572,7 @@ const Account: React.FC = () => {
                   {user?.niches?.map((niche, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded-full font-medium"
+                      className="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm rounded-full font-medium"
                     >
                       {niche}
                     </span>
@@ -582,8 +582,8 @@ const Account: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="border-b border-gray-200">
+          <div className="bg-slate-200/20 rounded-xl shadow-sm border border-slate-200/10 overflow-hidden">
+            <div className="border-b border-slate-200/10">
               <nav className="flex overflow-x-auto no-scrollbar">
                 {[
                   {
@@ -601,10 +601,10 @@ const Account: React.FC = () => {
                   <button
                     key={key}
                     onClick={() => setActiveTab(key)}
-                    className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors whitespace-nowrap ${
+                    className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
                       activeTab === key
-                        ? "border-b-2 border-indigo-600 text-indigo-600 bg-indigo-50"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                        ? "border-b-2 border-yellow-600 text-yellow-600 bg-yellow-50/10"
+                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50/10"
                     }`}
                   >
                     <Icon size={18} />
@@ -619,10 +619,10 @@ const Account: React.FC = () => {
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900">
+                      <h3 className="text-xl font-semibold text-gray-400">
                         Profile Information
                       </h3>
-                      <p className="text-gray-600 text-sm mt-1">
+                      <p className="text-gray-400 text-sm mt-1">
                         Update your personal information and professional
                         details
                       </p>
@@ -632,7 +632,7 @@ const Account: React.FC = () => {
                       className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                         isEditing
                           ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          : "bg-indigo-600 text-white hover:bg-indigo-700"
+                          : "bg-yellow-600 text-white hover:bg-yellow-700"
                       }`}
                     >
                       <PencilSimple size={16} />
@@ -641,13 +641,13 @@ const Account: React.FC = () => {
                   </div>
 
                   <form onSubmit={handleProfileUpdate} className="space-y-6">
-                    <div className="bg-gray-50 rounded-lg p-6">
-                      <h4 className="font-medium text-gray-900 mb-4">
+                    <div className="bg-slate-200/10 border border-slate-200/10 rounded-lg p-6">
+                      <h4 className="font-medium text-gray-400 mb-4">
                         Basic Information
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Full Name *
                           </label>
                           <div className="relative">
@@ -662,13 +662,13 @@ const Account: React.FC = () => {
                               onChange={handleInputChange}
                               disabled={!isEditing}
                               required
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
+                              className="frm2"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Email Address *
                           </label>
                           <div className="relative">
@@ -683,13 +683,13 @@ const Account: React.FC = () => {
                               onChange={handleInputChange}
                               disabled={!isEditing}
                               required
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
+                              className="frm2"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Phone Number
                           </label>
                           <div className="relative">
@@ -703,13 +703,13 @@ const Account: React.FC = () => {
                               value={formData.phone}
                               onChange={handleInputChange}
                               disabled={!isEditing}
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
+                              className="frm2"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             WhatsApp Number
                           </label>
                           <div className="relative">
@@ -723,13 +723,13 @@ const Account: React.FC = () => {
                               value={formData.whatsapp}
                               onChange={handleInputChange}
                               disabled={!isEditing}
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
+                              className="frm2"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Location
                           </label>
                           <div className="relative">
@@ -743,13 +743,13 @@ const Account: React.FC = () => {
                               value={formData.location}
                               onChange={handleInputChange}
                               disabled={!isEditing}
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
+                              className="frm2"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Audience Location
                           </label>
                           <div className="relative">
@@ -763,7 +763,7 @@ const Account: React.FC = () => {
                               value={formData.audienceLocation}
                               onChange={handleInputChange}
                               disabled={!isEditing}
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-colors"
+                              className="frm2"
                             />
                           </div>
                         </div>
@@ -775,7 +775,7 @@ const Account: React.FC = () => {
                         <button
                           type="submit"
                           disabled={loading}
-                          className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50"
+                          className="flex items-center space-x-2 bg-yellow-600 hover:bg-yellow-400 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50"
                         >
                           <FloppyDisk size={16} />
                           <span>{loading ? "Saving..." : "Save Changes"}</span>
@@ -783,7 +783,7 @@ const Account: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setIsEditing(false)}
-                          className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+                          className="px-6 py-3 border border-gray-300 rounded-lg text-gray-400 hover:bg-gray-50 font-medium transition-colors"
                         >
                           Cancel
                         </button>
@@ -797,10 +797,10 @@ const Account: React.FC = () => {
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900">
+                      <h3 className="text-xl font-semibold text-gray-500">
                         Profile Information
                       </h3>
-                      <p className="text-gray-600 text-sm mt-1">
+                      <p className="text-gray-500 text-sm mt-1">
                         Update your personal information and professional
                         details
                       </p>
@@ -810,7 +810,7 @@ const Account: React.FC = () => {
                       className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                         isEditing
                           ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          : "bg-indigo-600 text-white hover:bg-indigo-700"
+                          : "bg-yellow-600 text-white hover:bg-yellow-700"
                       }`}
                     >
                       <PencilSimple size={16} />
@@ -822,8 +822,8 @@ const Account: React.FC = () => {
                     onSubmit={handlePaymentDetailsUpdate}
                     className="space-y-6"
                   >
-                    <div className="bg-gray-50 rounded-lg p-6">
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <div className="bg-slate-200/10 rounded-lg p-6">
+                      <label className="block text-sm font-medium text-gray-500 mb-3">
                         Payment Method
                       </label>
                       <div className="grid grid-cols-2 gap-3">
@@ -838,8 +838,8 @@ const Account: React.FC = () => {
                           disabled={!isEditing}
                           className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
                             formData.paymentType === "bank"
-                              ? "border-blue-500 bg-blue-50 text-blue-700"
-                              : "border-gray-300 bg-white text-gray-600"
+                              ? "border-yellow-500/20 bg-yellow-50 text-yellow-700"
+                              : "border-slate-200/10 bg-slate-200/20 text-gray-400"
                           } disabled:opacity-50`}
                         >
                           <BiBuilding size={20} />
@@ -856,8 +856,8 @@ const Account: React.FC = () => {
                           disabled={!isEditing}
                           className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
                             formData.paymentType === "crypto"
-                              ? "border-blue-500 bg-blue-50 text-blue-700"
-                              : "border-gray-300 bg-white text-gray-600"
+                              ? "border-yellow-500/20 bg-yellow-50 text-yellow-700"
+                              : "border-slate-200/10 bg-slate-200/20 text-gray-400"
                           } disabled:opacity-50`}
                         >
                           <CurrencyBtc size={20} />
@@ -867,13 +867,13 @@ const Account: React.FC = () => {
                     </div>
 
                     {formData.paymentType === "bank" && (
-                      <div className="bg-gray-50 rounded-lg p-6">
-                        <h4 className="font-medium text-gray-900 mb-4">
+                      <div className="bg-slate-200/10 border border-slate-200/10 rounded-lg p-6">
+                        <h4 className="font-medium text-gray-500 mb-4">
                           Bank Account Information
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-400 mb-2">
                               Bank Name *
                             </label>
                             <input
@@ -884,12 +884,12 @@ const Account: React.FC = () => {
                               disabled={!isEditing}
                               required
                               placeholder="e.g., First Bank of Nigeria"
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                              className="frm"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-400 mb-2">
                               Account Number *
                             </label>
                             <input
@@ -901,12 +901,12 @@ const Account: React.FC = () => {
                               required
                               placeholder="0123456789"
                               maxLength={10}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                              className="frm"
                             />
                           </div>
 
                           <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-400 mb-2">
                               Account Name *
                             </label>
                             <input
@@ -917,7 +917,7 @@ const Account: React.FC = () => {
                               disabled={!isEditing}
                               required
                               placeholder="Account holder's full name"
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                              className="frm"
                             />
                           </div>
                         </div>
@@ -936,13 +936,13 @@ const Account: React.FC = () => {
                     )}
 
                     {formData.paymentType === "crypto" && (
-                      <div className="bg-gray-50 rounded-lg p-6">
-                        <h4 className="font-medium text-gray-900 mb-4">
+                      <div className="bg-slate-200/10 border border-slate-200/10 rounded-lg p-6">
+                        <h4 className="font-medium text-gray-400 mb-4">
                           Cryptocurrency Wallet Information
                         </h4>
                         <div className="space-y-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-400 mb-2">
                               Network/Currency *
                             </label>
                             <select
@@ -951,7 +951,7 @@ const Account: React.FC = () => {
                               onChange={handleInputChange}
                               disabled={!isEditing}
                               required
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                              className="frm"
                             >
                               <option value="">Select network</option>
                               {CRYPTO_NETWORKS.map((network) => (
@@ -963,7 +963,7 @@ const Account: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-400 mb-2">
                               Wallet Address *
                             </label>
                             <input
@@ -974,12 +974,12 @@ const Account: React.FC = () => {
                               disabled={!isEditing}
                               required
                               placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 font-mono text-sm"
+                              className="frm font-mono text-sm"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-400 mb-2">
                               Wallet Type *
                             </label>
                             <input
@@ -990,7 +990,7 @@ const Account: React.FC = () => {
                               disabled={!isEditing}
                               required
                               placeholder="e.g., MetaMask, Trust Wallet"
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                              className="frm"
                             />
                           </div>
                         </div>
@@ -1013,7 +1013,7 @@ const Account: React.FC = () => {
                         <button
                           type="submit"
                           disabled={loading}
-                          className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50"
+                          className="flex items-center space-x-2 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50"
                         >
                           <FloppyDisk size={16} />
                           <span>
@@ -1023,7 +1023,7 @@ const Account: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setIsEditing(false)}
-                          className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+                          className="px-6 py-3 border border-gray-300 rounded-lg text-gray-400 hover:bg-gray-50 font-medium transition-colors"
                         >
                           Cancel
                         </button>
@@ -1036,21 +1036,21 @@ const Account: React.FC = () => {
               {activeTab === "security" && (
                 <div className="space-y-8">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">
+                    <h3 className="text-xl font-semibold text-gray-400">
                       Security Settings
                     </h3>
-                    <p className="text-gray-600 text-sm mt-1">
+                    <p className="text-gray-400 text-sm mt-1">
                       Manage your password and account security
                     </p>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h4 className="font-medium text-gray-900 mb-4">
+                  <div className="bg-slate-200/10 border border-slate-200/10 rounded-lg p-6">
+                    <h4 className="font-medium text-gray-400 mb-4">
                       Change Password
                     </h4>
                     <form onSubmit={handlePasswordChange} className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
                           Current Password
                         </label>
                         <div className="relative">
@@ -1063,7 +1063,7 @@ const Account: React.FC = () => {
                             name="currentPassword"
                             value={formData.currentPassword}
                             onChange={handleInputChange}
-                            className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="frm2"
                             placeholder="Enter current password"
                           />
                           <button
@@ -1083,7 +1083,7 @@ const Account: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
                           New Password
                         </label>
                         <div className="relative">
@@ -1096,7 +1096,7 @@ const Account: React.FC = () => {
                             name="newPassword"
                             value={formData.newPassword}
                             onChange={handleInputChange}
-                            className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="frm2"
                             placeholder="Enter new password"
                           />
                           <button
@@ -1114,7 +1114,7 @@ const Account: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
                           Confirm New Password
                         </label>
                         <div className="relative">
@@ -1127,7 +1127,7 @@ const Account: React.FC = () => {
                             name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="frm2"
                             placeholder="Confirm new password"
                           />
                         </div>
@@ -1141,7 +1141,7 @@ const Account: React.FC = () => {
                           !formData.newPassword ||
                           !formData.confirmPassword
                         }
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50"
+                        className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50"
                       >
                         {loading ? "Changing Password..." : "Change Password"}
                       </button>

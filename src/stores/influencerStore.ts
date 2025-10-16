@@ -628,7 +628,6 @@ export const useInfluencerStore = create<InfluencerState>()(
 
           const res = await api.get(url);
           const data = handleApiResponse(res);
-          console.log(data.data);
 
           set({
             assignedCampaigns: data?.data || [],

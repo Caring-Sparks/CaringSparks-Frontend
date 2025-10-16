@@ -115,12 +115,8 @@ const Jobs: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [roleFilter, setRoleFilter] = useState<string>("all");
-
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-
-  // Modal states
   const [showCampaignDetails, setShowCampaignDetails] =
     useState<boolean>(false);
   const [selectedCampaign, setSelectedCampaign] = useState<
@@ -133,16 +129,12 @@ const Jobs: React.FC = () => {
     useState<boolean>(false);
   const [showSubmittedJobsModal, setShowSubmittedJobsModal] =
     useState<boolean>(false);
-
-  // Form states
   const [deliverables, setDeliverables] = useState<DeliverableSubmission[]>([]);
   const [responseMessage, setResponseMessage] = useState("");
   const [applicationMessage, setApplicationMessage] = useState("");
   const [proposedRate, setProposedRate] = useState<number | undefined>();
   const [isEditingDeliverables, setIsEditingDeliverables] =
     useState<boolean>(false);
-
-  // Loading states
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const [campaignMaterials, setCampaignMaterials] = useState<any[]>([]);
@@ -687,14 +679,14 @@ const Jobs: React.FC = () => {
 
   if (campaignsLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-12 bg-gray-200 rounded"></div>
+            <div className="h-8 bg-slate-200/10 rounded w-1/4"></div>
+            <div className="h-12 bg-slate-200/10 rounded"></div>
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded"></div>
+                <div key={i} className="h-32 bg-slate-200/10 rounded"></div>
               ))}
             </div>
           </div>
@@ -705,7 +697,7 @@ const Jobs: React.FC = () => {
 
   if (campaignsError) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <div className="text-red-600 text-lg font-medium mb-2">
@@ -734,20 +726,20 @@ const Jobs: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
             onClick={closeCampaignDetailsModal}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+              className="bg-slate-200/20 rounded-xl backdrop-blur-2xl border border-slate-200/10 shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-2xl font-bold text-gray-400 mb-2">
                       {selectedCampaign.brandName}
                     </h2>
                   </div>
@@ -761,10 +753,10 @@ const Jobs: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">
+                    <h3 className="font-semibold text-gray-500 mb-2">
                       Campaign Details
                     </h3>
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-2 text-sm text-gray-400">
                       <div>
                         <span className="font-medium">Role:</span>{" "}
                         {selectedCampaign.role}
@@ -855,28 +847,28 @@ const Jobs: React.FC = () => {
                 </div>
 
                 <div className="mb-6">
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                  <h3 className="font-semibold text-gray-500 mb-2">
                     Campaign Materials
                   </h3>
                   {materialsLoading ? (
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-slate-200/20 p-4 rounded-lg">
                       <div className="animate-pulse flex space-x-4">
-                        <div className="rounded bg-gray-200 h-20 w-20"></div>
+                        <div className="rounded bg-slate-200/10 h-20 w-20"></div>
                         <div className="flex-1 space-y-2 py-1">
-                          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                          <div className="h-4 bg-slate-200/10 rounded w-3/4"></div>
+                          <div className="h-4 bg-slate-200/10 rounded w-1/2"></div>
                         </div>
                       </div>
                     </div>
                   ) : campaignMaterials.length > 0 ? (
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-slate-200/20 p-4 rounded-lg">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {campaignMaterials.map((material, index) => (
                           <div
                             key={index}
-                            className="bg-white rounded-lg p-3 shadow-sm"
+                            className="bg-slate-200/20 rounded-lg p-3 shadow-sm"
                           >
-                            <div className="aspect-square mb-3 overflow-hidden rounded-lg bg-gray-100">
+                            <div className="aspect-square mb-3 overflow-hidden rounded-lg bg-slate-200/10">
                               <Image
                                 src={material.imageUrl || "/placeholder.svg"}
                                 width={200}
@@ -886,7 +878,7 @@ const Jobs: React.FC = () => {
                               />
                             </div>
                             {material.postDescription && (
-                              <div className="text-sm text-gray-700">
+                              <div className="text-sm text-gray-500">
                                 <p className="font-medium mb-1">Description:</p>
                                 <p className="line-clamp-3">
                                   {material.postDescription}
@@ -914,8 +906,8 @@ const Jobs: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-gray-700">
+                    <div className="bg-slate-200/20 p-4 rounded-lg">
+                      <p className="text-gray-100">
                         Campaign materials have not been uploaded yet. The brand
                         will provide materials soon.
                       </p>
@@ -923,16 +915,7 @@ const Jobs: React.FC = () => {
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
-                  {activeTab === "available" && (
-                    <button
-                      onClick={() => setShowApplicationModal(true)}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium"
-                    >
-                      Apply to Campaign
-                    </button>
-                  )}
-
+                <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-200/20">
                   {activeTab === "assigned" && (
                     <>
                       {getInfluencerStatus(selectedCampaign)
@@ -961,7 +944,7 @@ const Jobs: React.FC = () => {
                         !getInfluencerStatus(selectedCampaign)?.isCompleted && (
                           <button
                             onClick={() => setShowDeliverableModal(true)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
+                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-lg font-medium"
                           >
                             Submit Deliverables
                           </button>
@@ -990,19 +973,19 @@ const Jobs: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
             onClick={() => setShowSubmittedJobsModal(false)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+              className="bg-slate-200/20 border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-400">
                     {isEditingDeliverables
                       ? "Edit Submitted Work"
                       : "Submitted Work"}
@@ -1011,7 +994,7 @@ const Jobs: React.FC = () => {
                     {!isEditingDeliverables && (
                       <button
                         onClick={handleEditSubmittedJobs}
-                        className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-medium"
+                        className="bg-yellow-50 hover:bg-yellow-100 text-yellow-600 px-4 py-2 rounded-lg font-medium"
                       >
                         <FaEdit className="inline mr-2" /> Edit
                       </button>
@@ -1031,10 +1014,10 @@ const Jobs: React.FC = () => {
                       {deliverables.map((deliverable, index) => (
                         <div
                           key={index}
-                          className="p-4 border border-gray-200 rounded-lg"
+                          className="p-4 border border-slate-200/10 rounded-lg"
                         >
                           <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium text-gray-900">
+                            <h4 className="font-medium text-gray-400">
                               Deliverable {index + 1}
                             </h4>
                             <button
@@ -1047,7 +1030,7 @@ const Jobs: React.FC = () => {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium text-gray-400 mb-2">
                                 Platform
                               </label>
                               <select
@@ -1059,7 +1042,7 @@ const Jobs: React.FC = () => {
                                     e.target.value
                                   )
                                 }
-                                className="w-full p-3 border border-gray-300 rounded-lg"
+                                className="frm"
                               >
                                 <option value="">Select platform</option>
                                 {selectedCampaign?.platforms.map(
@@ -1073,7 +1056,7 @@ const Jobs: React.FC = () => {
                             </div>
 
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium text-gray-400 mb-2">
                                 Post URL
                               </label>
                               <input
@@ -1087,12 +1070,12 @@ const Jobs: React.FC = () => {
                                   )
                                 }
                                 placeholder="https://..."
-                                className="w-full p-3 border border-gray-300 rounded-lg"
+                                className="frm"
                               />
                             </div>
 
                             <div className="md:col-span-2">
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium text-gray-400 mb-2">
                                 Description
                               </label>
                               <textarea
@@ -1105,13 +1088,13 @@ const Jobs: React.FC = () => {
                                   )
                                 }
                                 placeholder="Describe your deliverable..."
-                                className="w-full p-3 border border-gray-300 rounded-lg resize-none"
+                                className="frm"
                                 rows={3}
                               />
                             </div>
 
                             <div className="md:col-span-2">
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium text-gray-400 mb-2">
                                 Performance Metrics (Optional)
                               </label>
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -1126,7 +1109,7 @@ const Jobs: React.FC = () => {
                                       Number(e.target.value) || 0
                                     )
                                   }
-                                  className="p-2 border border-gray-300 rounded"
+                                  className="frm"
                                 />
                                 <input
                                   type="number"
@@ -1139,7 +1122,7 @@ const Jobs: React.FC = () => {
                                       Number(e.target.value) || 0
                                     )
                                   }
-                                  className="p-2 border border-gray-300 rounded"
+                                  className="frm"
                                 />
                                 <input
                                   type="number"
@@ -1152,7 +1135,7 @@ const Jobs: React.FC = () => {
                                       Number(e.target.value) || 0
                                     )
                                   }
-                                  className="p-2 border border-gray-300 rounded"
+                                  className="frm"
                                 />
                                 <input
                                   type="number"
@@ -1165,7 +1148,7 @@ const Jobs: React.FC = () => {
                                       Number(e.target.value) || 0
                                     )
                                   }
-                                  className="p-2 border border-gray-300 rounded"
+                                  className="frm"
                                 />
                               </div>
                             </div>
@@ -1175,7 +1158,7 @@ const Jobs: React.FC = () => {
 
                       <button
                         onClick={addDeliverable}
-                        className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition flex items-center justify-center gap-2"
+                        className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-yellow-400 transition flex items-center justify-center gap-2"
                       >
                         <FaPlus /> Add Another Deliverable
                       </button>
@@ -1191,7 +1174,7 @@ const Jobs: React.FC = () => {
                       <button
                         onClick={handleSaveEditedDeliverables}
                         disabled={isSubmitting || deliverables.length === 0}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                        className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
                       >
                         {isSubmitting ? "Updating..." : "Save Changes"}
                       </button>
@@ -1201,22 +1184,25 @@ const Jobs: React.FC = () => {
                   <>
                     <div className="space-y-4 mb-6">
                       {deliverables.map((deliverable, index) => (
-                        <div key={index} className="p-4 bg-gray-50 rounded-lg">
+                        <div
+                          key={index}
+                          className="p-4 bg-slate-200/20 rounded-lg"
+                        >
                           <div className="flex items-start justify-between mb-3">
-                            <h4 className="font-medium text-gray-900">
+                            <h4 className="font-medium text-gray-400">
                               {deliverable.platform} - Deliverable {index + 1}
                             </h4>
                             <a
                               href={deliverable.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-700 text-sm"
+                              className="txt text-sm"
                             >
                               View Post →
                             </a>
                           </div>
 
-                          <p className="text-gray-700 text-sm mb-3">
+                          <p className="text-gray-400 text-sm mb-3">
                             {deliverable.description}
                           </p>
 
@@ -1224,19 +1210,19 @@ const Jobs: React.FC = () => {
                             Object.keys(deliverable.metrics).length > 0 && (
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                                 {deliverable.metrics.views && (
-                                  <div className="bg-white p-2 rounded">
+                                  <div className="bg-slate-200/20 border border-slate-200/10 text-white p-2 rounded">
                                     <span className="font-medium">Views:</span>{" "}
                                     {deliverable.metrics.views.toLocaleString()}
                                   </div>
                                 )}
                                 {deliverable.metrics.likes && (
-                                  <div className="bg-white p-2 rounded">
+                                  <div className="bg-slate-200/20 border border-slate-200/10 text-white p-2 rounded">
                                     <span className="font-medium">Likes:</span>{" "}
                                     {deliverable.metrics.likes.toLocaleString()}
                                   </div>
                                 )}
                                 {deliverable.metrics.comments && (
-                                  <div className="bg-white p-2 rounded">
+                                  <div className="bg-slate-200/20 border border-slate-200/10 text-white p-2 rounded">
                                     <span className="font-medium">
                                       Comments:
                                     </span>{" "}
@@ -1244,7 +1230,7 @@ const Jobs: React.FC = () => {
                                   </div>
                                 )}
                                 {deliverable.metrics.shares && (
-                                  <div className="bg-white p-2 rounded">
+                                  <div className="bg-slate-200/20 border border-slate-200/10 text-white p-2 rounded">
                                     <span className="font-medium">Shares:</span>{" "}
                                     {deliverable.metrics.shares.toLocaleString()}
                                   </div>
@@ -1273,18 +1259,18 @@ const Jobs: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
             onClick={() => setShowResponseModal(false)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-md"
+              className="bg-slate-200/20 border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-400 mb-4">
                   Accept Campaign
                 </h3>
                 <h5>
@@ -1315,19 +1301,19 @@ const Jobs: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
             onClick={() => setShowDeliverableModal(false)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+              className="bg-slate-200/20 border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-400">
                     Submit Campaign Deliverables
                   </h3>
                   <button
@@ -1342,10 +1328,10 @@ const Jobs: React.FC = () => {
                   {deliverables.map((deliverable, index) => (
                     <div
                       key={index}
-                      className="p-4 border border-gray-200 rounded-lg"
+                      className="p-4 border border-slate-200/10 rounded-lg"
                     >
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-medium text-gray-900">
+                        <h4 className="font-medium text-gray-400">
                           Deliverable {index + 1}
                         </h4>
                         <button
@@ -1358,7 +1344,7 @@ const Jobs: React.FC = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Platform
                           </label>
                           <select
@@ -1370,7 +1356,7 @@ const Jobs: React.FC = () => {
                                 e.target.value
                               )
                             }
-                            className="w-full p-3 border border-gray-300 rounded-lg"
+                            className="frm"
                           >
                             <option value="">Select platform</option>
                             {selectedCampaign?.platforms.map(
@@ -1384,7 +1370,7 @@ const Jobs: React.FC = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Post URL
                           </label>
                           <input
@@ -1394,12 +1380,12 @@ const Jobs: React.FC = () => {
                               updateDeliverable(index, "url", e.target.value)
                             }
                             placeholder="https://..."
-                            className="w-full p-3 border border-gray-300 rounded-lg"
+                            className="frm"
                           />
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Description
                           </label>
                           <textarea
@@ -1412,13 +1398,13 @@ const Jobs: React.FC = () => {
                               )
                             }
                             placeholder="Describe your deliverable..."
-                            className="w-full p-3 border border-gray-300 rounded-lg resize-none"
+                            className="frm resize-none"
                             rows={3}
                           />
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-400 mb-2">
                             Performance Metrics (Optional)
                           </label>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -1433,7 +1419,7 @@ const Jobs: React.FC = () => {
                                   Number(e.target.value) || 0
                                 )
                               }
-                              className="p-2 border border-gray-300 rounded"
+                              className="frm"
                             />
                             <input
                               type="number"
@@ -1446,7 +1432,7 @@ const Jobs: React.FC = () => {
                                   Number(e.target.value) || 0
                                 )
                               }
-                              className="p-2 border border-gray-300 rounded"
+                              className="frm"
                             />
                             <input
                               type="number"
@@ -1459,7 +1445,7 @@ const Jobs: React.FC = () => {
                                   Number(e.target.value) || 0
                                 )
                               }
-                              className="p-2 border border-gray-300 rounded"
+                              className="frm"
                             />
                             <input
                               type="number"
@@ -1472,7 +1458,7 @@ const Jobs: React.FC = () => {
                                   Number(e.target.value) || 0
                                 )
                               }
-                              className="p-2 border border-gray-300 rounded"
+                              className="frm"
                             />
                           </div>
                         </div>
@@ -1482,7 +1468,7 @@ const Jobs: React.FC = () => {
 
                   <button
                     onClick={addDeliverable}
-                    className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition"
+                    className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-yellow-400 hover:text-yellow-600 transition"
                   >
                     + Add Deliverable
                   </button>
@@ -1498,7 +1484,7 @@ const Jobs: React.FC = () => {
                   <button
                     onClick={handleSubmitDeliverables}
                     disabled={isSubmitting || deliverables.length === 0}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                    className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
                   >
                     {isSubmitting ? "Submitting..." : "Submit Deliverables"}
                   </button>
@@ -1509,21 +1495,21 @@ const Jobs: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <div className="flex justify-between items-center gap-6 mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-gray-500">
                   Assigned Campaigns
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-gray-500 mt-1">
                   Manage your assigned campaigns and discover new opportunities.
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-500">
                     Proposed Monthly Earnings
                   </div>
                   <div className="text-xl font-bold text-green-600">
@@ -1542,7 +1528,7 @@ const Jobs: React.FC = () => {
                   placeholder="Search by brand name, location, or description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="frm"
                 />
               </div>
 
@@ -1554,8 +1540,8 @@ const Jobs: React.FC = () => {
                       onClick={() => setFilter(status as typeof filter)}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                         filter === status
-                          ? "bg-indigo-600 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-50"
+                          ? "bg-yellow-500 text-white"
+                          : "bg-slate-200/20 text-gray-400 hover:bg-gray-50/10 border border-slate-200/10"
                       }`}
                     >
                       {status.charAt(0).toUpperCase() +
@@ -1569,7 +1555,7 @@ const Jobs: React.FC = () => {
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="px-4 py-2 border border-slate-200/10 rounded-lg bg-slate-200/20 text-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 >
                   <option value="all">All Types</option>
                   <option value="Brand">Brand</option>
@@ -1583,7 +1569,7 @@ const Jobs: React.FC = () => {
                 <select
                   value={platformFilter}
                   onChange={(e) => setPlatformFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="px-4 py-2 border border-slate-200/10 rounded-lg bg-slate-200/20 text-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 >
                   <option value="all">All Platforms</option>
                   <option value="instagram">Instagram</option>
@@ -1600,26 +1586,26 @@ const Jobs: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {filteredCampaigns.length}
                 </div>
-                <div className="text-gray-600">
+                <div className="text-gray-400">
                   {filter === "all" ? "Total" : "Filtered"} Campaigns
                 </div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {
                     assignedCampaigns.filter(
                       (c: any) => getInfluencerStatus(c)?.isCompleted
                     ).length
                   }
                 </div>
-                <div className="text-gray-600">Completed</div>
+                <div className="text-gray-400">Completed</div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold text-gray-400">
                   {
                     assignedCampaigns.filter(
                       (c: any) =>
@@ -1627,13 +1613,13 @@ const Jobs: React.FC = () => {
                     ).length
                   }
                 </div>
-                <div className="text-gray-600">Pending Response</div>
+                <div className="text-gray-400">Pending Response</div>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
+              <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
                 <div className="text-2xl font-bold text-red-600">
                   {assignedCampaigns.filter((c: any) => isOverdue(c)).length}
                 </div>
-                <div className="text-gray-600">Overdue</div>
+                <div className="text-gray-400">Overdue</div>
               </div>
             </div>
 
@@ -1648,7 +1634,7 @@ const Jobs: React.FC = () => {
 
           <div className="space-y-4 mb-8">
             {paginatedCampaigns.length === 0 ? (
-              <div className="bg-white p-12 rounded-lg shadow-sm text-center">
+              <div className="bg-slate-200/10 border border-slate-200/10 p-12 rounded-lg shadow-sm text-center">
                 <div className="text-gray-400 text-lg mb-2">
                   No campaigns found
                 </div>
@@ -1662,7 +1648,7 @@ const Jobs: React.FC = () => {
                 {activeTab === "available" && (
                   <button
                     onClick={() => fetchAssignedCampaigns()}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg"
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-lg"
                   >
                     Refresh
                   </button>
@@ -1676,13 +1662,13 @@ const Jobs: React.FC = () => {
                 return (
                   <div
                     key={campaign._id}
-                    className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+                    className="bg-slate-200/20 border border-slate-200/10 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
                   >
                     <div className="p-6">
                       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 flex-wrap mb-2">
-                            <h3 className="text-xl font-semibold text-gray-900">
+                            <h3 className="text-xl font-semibold text-gray-400">
                               {campaign.brandName}
                             </h3>
                             <span
@@ -1702,7 +1688,7 @@ const Jobs: React.FC = () => {
                             )}
                           </div>
 
-                          <p className="text-gray-600 mb-4">
+                          <p className="text-gray-400 mb-4">
                             {campaign.platforms.join(", ")} •{" "}
                             {campaign.location}
                             {campaign.additionalLocations &&
@@ -1712,30 +1698,30 @@ const Jobs: React.FC = () => {
 
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                             <div>
-                              <span className="font-medium text-gray-700">
+                              <span className="font-medium text-gray-400">
                                 Followers Range:
                               </span>
-                              <div className="text-gray-900">
+                              <div className="text-gray-400">
                                 {campaign.followersRange || "Any"}
                               </div>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-700">
+                              <span className="font-medium text-gray-400">
                                 Duration:
                               </span>
-                              <div className="text-gray-900">
+                              <div className="text-gray-400">
                                 {campaign.postDuration || "N/A"}
                               </div>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-700">
+                              <span className="font-medium text-gray-400">
                                 Due Date:
                               </span>
                               <div
                                 className={
                                   dueDateInfo.isOverdue
                                     ? "text-red-600 font-semibold"
-                                    : "text-gray-900"
+                                    : "text-gray-400"
                                 }
                               >
                                 {dueDateInfo.date}
@@ -1760,10 +1746,10 @@ const Jobs: React.FC = () => {
                               </div>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-700">
+                              <span className="font-medium text-gray-400">
                                 Assigned:
                               </span>
-                              <div className="text-gray-900">
+                              <div className="text-gray-400">
                                 {formatDate(status?.assignedAt)}
                               </div>
                             </div>
@@ -1847,13 +1833,14 @@ const Jobs: React.FC = () => {
           </div>
 
           {filteredCampaigns.length > itemsPerPage && (
-            <div className="bg-white rounded-lg shadow-sm p-4">
+            <div className="bg-slate-200/20 border border-slate-200/10 rounded-lg shadow-sm p-4">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="text-sm text-gray-600">
                   Page {currentPage} of {totalPages}
                 </div>
 
                 <div className="flex items-center gap-2">
+                  {/* Previous Button */}
                   <button
                     onClick={handlePreviousPage}
                     disabled={currentPage === 1}
@@ -1863,6 +1850,7 @@ const Jobs: React.FC = () => {
                     <FaChevronLeft className="w-4 h-4 text-gray-600" />
                   </button>
 
+                  {/* Page Numbers */}
                   <div className="flex items-center gap-1">
                     {getPageNumbers().map((page, index) => (
                       <button
@@ -1873,10 +1861,10 @@ const Jobs: React.FC = () => {
                         disabled={page === "..."}
                         className={`min-w-[40px] h-10 px-3 rounded-lg text-sm font-medium transition-colors ${
                           page === currentPage
-                            ? "bg-indigo-600 text-white"
+                            ? "bg-yellow-600 text-white"
                             : page === "..."
                             ? "cursor-default text-gray-400"
-                            : "border border-gray-300 hover:bg-gray-50 text-gray-700"
+                            : "border border-gray-300 hover:bg-gray-50 text-gray-400"
                         }`}
                       >
                         {page}
@@ -1884,6 +1872,7 @@ const Jobs: React.FC = () => {
                     ))}
                   </div>
 
+                  {/* Next Button */}
                   <button
                     onClick={handleNextPage}
                     disabled={currentPage === totalPages}
@@ -1894,6 +1883,7 @@ const Jobs: React.FC = () => {
                   </button>
                 </div>
 
+                {/* Go to page input (optional) */}
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Go to:</span>
                   <input
@@ -1907,7 +1897,7 @@ const Jobs: React.FC = () => {
                         handlePageClick(page);
                       }
                     }}
-                    className="w-16 px-2 py-1 border border-gray-300 rounded-lg text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-16 px-2 py-1 border border-gray-300 rounded-lg text-sm text-center focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   />
                 </div>
               </div>

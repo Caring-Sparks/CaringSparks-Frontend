@@ -23,7 +23,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const [notificationOffset, setNotificationOffset] = useState(0);
   const NOTIFICATIONS_PER_PAGE = 10;
 
-  // Track unseen/seen using timestamps
   const [hasNewNotifications, setHasNewNotifications] = useState(false);
   const [lastSeen, setLastSeen] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
@@ -58,7 +57,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
 
   const token = getAuthToken();
 
-  // Helper function for deadline calculation
   const getDaysUntilDeadline = (createdAt: string, postFrequency: string) => {
     const created = new Date(createdAt);
     const weekMatch = postFrequency.match(/(?:for\s+)?(\d+)\s+weeks?/i);
@@ -84,7 +82,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
 
     return { deadline, daysRemaining: diffDays };
   };
-  // Generate notifications from campaign data
   const allNotifications = useMemo(() => {
     const notifications: any[] = [];
 
@@ -125,7 +122,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         });
       }
 
-      // Deadline notifications (for campaigns due within 3 days)
       const { daysRemaining } = getDaysUntilDeadline(
         campaign.createdAt,
         campaign.postFrequency
@@ -143,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
               ? "tomorrow"
               : `in ${daysRemaining} days`
           }`,
-          timestamp: Date.now(), // Current time for deadline reminders
+          timestamp: Date.now(),
           createdAt: new Date().toISOString(),
           campaign,
           icon: "clock",
@@ -154,11 +150,9 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       }
     });
 
-    // Sort by newest first
     return notifications.sort((a, b) => b.timestamp - a.timestamp);
   }, [assignedCampaigns]);
 
-  // Get current page of notifications
   const currentNotifications = allNotifications.slice(
     notificationOffset,
     notificationOffset + NOTIFICATIONS_PER_PAGE
@@ -245,7 +239,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     }
   };
 
-  // Compute latest activity timestamp
   const latestActivityTs = useMemo(() => {
     const times: number[] = [];
 
@@ -259,7 +252,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
     return times.length ? Math.max(...times) : 0;
   }, [assignedCampaigns]);
 
-  // Show notification dot if there's something newer than last seen
   useEffect(() => {
     if (latestActivityTs > lastSeen) {
       setHasNewNotifications(true);
@@ -269,7 +261,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   const handleNotificationClick = () => {
     setShowNotifications((prev) => !prev);
 
-    // Mark as seen when opening the panel and reset offset
     if (!showNotifications) {
       const seen = Date.now();
       setLastSeen(seen);
@@ -322,16 +313,16 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex items-center justify-between relative">
+    <header className="bg-black shadow-sm shadow-slate-200/20 px-6 py-4 flex items-center justify-between relative">
       <div className="flex items-center space-x-4">
         <button
           onClick={toggleSidebar}
-          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="lg:hidden text-gray-500 p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
           {sidebarOpen ? <BiX size={20} /> : <BiMenu size={20} />}
         </button>
-        <h1 className="text-2xl font-bold lg:hidden block text-gray-900">
-          CaringSparks
+        <h1 className="text-2xl font-bold lg:hidden block text-gray-500">
+          The•PR•God
         </h1>
       </div>
 
@@ -341,7 +332,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={handleNotificationClick}
-            className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="relative p-2 text-gray-600 bg-slate-200/20 border hover:text-blue-500 hover:bg-gray-100 duration-300 ease-in-out rounded-lg transition-colors"
           >
             <BiBell size={20} />
             {hasNewNotifications && (
@@ -357,9 +348,9 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded-lg border border-gray-200 z-50"
+                className="absolute right-0 mt-2 w-72 bg-slate-200/20 backdrop-blur-2xl shadow-lg rounded-lg border border-gray-200/10 z-50"
               >
-                <div className="p-3 bg-slate-200/50 font-semibold text-gray-700 flex items-center justify-between">
+                <div className="p-3 bg-slate-200/10 font-semibold text-gray-400 flex items-center justify-between">
                   <span>Notifications</span>
                   {allNotifications.length > 0 && (
                     <span className="text-xs text-gray-500">
@@ -419,7 +410,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
         {/* Logout */}
         <button
           onClick={() => setShowLogoutPopup(true)}
-          className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-gray-600 hover:text-red-600 bg-slate-200/20 border duration-300 ease-in-out hover:bg-gray-100 rounded-lg transition-colors"
         >
           <BiLogOut size={20} />
         </button>
@@ -433,7 +424,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-8 z-50"
             onClick={() => setShowLogoutPopup(false)}
           >
             <motion.div
@@ -442,7 +433,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              className="bg-slate-200/20 backdrop-blur-2xl border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <h2 className="text-lg font-semibold text-gray-900 mb-4">

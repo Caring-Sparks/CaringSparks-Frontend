@@ -25,7 +25,6 @@ import { BsThreads, BsTwitterX } from "react-icons/bs";
 import { FaDollarSign } from "react-icons/fa";
 import { FiZap } from "react-icons/fi";
 
-// Type definitions
 type JobStatus =
   | "pending_approval"
   | "in_progress"
@@ -113,8 +112,8 @@ const Overview: React.FC = () => {
     snapchat: {
       name: "Snapchat",
       icon: SnapchatLogo,
-      color: "text-yellow-400",
-      bgColor: "bg-yellow-400",
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-500",
     },
   };
 
@@ -157,7 +156,6 @@ const Overview: React.FC = () => {
     },
   };
 
-  // Get available platforms (only those with data)
   const availablePlatforms: SocialPlatformKey[] = (
     Object.keys(socialPlatforms) as SocialPlatformKey[]
   ).filter(
@@ -197,7 +195,6 @@ const Overview: React.FC = () => {
     }
   };
 
-  // Helper function to get priority color (if you want to use role as priority indicator)
   const getPriorityColor = (role: string) => {
     switch (role?.toLowerCase()) {
       case "movie":
@@ -351,8 +348,8 @@ const Overview: React.FC = () => {
         notifications.push({
           id: `approval-${campaign._id}`,
           type: "approval",
-          title: "You accepted the task!",
-          message: `The campaign ${campaign.brandName} has been accepted and is now being tracked`,
+          title: "Task Accepted!",
+          message: `The campaign for ${campaign.brandName} has been accepted and is now being tracked`,
           timestamp: new Date(campaign.updatedAt || campaign.createdAt),
           campaign,
           icon: CheckCircle,
@@ -390,7 +387,7 @@ const Overview: React.FC = () => {
               ? "tomorrow"
               : `in ${daysRemaining} days`
           }`,
-          timestamp: new Date(), // Current time for deadline reminders
+          timestamp: new Date(),
           campaign,
           icon: Clock,
           bgColor: "bg-yellow-50",
@@ -399,7 +396,6 @@ const Overview: React.FC = () => {
       }
     });
 
-    // Sort by timestamp (most recent first) and return top 3
     return notifications
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
       .slice(0, 3);
@@ -424,24 +420,24 @@ const Overview: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl px-6 pt-8">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-gray-400">
           {user ? `Welcome Back, ${user.name}!` : `Welcome Back, user!`}
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-500">
           Here&apos;s your information at a glance.
         </p>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
+          <div className="bg-slate-200/20 rounded-xl shadow-sm p-6 border border-slate-200/10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Jobs</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-gray-500">Active Jobs</p>
+                <p className="text-3xl font-bold text-gray-500">
                   {assignedCampaigns.length}
                 </p>
                 <p className="text-sm text-green-600">All campaigns</p>
@@ -452,13 +448,13 @@ const Overview: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-slate-200/20 rounded-xl shadow-sm p-6 border border-slate-200/10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-sm font-medium text-gray-500">
                   Earnings Per Post
                 </p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-3xl font-bold text-gray-500">
                   ₦{user?.earningsPerPostNaira?.toLocaleString() || "0"}
                 </p>
                 <p className="text-sm text-gray-600">
@@ -471,13 +467,13 @@ const Overview: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-slate-200/20 rounded-xl shadow-sm p-6 border border-slate-200/10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-sm font-medium text-gray-500">
                   Max Monthly Earnings
                 </p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-3xl font-bold text-gray-500">
                   ₦{user?.maxMonthlyEarningsNaira?.toLocaleString() || "0"}
                 </p>
                 <p className="text-sm text-gray-600">
@@ -490,13 +486,13 @@ const Overview: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-slate-200/20 rounded-xl shadow-sm p-6 border border-slate-200/10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-sm font-medium text-gray-500">
                   Account Status
                 </p>
-                <p className="text-2xl font-bold text-gray-900 capitalize">
+                <p className="text-2xl font-bold text-gray-500 capitalize">
                   {user?.status || "Pending"}
                 </p>
                 <p className="text-sm text-green-600">Profile verified</p>
@@ -511,13 +507,13 @@ const Overview: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Active Jobs */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="p-6 border-b border-gray-100">
+            <div className="bg-slate-200/20 rounded-xl shadow-sm border border-slate-200/10">
+              <div className="p-6 border-b border-slate-200/10">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-xl font-semibold text-gray-500">
                     Assigned Campaigns
                   </h2>
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                  <span className="bg-yellow-100 text-yellow-500 px-3 py-1 rounded-full text-sm font-medium">
                     {assignedCampaigns.length} Active
                   </span>
                 </div>
@@ -543,14 +539,14 @@ const Overview: React.FC = () => {
                           return (
                             <div
                               key={campaign._id}
-                              className={`bg-gray-50 rounded-lg p-4 border-l-4 ${getPriorityColor(
+                              className={`bg-slate-200/20 rounded-lg p-4 border-l-4 ${getPriorityColor(
                                 campaign.role
                               )}`}
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center space-x-3 mb-2">
-                                    <h3 className="font-semibold text-gray-900">
+                                    <h3 className="font-semibold text-gray-300">
                                       {campaign.brandName}
                                     </h3>
                                     <span
@@ -574,24 +570,24 @@ const Overview: React.FC = () => {
                                     </span>
                                   </div>
 
-                                  <p className="text-gray-600 text-sm mb-2">
+                                  <p className="text-gray-300 text-sm mb-2">
                                     <strong>Platforms:</strong>{" "}
                                     {campaign.platforms.join(", ")}
                                   </p>
 
-                                  <p className="text-gray-700 text-sm mb-3">
+                                  <p className="text-gray-300 text-sm mb-3">
                                     <strong>Frequency:</strong>{" "}
                                     {campaign.postFrequency}
                                   </p>
 
-                                  <p className="text-gray-700 text-sm mb-3">
+                                  <p className="text-gray-300 text-sm mb-3">
                                     <strong>Location:</strong>{" "}
                                     {campaign.location} •{" "}
                                     <strong>Audience:</strong>{" "}
                                     {campaign.followersRange}
                                   </p>
 
-                                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                  <div className="flex items-center space-x-4 text-sm text-gray-300">
                                     <div className="flex items-center space-x-1">
                                       <Calendar className="w-4 h-4" />
                                       <span>
@@ -652,7 +648,7 @@ const Overview: React.FC = () => {
                     {assignedCampaigns.length > 2 && (
                       <div className="pt-4 border-t border-gray-200">
                         <Link href="/influencer/jobs">
-                          <button className="w-full text-center text-indigo-600 hover:text-indigo-700 font-medium py-2 hover:bg-indigo-50 rounded-lg transition-colors">
+                          <button className="w-full text-center text-yellow-600 hover:text-yellow-700 font-medium py-2 hover:bg-yellow-50 rounded-lg transition-colors">
                             View All {assignedCampaigns.length} Campaigns →
                           </button>
                         </Link>
@@ -666,8 +662,8 @@ const Overview: React.FC = () => {
 
           <div className="space-y-6">
             {/* Social Media Stats */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-slate-200/20 rounded-xl shadow-sm border border-slate-200/10 p-6">
+              <h3 className="text-lg font-semibold text-gray-500 mb-4">
                 Social Media Overview
               </h3>
               <div className="space-y-4">
@@ -698,13 +694,15 @@ const Overview: React.FC = () => {
                               </span>
                             </div>
                           )}
-                          <span className="font-medium">{platform.name}</span>
+                          <span className="font-medium text-gray-400">
+                            {platform.name}
+                          </span>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right text-gray-400">
                           <p className="font-semibold">
                             {formatNumber(stats.followers)}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-400">
                             {stats.impressions
                               ? `${formatNumber(stats.impressions)} imp.`
                               : stats.engagement
@@ -729,8 +727,8 @@ const Overview: React.FC = () => {
             </div>
 
             {/* Recent Notifications */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-slate-200/20 rounded-xl shadow-sm border border-slate-200/10 p-6">
+              <h3 className="text-lg font-semibold text-gray-500 mb-4">
                 Recent Notifications
               </h3>
 
@@ -786,13 +784,13 @@ const Overview: React.FC = () => {
         </div>
 
         {/* Upcoming Deadlines */}
-        <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="mt-8 bg-slate-200/20 rounded-xl shadow-sm border border-slate-200/10 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-gray-500">
               Upcoming Deadlines
             </h3>
             <Link href="/influencer/jobs">
-              <button className="text-blue-600 hover:text-blue-700 font-medium">
+              <button className="txt hover:text-yellow-700 font-medium">
                 View All Campaigns
               </button>
             </Link>
@@ -830,41 +828,40 @@ const Overview: React.FC = () => {
                           {timeLabel}
                         </span>
                       </div>
-                      <p className="font-semibold text-gray-900 mb-1">
+                      <p className="font-semibold text-gray-400 mb-1">
                         {item.campaign.brandName}
                       </p>
-                      <p className="text-sm text-gray-600 mb-2">
+                      <p className="text-sm text-gray-500 mb-2">
                         {item.campaign.role} Campaign
                       </p>
                       <div className="flex items-center justify-between text-xs text-gray-500">
                         <span>{item.campaign.platforms.join(", ")}</span>
                         <span>{item.campaign.postCount} posts</span>
                       </div>
-                      <div className="mt-2 text-xs text-gray-600">
+                      <div className="mt-2 text-xs text-gray-500">
                         Due: {item.deadline.toLocaleDateString()}
                       </div>
                     </div>
                   );
                 })}
 
-                {/* Fill remaining slots with empty cards if less than 3 items */}
                 {Array.from({
                   length: Math.max(0, 3 - upcomingDeadlines.length),
                 }).map((_, index) => (
                   <div
                     key={`empty-${index}`}
-                    className="bg-gray-50 border border-gray-200 rounded-lg p-4 opacity-50"
+                    className="bg-slate-200/20 border border-slate-200/10 rounded-lg p-4 opacity-50"
                   >
                     <div className="flex items-center space-x-2 mb-2">
-                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-400">
+                      <div className="w-2 h-2 bg-slate-200/10 rounded-full"></div>
+                      <span className="text-sm font-medium text-gray-500">
                         No deadline
                       </span>
                     </div>
-                    <p className="font-semibold text-gray-400 mb-1">
+                    <p className="font-semibold text-gray-500 mb-1">
                       Available slot
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-gray-500">
                       Ready for new campaigns
                     </p>
                   </div>

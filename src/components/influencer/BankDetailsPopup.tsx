@@ -166,7 +166,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+        className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
         onClick={(e) =>
           e.target === e.currentTarget && !isSubmitting && handleSkipForNow()
         }
@@ -175,25 +175,25 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
+          className="bg-black rounded-2xl border border-slate-200/10 shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="p-6 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div className="p-6 border-b border-slate-200/10 sticky top-0 bg-slate-200/20 backdrop-blur-2xl z-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                   {paymentType === "bank" ? (
-                    <Bank className="text-blue-600 text-xl" />
+                    <Bank className="txt text-xl" />
                   ) : (
-                    <CurrencyBtc className="text-blue-600 text-xl" />
+                    <CurrencyBtc className="txt text-xl" />
                   )}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold text-gray-400">
                     Welcome, {userName}!
                   </h2>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-400">
                     Set up your payment details
                   </p>
                 </div>
@@ -214,7 +214,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
           <div className="p-6">
             {/* Payment Type Toggle */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-gray-400 mb-3">
                 Payment Method
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -224,7 +224,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                   disabled={isSubmitting}
                   className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
                     paymentType === "bank"
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      ? "border-yellow-500 bg-yellow-50 text-yellow-700"
                       : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
@@ -237,7 +237,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                   disabled={isSubmitting}
                   className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
                     paymentType === "crypto"
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      ? "border-yellow-500 bg-yellow-50 text-yellow-700"
                       : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
@@ -248,9 +248,9 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
             </div>
 
             <div className="mb-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <p className="text-blue-800 text-sm">
-                  <FaCheck className="inline mr-2 text-blue-600" />
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <p className="text-yellow-800 text-sm">
+                  <FaCheck className="inline mr-2 text-yellow-600" />
                   {paymentType === "bank"
                     ? "To receive payments for completed campaigns, please provide your bank account details."
                     : "To receive crypto payments for completed campaigns, please provide your wallet details."}
@@ -280,7 +280,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                       }
                       placeholder="e.g., First Bank of Nigeria"
                       disabled={isSubmitting}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                      className={`frm ${
                         errors.bankName
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
@@ -309,7 +309,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                       }
                       placeholder="1234567890"
                       disabled={isSubmitting}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                      className={`frm ${
                         errors.accountNumber
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
@@ -335,7 +335,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                       }
                       placeholder="John Doe"
                       disabled={isSubmitting}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                      className={`frm ${
                         errors.accountName
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
@@ -361,7 +361,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                         handleCryptoInputChange("network", e.target.value)
                       }
                       disabled={isSubmitting}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                      className={`frm ${
                         errors.network
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
@@ -394,7 +394,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                       }
                       placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
                       disabled={isSubmitting}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors font-mono text-sm disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                      className={`frm ${
                         errors.walletAddress
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
@@ -420,7 +420,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                       }
                       placeholder="e.g., MetaMask, Trust Wallet, Binance"
                       disabled={isSubmitting}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                      className={`frm font-mono ${
                         errors.walletType
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
@@ -440,7 +440,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  className="w-full bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
