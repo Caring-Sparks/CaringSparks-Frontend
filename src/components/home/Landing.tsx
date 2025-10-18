@@ -2,18 +2,29 @@
 
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
-import { ArrowRight, Lightning, Sparkle, Star, X } from "phosphor-react";
+import {
+  ArrowRight,
+  Lightning,
+  LinkedinLogo,
+  Sparkle,
+  Star,
+  X,
+} from "phosphor-react";
 import { useEffect, useState } from "react";
 import GetStarted from "./extras/GetStarted";
 import LoginPopup from "./extras/Login";
 import { jwtDecode } from "jwt-decode";
-import { FaBarsStaggered } from "react-icons/fa6";
+import { FaBarsStaggered, FaXTwitter } from "react-icons/fa6";
+import { FaInstagram } from "react-icons/fa";
+import LegalDocumentsModal from "./DocModal";
 
 export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [getStarted, setGetStarted] = useState<boolean>(false);
   const [login, setLogin] = useState<boolean>(false);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [showLegalDocs, setShowLegalDocs] = useState<boolean>(false);
+  const [initialDoc, setInitialDoc] = useState<string>("privacy");
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -125,13 +136,23 @@ export default function LandingPage() {
 
   return (
     <>
-      {getStarted && (
-        <GetStarted
-          onClose={() => setGetStarted(false)}
-          login={() => setLogin(true)}
-        />
-      )}
-      {login && <LoginPopup onClose={() => setLogin(false)} isOpen={login} />}
+      <AnimatePresence>
+        {getStarted && (
+          <GetStarted
+            onClose={() => setGetStarted(false)}
+            login={() => setLogin(true)}
+          />
+        )}
+        {login && <LoginPopup onClose={() => setLogin(false)} isOpen={login} />}
+        {showLegalDocs && (
+          <LegalDocumentsModal
+            isVisible={showLegalDocs}
+            onClose={() => setShowLegalDocs(false)}
+            initialDocument={initialDoc}
+          />
+        )}
+      </AnimatePresence>
+
       <div className="min-h-screen bg-black">
         {/* Navbar */}
         <motion.nav
@@ -233,6 +254,7 @@ export default function LandingPage() {
                   variants={staggerContainer}
                   initial="closed"
                   animate="open"
+                  exit="closed"
                 >
                   <motion.div
                     className="pt-4 border-t border-gray-200 space-y-3"
@@ -494,6 +516,7 @@ export default function LandingPage() {
                     transition={{
                       duration: 1.5,
                       repeat: Number.POSITIVE_INFINITY,
+                      repeatType: "reverse",
                     }}
                   >
                     <ArrowRight className="w-6 h-6" />
@@ -551,6 +574,42 @@ export default function LandingPage() {
                   Making brands trend overnight with our network of 100k+ micro
                   influencers.
                 </p>
+
+                <div className="flex justify-center space-x-6 mt-4 mb-4">
+                  <motion.a
+                    href="https://x.com/The_Pr_God?t=rXHCtH71y3i1nbFcsuAtSQ&s=09"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                    whileHover={{ scale: 1.2, y: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    aria-label="Twitter"
+                  >
+                    <FaXTwitter size={24} />
+                  </motion.a>
+                  <motion.a
+                    href="https://www.instagram.com/thepr_god/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                    whileHover={{ scale: 1.2, y: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    aria-label="Instagram"
+                  >
+                    <FaInstagram size={24} />
+                  </motion.a>
+                  <motion.a
+                    href="https://www.linkedin.com/company/theprgod/?viewAsMember=true"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                    whileHover={{ scale: 1.2, y: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    aria-label="LinkedIn"
+                  >
+                    <LinkedinLogo size={24} />
+                  </motion.a>
+                </div>
               </motion.div>
             </div>
 
@@ -561,6 +620,37 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
             >
+              <div className="flex flex-wrap justify-center gap-4 mb-4 text-sm">
+                <button
+                  onClick={() => {
+                    setInitialDoc("privacy");
+                    setShowLegalDocs(true);
+                  }}
+                  className="hover:text-white transition-colors underline focus:outline-none"
+                >
+                  Privacy Policy
+                </button>
+                <span className="text-gray-600">•</span>
+                <button
+                  onClick={() => {
+                    setInitialDoc("terms");
+                    setShowLegalDocs(true);
+                  }}
+                  className="hover:text-white transition-colors underline focus:outline-none"
+                >
+                  Terms of Service
+                </button>
+                <span className="text-gray-600">•</span>
+                <button
+                  onClick={() => {
+                    setInitialDoc("partnership");
+                    setShowLegalDocs(true);
+                  }}
+                  className="hover:text-white transition-colors underline focus:outline-none"
+                >
+                  Partnership Agreement
+                </button>
+              </div>
               <p>&copy; 2025 The•PR•God. All rights reserved.</p>
             </motion.div>
           </div>
