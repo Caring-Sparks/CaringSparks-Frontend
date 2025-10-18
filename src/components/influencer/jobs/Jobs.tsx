@@ -579,6 +579,8 @@ const Jobs: React.FC = () => {
     platformFilter,
     roleFilter,
     activeTab,
+    getCurrentCampaigns,
+    getInfluencerStatus
   ]);
 
   const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
