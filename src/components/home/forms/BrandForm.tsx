@@ -196,7 +196,7 @@ const PhoneNumberInput = ({
           ))}
         </select>
 
-        <div className="relative flex-1">
+        <div className="relative w-full">
           <input
             type="tel"
             placeholder={currentFormat.placeholder}
@@ -483,11 +483,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                       <label className="text-sm font-medium text-gray-500">
                         Preferred followers range:
                       </label>
-                      <Field
-                        as="select"
-                        name="followersRange"
-                        className="frm"
-                      >
+                      <Field as="select" name="followersRange" className="frm">
                         <option value="">Select followers range...</option>
                         {followerRanges.map((range) => (
                           <option key={range} value={range}>
@@ -715,11 +711,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                         <Clock className="w-4 h-4" />
                         Post stays on page for:
                       </label>
-                      <Field
-                        as="select"
-                        name="postDuration"
-                        className="frm"
-                      >
+                      <Field as="select" name="postDuration" className="frm">
                         <option value="">Select duration...</option>
                         {postDurations.map((duration) => (
                           <option key={duration} value={duration}>
