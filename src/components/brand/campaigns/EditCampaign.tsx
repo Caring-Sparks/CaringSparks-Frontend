@@ -242,7 +242,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
           onClick={onBack}
         >
           <motion.div
-            className="relative w-[90%] lg:w-[80%] max-h-[90vh] overflow-y-auto mx-auto bg-black rounded-xl shadow-lg border border-gray-200/10"
+            className="relative w-[90%] lg:w-[80%] max-h-[90vh] no-scrollbar overflow-y-auto mx-auto bg-black rounded-xl shadow-lg border border-gray-200/10"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}

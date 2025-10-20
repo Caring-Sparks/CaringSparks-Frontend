@@ -200,7 +200,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="bg-black rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+            className="bg-black rounded-2xl shadow-2xl no-scrollbar w-full max-w-4xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -548,7 +548,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                           <div className="p-6">
                             {Object.keys(jobData).length > 0 ? (
                               <div className="space-y-6">
-                                {Object.entries(jobData).some(
+                                {(Object.entries(jobData).some(
                                   ([key]) =>
                                     key.toLowerCase().includes("reach") ||
                                     key.toLowerCase().includes("engagement") ||
@@ -557,124 +557,176 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                     key.toLowerCase().includes("comments") ||
                                     key.toLowerCase().includes("shares") ||
                                     key.toLowerCase().includes("impressions")
-                                ) && (
+                                ) ||
+                                  Object.keys(jobData).some(
+                                    (key) => key.toLowerCase() === "metrics"
+                                  )) && (
                                   <div>
-                                    <h6 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                    <h6 className="text-sm font-semibold text-gray-400 mb-3 flex items-center gap-2">
                                       <FaChartLine className="text-yellow-600" />
                                       Performance Metrics
                                     </h6>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                      {Object.entries(jobData)
-                                        .filter(
+                                      {(() => {
+                                        const allMetrics: [string, string][] =
+                                          [];
+
+                                        const metricsField = Object.entries(
+                                          jobData
+                                        ).find(
                                           ([key]) =>
-                                            key
-                                              .toLowerCase()
-                                              .includes("reach") ||
-                                            key
-                                              .toLowerCase()
-                                              .includes("engagement") ||
-                                            key
-                                              .toLowerCase()
-                                              .includes("views") ||
-                                            key
-                                              .toLowerCase()
-                                              .includes("likes") ||
-                                            key
-                                              .toLowerCase()
-                                              .includes("comments") ||
-                                            key
-                                              .toLowerCase()
-                                              .includes("shares") ||
-                                            key
-                                              .toLowerCase()
-                                              .includes("impressions")
-                                        )
-                                        .map(([key, value]) => {
-                                          const getMetricIcon = (
-                                            metricKey: string
-                                          ) => {
-                                            const lowerKey =
-                                              metricKey.toLowerCase();
-                                            if (
-                                              lowerKey.includes("views") ||
-                                              lowerKey.includes("reach") ||
-                                              lowerKey.includes("impressions")
-                                            ) {
+                                            key.toLowerCase() === "metrics"
+                                        );
+
+                                        if (metricsField) {
+                                          const [, metricsValue] = metricsField;
+                                          try {
+                                            const parsedMetrics =
+                                              typeof metricsValue === "string"
+                                                ? JSON.parse(metricsValue)
+                                                : metricsValue;
+
+                                            Object.entries(
+                                              parsedMetrics
+                                            ).forEach(([key, value]) => {
+                                              allMetrics.push([
+                                                key,
+                                                String(value),
+                                              ]);
+                                            });
+                                          } catch (e) {
+                                            console.error(
+                                              "Failed to parse metrics:",
+                                              e
+                                            );
+                                          }
+                                        }
+
+                                        Object.entries(jobData)
+                                          .filter(
+                                            ([key]) =>
+                                              key.toLowerCase() !== "metrics" &&
+                                              (key
+                                                .toLowerCase()
+                                                .includes("reach") ||
+                                                key
+                                                  .toLowerCase()
+                                                  .includes("engagement") ||
+                                                key
+                                                  .toLowerCase()
+                                                  .includes("views") ||
+                                                key
+                                                  .toLowerCase()
+                                                  .includes("likes") ||
+                                                key
+                                                  .toLowerCase()
+                                                  .includes("comments") ||
+                                                key
+                                                  .toLowerCase()
+                                                  .includes("shares") ||
+                                                key
+                                                  .toLowerCase()
+                                                  .includes("impressions"))
+                                          )
+                                          .forEach(([key, value]) => {
+                                            allMetrics.push([key, value]);
+                                          });
+
+                                        return allMetrics.map(
+                                          ([key, value]) => {
+                                            const getMetricIcon = (
+                                              metricKey: string
+                                            ) => {
+                                              const lowerKey =
+                                                metricKey.toLowerCase();
+                                              if (
+                                                lowerKey.includes("views") ||
+                                                lowerKey.includes("reach") ||
+                                                lowerKey.includes("impressions")
+                                              ) {
+                                                return (
+                                                  <FaEye className="text-blue-500" />
+                                                );
+                                              } else if (
+                                                lowerKey.includes("likes")
+                                              ) {
+                                                return (
+                                                  <FaHeart className="text-red-500" />
+                                                );
+                                              } else if (
+                                                lowerKey.includes("comments")
+                                              ) {
+                                                return (
+                                                  <FaComment className="text-green-500" />
+                                                );
+                                              } else if (
+                                                lowerKey.includes("shares")
+                                              ) {
+                                                return (
+                                                  <FaShare className="text-purple-500" />
+                                                );
+                                              } else if (
+                                                lowerKey.includes("engagement")
+                                              ) {
+                                                return (
+                                                  <FaUsers className="text-orange-500" />
+                                                );
+                                              }
                                               return (
-                                                <FaEye className="text-blue-500" />
+                                                <FaChartLine className="text-indigo-500" />
                                               );
-                                            } else if (
-                                              lowerKey.includes("likes")
-                                            ) {
-                                              return (
-                                                <FaHeart className="text-red-500" />
-                                              );
-                                            } else if (
-                                              lowerKey.includes("comments")
-                                            ) {
-                                              return (
-                                                <FaComment className="text-green-500" />
-                                              );
-                                            } else if (
-                                              lowerKey.includes("shares")
-                                            ) {
-                                              return (
-                                                <FaShare className="text-purple-500" />
-                                              );
-                                            } else if (
-                                              lowerKey.includes("engagement")
-                                            ) {
-                                              return (
-                                                <FaUsers className="text-orange-500" />
-                                              );
-                                            }
+                                            };
+
+                                            const formatMetricValue = (
+                                              val: string
+                                            ) => {
+                                              const cleaned = val
+                                                .replace(/,/g, "")
+                                                .trim();
+                                              const numValue =
+                                                Number.parseFloat(
+                                                  cleaned.replace(
+                                                    /[^\d.-]/g,
+                                                    ""
+                                                  )
+                                                );
+                                              if (!isNaN(numValue)) {
+                                                if (numValue >= 1_000_000)
+                                                  return (
+                                                    (
+                                                      numValue / 1_000_000
+                                                    ).toFixed(1) + "M"
+                                                  );
+                                                if (numValue >= 1_000)
+                                                  return (
+                                                    (numValue / 1_000).toFixed(
+                                                      1
+                                                    ) + "K"
+                                                  );
+                                                return numValue.toLocaleString();
+                                              }
+                                              return val;
+                                            };
+
                                             return (
-                                              <FaChartLine className="text-indigo-500" />
-                                            );
-                                          };
-
-                                          const formatMetricValue = (
-                                            val: string
-                                          ) => {
-                                            const cleaned = val
-                                              .replace(/,/g, "")
-                                              .trim(); // remove commas
-                                            const numValue = Number.parseFloat(
-                                              cleaned.replace(/[^\d.-]/g, "")
-                                            );
-                                            if (!isNaN(numValue)) {
-                                              if (numValue >= 1_000_000)
-                                                return (
-                                                  (
-                                                    numValue / 1_000_000
-                                                  ).toFixed(1) + "M"
-                                                );
-                                              if (numValue >= 1_000)
-                                                return (
-                                                  (numValue / 1_000).toFixed(
-                                                    1
-                                                  ) + "K"
-                                                );
-                                              return numValue.toString();
-                                            }
-                                            return val;
-                                          };
-
-                                          return (
-                                            <div
-                                              key={key}
-                                              className="p-3 bg-white rounded-lg shadow flex flex-col items-center"
-                                            >
-                                              <div className="flex items-center gap-2 text-gray-700 font-medium">
-                                                {getMetricIcon(key)}
-                                                <span>{key}</span>
+                                              <div
+                                                key={key}
+                                                className="p-3 bg-white rounded-lg shadow flex flex-col items-center"
+                                              >
+                                                <div className="flex items-center gap-2 text-gray-700 font-medium text-sm">
+                                                  {getMetricIcon(key)}
+                                                  <span className="capitalize">
+                                                    {key}
+                                                  </span>
+                                                </div>
+                                                <p className="text-lg font-bold text-gray-900">
+                                                  {formatMetricValue(value)}
+                                                </p>
                                               </div>
-                                              <p className="text-lg font-bold text-gray-900">
-                                                {formatMetricValue(value)}
-                                              </p>
-                                            </div>
-                                          );
-                                        })}
+                                            );
+                                          }
+                                        );
+                                      })()}
                                     </div>
                                   </div>
                                 )}
@@ -684,6 +736,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                   {Object.entries(jobData)
                                     .filter(
                                       ([key]) =>
+                                        key.toLowerCase() !== "metrics" &&
                                         !key.toLowerCase().includes("reach") &&
                                         !key
                                           .toLowerCase()
@@ -706,12 +759,12 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
                                       return (
                                         <div key={key} className="space-y-1">
-                                          <div className="text-sm font-medium text-gray-600 capitalize">
+                                          <div className="text-sm font-medium text-gray-400 capitalize">
                                             {key
                                               .replace(/([A-Z])/g, " $1")
                                               .trim()}
                                           </div>
-                                          <div className="text-sm text-gray-900">
+                                          <div className="text-sm text-gray-400">
                                             {isUrl ? (
                                               <a
                                                 href={value}
@@ -742,7 +795,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                 <div className="text-sm font-medium text-gray-600 mb-2">
                                   Job Description
                                 </div>
-                                <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                <div className="text-sm text-gray-400 whitespace-pre-wrap leading-relaxed">
                                   {job.description}
                                 </div>
                               </div>
@@ -751,7 +804,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
                           {/* Job Footer */}
                           <div className="px-6 py-3 bg-slate-200/20 border-t border-slate-200/10 rounded-b-xl">
-                            <div className="flex items-center justify-between text-xs text-gray-500">
+                            <div className="flex items-center justify-between text-xs text-gray-900">
                               <span>Job ID: {job._id}</span>
                               <span className="flex items-center gap-1">
                                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>

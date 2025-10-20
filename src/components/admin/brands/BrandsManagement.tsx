@@ -347,7 +347,7 @@ const BrandsManagement: React.FC = () => {
               className="pl-10 pr-4 py-2 border bg-slate-200/20 text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full sm:w-auto min-w-[250px]"
             />
           </div>
-          <select
+          {/* <select
             value={paymentFilter}
             onChange={(e) => setPaymentFilter(e.target.value as PaymentFilter)}
             className="px-4 py-2 border border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20 text-slate-500"
@@ -355,8 +355,8 @@ const BrandsManagement: React.FC = () => {
             <option value="all">All Payments</option>
             <option value="paid">Paid</option>
             <option value="unpaid">Unpaid</option>
-          </select>
-          <select
+          </select> */}
+          {/* <select
             value={validationFilter}
             onChange={(e) =>
               setValidationFilter(e.target.value as ValidationFilter)
@@ -366,7 +366,7 @@ const BrandsManagement: React.FC = () => {
             <option value="all">All Validation</option>
             <option value="validated">Validated</option>
             <option value="unvalidated">Unvalidated</option>
-          </select>
+          </select> */}
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value as DateFilter)}

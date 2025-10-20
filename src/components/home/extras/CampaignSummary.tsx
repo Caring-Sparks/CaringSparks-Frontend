@@ -57,9 +57,9 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
     : null;
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-black rounded-xl shadow-lg border border-gray-200">
+    <div className="w-full max-w-4xl mx-auto bg-black rounded-xl shadow-lg border border-slate-200/10">
       {/* Header */}
-      <div className="text-center p-6 border-b border-gray-100">
+      <div className="text-center p-6 border-b border-slate-200/10">
         <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
           <CheckCircle className="w-6 h-6 text-yellow-600" />
         </div>
@@ -120,7 +120,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
             <div className="grid lg:grid-cols-2 gap-3">
               <button
                 onClick={onBack}
-                className="px-4 py-2 border border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="px-4 py-2 border border-slate-200/20 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Form
@@ -336,7 +336,7 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
             <div className="grid lg:grid-cols-2 gap-3">
               <button
                 onClick={onBack}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="px-4 py-2 border border-slate-200/20 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Form

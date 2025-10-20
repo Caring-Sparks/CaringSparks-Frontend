@@ -125,6 +125,7 @@ const Jobs: React.FC = () => {
   const [showDeliverableModal, setShowDeliverableModal] =
     useState<boolean>(false);
   const [showResponseModal, setShowResponseModal] = useState<boolean>(false);
+  const [showResponseModal2, setShowResponseModal2] = useState<boolean>(false);
   const [showApplicationModal, setShowApplicationModal] =
     useState<boolean>(false);
   const [showSubmittedJobsModal, setShowSubmittedJobsModal] =
@@ -408,6 +409,7 @@ const Jobs: React.FC = () => {
       });
 
       setShowResponseModal(false);
+      setShowResponseModal2(false);
       setResponseMessage("");
       closeCampaignDetailsModal();
 
@@ -580,7 +582,7 @@ const Jobs: React.FC = () => {
     roleFilter,
     activeTab,
     getCurrentCampaigns,
-    getInfluencerStatus
+    getInfluencerStatus,
   ]);
 
   const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
@@ -930,10 +932,7 @@ const Jobs: React.FC = () => {
                             Accept Campaign
                           </button>
                           <button
-                            onClick={() => {
-                              setResponseMessage("");
-                              handleCampaignResponse("declined");
-                            }}
+                            onClick={() => setShowResponseModal2(true)}
                             className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium"
                           >
                             Reject Campaign
@@ -1272,10 +1271,10 @@ const Jobs: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-400 mb-4">
+                <h3 className="text-lg font-semibold text-gray-500 mb-4">
                   Accept Campaign
                 </h3>
-                <h5>
+                <h5 className="text-gray-400">
                   The brand will be notified that you have accepted this task.
                 </h5>
                 <div className="flex gap-3 mt-4">
@@ -1291,6 +1290,48 @@ const Jobs: React.FC = () => {
                     className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
                   >
                     {isSubmitting ? "Processing..." : "Accept"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {showResponseModal2 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
+            onClick={() => setShowResponseModal2(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-slate-200/20 border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-500 mb-4">
+                  Reject Campaign
+                </h3>
+                <h5 className="text-gray-400">
+                  The brand will be notified that you have declined this task.
+                </h5>
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={() => setShowResponseModal2(false)}
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleCampaignResponse("declined")}
+                    disabled={isSubmitting}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                  >
+                    {isSubmitting ? "Processing..." : "Reject"}
                   </button>
                 </div>
               </div>
@@ -1759,12 +1800,28 @@ const Jobs: React.FC = () => {
                         </div>
 
                         <div className="flex flex-col gap-2 lg:ml-6 mt-4 lg:mt-0">
-                          <button
-                            onClick={() => handleViewCampaign(campaign)}
-                            className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center flex items-center gap-2 justify-center"
-                          >
-                            <FaEye /> View Job Details
-                          </button>
+                          {(() => {
+                            const status = getInfluencerStatus(campaign);
+
+                            const hasDeclined =
+                              status?.acceptanceStatus === "declined";
+
+                            const baseClasses =
+                              "px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center flex items-center gap-2 justify-center";
+                            const statusClasses = hasDeclined
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600";
+
+                            return (
+                              <button
+                                onClick={() => handleViewCampaign(campaign)}
+                                disabled={hasDeclined}
+                                className={`${baseClasses} ${statusClasses}`}
+                              >
+                                <FaEye /> View Job Details
+                              </button>
+                            );
+                          })()}
 
                           {activeTab === "assigned" && (
                             <>
@@ -1782,8 +1839,7 @@ const Jobs: React.FC = () => {
                                   <button
                                     onClick={() => {
                                       setSelectedCampaign(campaign);
-                                      setResponseMessage("");
-                                      handleCampaignResponse("declined");
+                                      setShowResponseModal2(true);
                                     }}
                                     className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 justify-center"
                                   >

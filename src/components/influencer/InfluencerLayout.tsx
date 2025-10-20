@@ -51,7 +51,7 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
 
     const hasSkipped = localStorage.getItem("paymentDetailsSkipped");
     const skipDate = localStorage.getItem("paymentDetailsSkippedDate");
-    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+    const threeDaysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
 
     if (hasSkipped && skipDate && new Date(skipDate) < threeDaysAgo) {
       localStorage.removeItem("paymentDetailsSkipped");

@@ -204,7 +204,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
           onClick={onBack}
         >
           <motion.div
-            className="relative w-[90%] lg:w-[80%] max-h-[90vh] overflow-y-auto mx-auto bg-black rounded-xl shadow-lg border border-slate-200/10"
+            className="relative w-[90%] lg:w-[80%] max-h-[90vh] no-scrollbar overflow-y-auto mx-auto bg-black rounded-xl shadow-lg border border-slate-200/10"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
@@ -355,7 +355,7 @@ const NewCampaign: React.FC<formProps> = ({ onBack }) => {
 
                         {/* Followers Range */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700">
+                          <label className="text-sm font-medium text-gray-400">
                             Preferred followers range:
                           </label>
                           <Field
