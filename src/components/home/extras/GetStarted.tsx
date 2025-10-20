@@ -59,7 +59,7 @@ const GetStarted: React.FC<GetStartedProps> = ({ onClose, login }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="bg-black shadow-2xl rounded-2xl p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
+        className="bg-black shadow-2xl no-scrollbar rounded-2xl p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
       >
         <button
           onClick={onClose}

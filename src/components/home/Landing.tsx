@@ -500,15 +500,15 @@ export default function LandingPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <button className="text-xl px-12 py-6 background text-white rounded-full shadow-2xl group relative overflow-hidden">
+              <button
+                onClick={() => setGetStarted(true)}
+                className="text-xl px-12 py-6 background text-white rounded-full shadow-2xl group relative overflow-hidden"
+              >
                 <motion.div
                   className="absolute inset-0 background opacity-0 group-hover:opacity-100 transition-opacity"
                   layoutId="button-bg"
                 />
-                <span
-                  onClick={() => setGetStarted(true)}
-                  className="relative z-10 flex items-center space-x-3"
-                >
+                <span className="relative z-10 flex items-center space-x-3">
                   <Lightning className="w-6 h-6" />
                   <span>Click here to begin</span>
                   <motion.div

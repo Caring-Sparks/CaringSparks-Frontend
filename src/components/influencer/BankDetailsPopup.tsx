@@ -175,14 +175,14 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-black rounded-2xl border border-slate-200/10 shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
+          className="bg-black rounded-2xl border no-scrollbar border-slate-200/10 shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="p-6 border-b border-slate-200/10 sticky top-0 bg-slate-200/20 backdrop-blur-2xl z-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-slate-200/10 rounded-full flex items-center justify-center">
                   {paymentType === "bank" ? (
                     <Bank className="txt text-xl" />
                   ) : (

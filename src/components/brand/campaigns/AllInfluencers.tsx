@@ -245,7 +245,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="bg-black border border-slate-200/10 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[85vh] overflow-hidden"
+            className="bg-black border border-slate-200/10 no-scrollbar rounded-2xl shadow-2xl w-full max-w-6xl max-h-[85vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

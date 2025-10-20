@@ -220,7 +220,7 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-black rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-xl relative"
+          className="bg-black rounded-2xl max-w-5xl w-full no-scrollbar max-h-[90vh] overflow-y-auto shadow-xl relative"
         >
           {/* Loading Overlay */}
           {isLoading && (
@@ -444,7 +444,7 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
             <button
               onClick={handleStatusReject}
               disabled={isLoading}
-              className="bg-slate-300 p-3 rounded-md flex items-center justify-center gap-3 hover:bg-slate-400 cursor-pointer transition-all ease-in duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-slate-200/20 p-3 rounded-md flex items-center justify-center gap-3 hover:bg-slate-400 cursor-pointer transition-all ease-in duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isRejecting ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div>
