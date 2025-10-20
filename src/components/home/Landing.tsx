@@ -206,7 +206,7 @@ export default function LandingPage() {
           )}
 
           <motion.button
-            className="md:hidden z-50 relative"
+            className="md:hidden z-10 relative"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}

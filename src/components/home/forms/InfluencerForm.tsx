@@ -225,7 +225,7 @@ const PhoneNumberInput: React.FC<{
           ))}
         </select>
 
-        <div className="relative flex-1">
+        <div className="relative w-full">
           <input
             type="tel"
             placeholder={currentFormat.placeholder}

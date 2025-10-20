@@ -269,9 +269,10 @@ const LegalDocumentsModal = ({
           <section>
             <h3 className="text-xl font-bold mb-3">1. Introduction</h3>
             <p>
-              Welcome to <strong>ThePrGod</strong> (&quot;Company,&quot; &quot;we,&quot; &quot;our,&quot; or
-              &quot;us&quot;). These <strong>Terms of Service</strong> (&quot;Terms&quot;) govern
-              your access to and use of our website, platform, and services.
+              Welcome to <strong>ThePrGod</strong> (&quot;Company,&quot;
+              &quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). These{" "}
+              <strong>Terms of Service</strong> (&quot;Terms&quot;) govern your
+              access to and use of our website, platform, and services.
             </p>
             <p className="mt-2">
               By accessing or using our Services, you agree to these Terms. If
@@ -1248,11 +1249,12 @@ const LegalDocumentsModal = ({
             <h3 className="text-xl font-bold mb-3">1. Introduction</h3>
             <p>
               At <strong>ThePrGod</strong>, we are committed to delivering
-              high-quality influencer marketing campaigns that meet our clients&apos;
-              objectives while ensuring fairness and professionalism for our
-              influencers. This Service Level & Performance Policy outlines the
-              standards we follow to maintain trust, transparency, and timely
-              delivery across all campaigns managed by our team.
+              high-quality influencer marketing campaigns that meet our
+              clients&apos; objectives while ensuring fairness and
+              professionalism for our influencers. This Service Level &
+              Performance Policy outlines the standards we follow to maintain
+              trust, transparency, and timely delivery across all campaigns
+              managed by our team.
             </p>
           </section>
 
@@ -1720,8 +1722,8 @@ const LegalDocumentsModal = ({
                 conspiracy theories
               </li>
               <li>
-                <strong>Health or financial deception:</strong> &quot;Miracle cures,&quot;
-                &quot;get-rich-quick&quot; schemes
+                <strong>Health or financial deception:</strong> &quot;Miracle
+                cures,&quot; &quot;get-rich-quick&quot; schemes
               </li>
             </ul>
           </section>
@@ -2342,11 +2344,13 @@ const LegalDocumentsModal = ({
       onClick={onClose}
     >
       <motion.div
+        // Modal container: no change here
         className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] relative shadow-2xl border border-gray-100 flex overflow-hidden"
         variants={modal}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="absolute top-0 right-0 z-10 p-4">
+        {/* Close Button: remains the same */}
+        {/* <div className="absolute top-0 right-0 z-10 p-4">
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-800 transition-colors p-2 hover:bg-gray-100 rounded-full"
@@ -2354,9 +2358,9 @@ const LegalDocumentsModal = ({
           >
             <X size={24} strokeWidth={2} />
           </button>
-        </div>
+        </div> */}
 
-        <div className="w-full max-w-xs bg-gray-50 border-r border-gray-200 p-6 flex flex-col">
+        <div className="hidden md:flex flex-col md:w-full md:max-w-xs bg-gray-50 border-r border-gray-200 p-6">
           <h2 className="text-2xl flex items-center gap-4 font-extrabold text-gray-900 mb-6">
             Legal Documents{" "}
             <Image src="/icons/doc.png" width={30} height={30} alt="icon" />
@@ -2381,8 +2385,27 @@ const LegalDocumentsModal = ({
           </nav>
         </div>
 
-        {/* --- Content Area --- */}
         <div className="flex-1 flex flex-col overflow-y-auto">
+          {/* Mobile-Only Navigation (Dropdown) */}
+          <div className="p-4 border-b border-gray-200 bg-gray-50 md:hidden">
+            <label htmlFor="mobile-doc-select" className="sr-only">
+              Select Document
+            </label>
+            <select
+              id="mobile-doc-select"
+              value={selectedDoc}
+              onChange={(e) => setSelectedDoc(e.target.value)}
+              className="block w-full rounded-lg border-gray-300 py-2.5 pl-3 pr-10 text-base focus:border-yellow-500 focus:ring-yellow-500"
+            >
+              {docCategories.map((doc) => (
+                <option key={doc.id} value={doc.id}>
+                  {doc.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Main Document Content */}
           <div className="flex-1 overflow-y-auto p-8 lg:p-12">
             <motion.div
               key={selectedDoc}
@@ -2401,7 +2424,7 @@ const LegalDocumentsModal = ({
             </motion.div>
           </div>
 
-          {/* --- Footer --- */}
+          {/* --- Footer --- (remains the same) */}
           <div className="border-t border-gray-200 p-4 bg-gray-50 text-center text-xs text-gray-500">
             Last updated: October 18, 2025 • ThePrGod © 2025
           </div>
