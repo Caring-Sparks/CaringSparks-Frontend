@@ -4,7 +4,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import ProtectedRoute from "@/utils/ProtectedRoute";
 
 export const metadata: Metadata = {
-  title: "Caring Sparks – Admin",
+  title: "The•PR•God – Admin",
 };
 
 export default function RootLayout({

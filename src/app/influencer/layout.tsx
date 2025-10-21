@@ -4,7 +4,7 @@ import ProtectedRoute from "@/utils/ProtectedRoute";
 import InfluencerLayout from "@/components/influencer/InfluencerLayout";
 
 export const metadata: Metadata = {
-  title: "Caring Sparks – Influencer",
+  title: "The•PR•God – Influencer",
 };
 
 export default function RootLayout({
