@@ -10,9 +10,9 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Caring Sparks – Empowering Brand & Influencer Collaborations",
+  title: "The•PR•God – Empowering Brand & Influencer Collaborations",
   description:
-    "Caring Sparks connects brands and influencers to create meaningful, authentic campaigns. Discover seamless collaboration, campaign management, and creative growth.",
+    "The•PR•God connects brands and influencers to create meaningful, authentic campaigns. Discover seamless collaboration, campaign management, and creative growth.",
 };
 
 export default function RootLayout({

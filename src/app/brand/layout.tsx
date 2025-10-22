@@ -4,7 +4,7 @@ import ProtectedRoute from "@/utils/ProtectedRoute";
 import BrandLayout from "@/components/brand/BrandLayout";
 
 export const metadata: Metadata = {
-  title: "Caring Sparks – Brand",
+  title: "The•PR•God – Brand",
 };
 
 export default function RootLayout({
