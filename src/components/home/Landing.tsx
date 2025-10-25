@@ -304,7 +304,7 @@ export default function LandingPage() {
             </motion.h1>
 
             <motion.div variants={fadeInUp} className="relative">
-              <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-8">
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">
                 Then let&apos;s make you trend{" "}
                 <span className="relative">
                   overnight
@@ -332,7 +332,7 @@ export default function LandingPage() {
               >
                 <Sparkle className="txt w-8 h-8" />
               </motion.div>
-              <p className="text-xl md:text-2xl text-gray-600">
+              <p className="text-xl md:text-2xl text-gray-100">
                 Over <span className="font-bold txt">100k+</span> micro
                 influencers
               </p>
@@ -361,7 +361,7 @@ export default function LandingPage() {
           >
             <div className="text-center mb-16">
               <motion.h3
-                className="text-4xl md:text-5xl font-bold text-slate-700 mb-6"
+                className="text-4xl md:text-5xl font-bold text-slate-100 mb-6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -460,7 +460,7 @@ export default function LandingPage() {
                     <h4 className={`text-2xl font-bold ${item.textColor} mb-4`}>
                       {item.title}
                     </h4>
-                    <p className="text-slate-600 leading-relaxed">
+                    <p className="text-slate-100 leading-relaxed">
                       {item.description}
                     </p>
                   </div>
@@ -475,10 +475,10 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
             >
-              <h4 className="text-3xl md:text-4xl font-bold text-slate-700 mb-4">
+              <h4 className="text-3xl md:text-4xl font-bold text-slate-100 mb-4">
                 We have got you covered
               </h4>
-              <p className="text-xl text-slate-500 max-w-2xl mx-auto">
+              <p className="text-xl text-slate-100 max-w-2xl mx-auto">
                 Our comprehensive platform connects you with the right
                 influencers to achieve your unique goals
               </p>
@@ -570,7 +570,7 @@ export default function LandingPage() {
                 <span className="flex items-center justify-center">
                   <Image src="/Logo.svg" width={100} height={50} alt="Logo" />
                 </span>
-                <p className="text-gray-400">
+                <p className="text-gray-100">
                   Making brands trend overnight with our network of 100k+ micro
                   influencers.
                 </p>
@@ -614,7 +614,7 @@ export default function LandingPage() {
             </div>
 
             <motion.div
-              className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400"
+              className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-100"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
