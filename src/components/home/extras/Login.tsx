@@ -70,7 +70,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
               exit={{ opacity: 0 }}
             >
               <motion.div
-                className="bg-black border border-slate-200/10 text-gray-800 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
+                className="bg-black border border-slate-200/10 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
                 initial={{ scale: 0.9, y: 50, opacity: 0 }}
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.9, y: 50, opacity: 0 }}
@@ -80,17 +80,17 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                 {/* Close Button */}
                 <button
                   onClick={onClose}
-                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute top-4 right-4 text-white hover:text-gray-600 transition-colors"
                 >
                   <X size={22} weight="bold" />
                 </button>
 
                 {/* Header */}
                 <div className="flex flex-col items-center mb-8">
-                  <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-gray-500">
+                  <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-white">
                     Welcome Back
                   </h2>
-                  <p className="text-gray-500 text-sm">Sign in to continue</p>
+                  <p className="text-white text-sm">Sign in to continue</p>
                 </div>
 
                 {/* Form */}
@@ -159,7 +159,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                         <div className="relative">
                           <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                           <Field as="select" name="role" className="frm2">
-                            <option value="" disabled className="text-gray-500">
+                            <option value="" disabled className="text-white">
                               Select your role
                             </option>
                             <option value="influencer">Influencer</option>
@@ -210,7 +210,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                       </div>
 
                       {/* Signup link */}
-                      <p className="text-center text-gray-500 text-sm mt-1">
+                      <p className="text-center text-white text-sm mt-1">
                         Don&apos;t have an account?{" "}
                         <span
                           onClick={() => {
@@ -223,7 +223,7 @@ export default function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
                       </p>
                       <p
                         onClick={() => setResetPassword(true)}
-                        className="text-center text-gray-500 text-sm mt-1 cursor-pointer"
+                        className="text-center text-white text-sm mt-1 cursor-pointer"
                       >
                         <span className="text-yellow-500 font-medium hover:underline">
                           Don&apos;t remember your password?

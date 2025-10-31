@@ -318,15 +318,13 @@ const BrandsManagement: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-500">
-            Brands Management
-          </h2>
+          <h2 className="text-2xl font-bold text-white">Brands Management</h2>
         </div>
         <div className="flex flex-wrap gap-3">
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-slate-200/20 border border-gray-200/10 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-slate-200/20 border border-gray-200/10 rounded-lg hover:bg-gray-50/10 disabled:opacity-50"
           >
             <BiRefresh
               size={16}
@@ -336,7 +334,7 @@ const BrandsManagement: React.FC = () => {
           </button>
           <div className="relative">
             <BiSearch
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
               size={18}
             />
             <input
@@ -344,13 +342,13 @@ const BrandsManagement: React.FC = () => {
               placeholder="Search brands..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="pl-10 pr-4 py-2 border bg-slate-200/20 text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full sm:w-auto min-w-[250px]"
+              className="pl-10 pr-4 py-2 border bg-slate-200/20 text-white border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full sm:w-auto min-w-[250px]"
             />
           </div>
           {/* <select
             value={paymentFilter}
             onChange={(e) => setPaymentFilter(e.target.value as PaymentFilter)}
-            className="px-4 py-2 border border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20 text-slate-500"
+            className="px-4 py-2 border border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20 text-white"
           >
             <option value="all">All Payments</option>
             <option value="paid">Paid</option>
@@ -361,7 +359,7 @@ const BrandsManagement: React.FC = () => {
             onChange={(e) =>
               setValidationFilter(e.target.value as ValidationFilter)
             }
-            className="px-4 py-2 border border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20 text-slate-500"
+            className="px-4 py-2 border border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20 text-white"
           >
             <option value="all">All Validation</option>
             <option value="validated">Validated</option>
@@ -370,7 +368,7 @@ const BrandsManagement: React.FC = () => {
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value as DateFilter)}
-            className="px-4 py-2 border border-gray-200/10 text-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
+            className="px-4 py-2 border border-gray-200/10 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
           >
             <option value="all">All Time</option>
             <option value="today">Today</option>
@@ -384,25 +382,25 @@ const BrandsManagement: React.FC = () => {
       {/* Custom date range inputs */}
       {dateFilter === "custom" && (
         <div className="flex gap-4 items-center bg-slate-200/20 p-4 rounded-lg border border-gray-200/10">
-          <BiCalendar className="text-gray-500" size={18} />
+          <BiCalendar className="text-white" size={18} />
           <input
             type="date"
             value={customDateFrom}
             onChange={(e) => setCustomDateFrom(e.target.value)}
-            className="px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
-          <span className="text-gray-500">to</span>
+          <span className="text-white">to</span>
           <input
             type="date"
             value={customDateTo}
             onChange={(e) => setCustomDateTo(e.target.value)}
-            className="px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
         </div>
       )}
 
       {/* Results info */}
-      <div className="flex justify-between items-center text-sm text-gray-600">
+      <div className="flex justify-between items-center text-sm text-white">
         <div>
           Showing {startIndex + 1} to{" "}
           {Math.min(endIndex, filteredBrands.length)} of {filteredBrands.length}{" "}
@@ -416,7 +414,7 @@ const BrandsManagement: React.FC = () => {
       <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 overflow-hidden">
         {currentBrands.length === 0 ? (
           <div className="p-8 text-center">
-            <div className="text-gray-500">
+            <div className="text-white">
               {searchTerm || paymentFilter !== "all" || dateFilter !== "all"
                 ? "No brands found matching your criteria."
                 : "No brands available."}
@@ -445,16 +443,16 @@ const BrandsManagement: React.FC = () => {
             <table className="w-full bg-black">
               <thead className="bg-slate-200/20 border-b border-gray-200/10">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Brand
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Join Date
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -475,21 +473,21 @@ const BrandsManagement: React.FC = () => {
                               "?"}
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-400">
+                            <div className="text-sm font-medium text-white">
                               {brandData.brandName || "Unknown Brand"}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-white">
                               {brandData.email || "No email"}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-white">
                           {brandData.role || "N/A"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {formatDate(brandData.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -552,7 +550,7 @@ const BrandsManagement: React.FC = () => {
                 </button>
               </div>
 
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-white">
                 Total: {filteredBrands.length} brands
               </div>
             </div>

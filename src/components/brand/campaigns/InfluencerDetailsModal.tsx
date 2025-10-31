@@ -205,14 +205,14 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
           >
             {/* Header */}
             <div className="sticky top-0 bg-slate-200/20 border-b backdrop-blur-2xl border-slate-200/10 px-6 py-4 rounded-t-2xl flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-400">
+              <h2 className="text-2xl font-bold text-white">
                 Influencer Details
               </h2>
               <button
                 onClick={onClose}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <FaTimes className="text-gray-500" />
+                <FaTimes className="text-white" />
               </button>
             </div>
 
@@ -225,7 +225,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
-                    <h3 className="text-2xl font-semibold text-gray-400">
+                    <h3 className="text-2xl font-semibold text-white">
                       {influencer.name}
                     </h3>
                     <span
@@ -245,19 +245,19 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
                   {/* Contact Info */}
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-white">
                       <FaEnvelope className="text-sm" />
                       <span>{influencer.email}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-white">
                       <FaPhone className="text-sm" />
                       <span>{influencer.phone}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-white">
                       <FaWhatsapp className="text-sm text-green-600" />
                       <span>{influencer.whatsapp}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-white">
                       <FaMapMarkerAlt className="text-sm" />
                       <span>{influencer.location}</span>
                     </div>
@@ -267,7 +267,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
               {/* Niches */}
               <div className="mb-6">
-                <h4 className="font-semibold text-gray-400 mb-3">Niches</h4>
+                <h4 className="font-semibold text-white mb-3">Niches</h4>
                 <div className="flex flex-wrap gap-2">
                   {influencer.niches.map((niche, index) => (
                     <span
@@ -285,16 +285,16 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                 influencer.malePercentage ||
                 influencer.femalePercentage) && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-400 mb-3">
+                  <h4 className="font-semibold text-white mb-3">
                     Audience Demographics
                   </h4>
                   <div className="bg-slate-200/20 border border-slate-200/10 p-4 rounded-lg">
                     {influencer.audienceLocation && (
                       <div className="mb-2">
-                        <span className="font-medium text-gray-400">
+                        <span className="font-medium text-white">
                           Location:{" "}
                         </span>
-                        <span className="text-gray-400">
+                        <span className="text-white">
                           {influencer.audienceLocation}
                         </span>
                       </div>
@@ -304,20 +304,20 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                       <div className="flex gap-4">
                         {influencer.malePercentage && (
                           <div>
-                            <span className="font-medium text-gray-400">
+                            <span className="font-medium text-white">
                               Male:{" "}
                             </span>
-                            <span className="text-gray-400">
+                            <span className="text-white">
                               {influencer.malePercentage}%
                             </span>
                           </div>
                         )}
                         {influencer.femalePercentage && (
                           <div>
-                            <span className="font-medium text-gray-400">
+                            <span className="font-medium text-white">
                               Female:{" "}
                             </span>
-                            <span className="text-gray-400">
+                            <span className="text-white">
                               {influencer.femalePercentage}%
                             </span>
                           </div>
@@ -343,7 +343,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
               {/* Social Media Platforms */}
               {activePlatforms.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-400 mb-3">
+                  <h4 className="font-semibold text-white mb-3">
                     Social Media Platforms
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -358,7 +358,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                         >
                           <div className="flex items-center gap-3 mb-3">
                             {getPlatformIcon(platform)}
-                            <span className="font-medium text-gray-400 capitalize">
+                            <span className="font-medium text-white capitalize">
                               {platform}
                             </span>
                           </div>
@@ -366,20 +366,16 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                           <div className="space-y-2 text-sm">
                             {platformData.followers && (
                               <div className="flex justify-between">
-                                <span className="text-gray-400">
-                                  Followers:
-                                </span>
-                                <span className="font-medium text-gray-500">
+                                <span className="text-white">Followers:</span>
+                                <span className="font-medium text-white">
                                   {formatNumber(platformData.followers)}
                                 </span>
                               </div>
                             )}
                             {platformData.impressions && (
                               <div className="flex justify-between">
-                                <span className="text-gray-400">
-                                  Impressions:
-                                </span>
-                                <span className="font-medium text-gray-500">
+                                <span className="text-white">Impressions:</span>
+                                <span className="font-medium text-white">
                                   {formatNumber(platformData.impressions)}
                                 </span>
                               </div>
@@ -422,7 +418,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                 influencer.amountPerPost ||
                 influencer.amountPerMonth) && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-400 mb-3">
+                  <h4 className="font-semibold text-white mb-3">
                     Earnings Information
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -473,10 +469,8 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
               {/* Additional Stats */}
               <div className="grid grid-cols-1 gap-4">
                 <div className="p-4 bg-gray-50/10 border border-slate-200/10 rounded-lg">
-                  <h5 className="font-medium text-gray-400 mb-1">
-                    Member Since
-                  </h5>
-                  <p className="text-gray-600 font-medium">
+                  <h5 className="font-medium text-white mb-1">Member Since</h5>
+                  <p className="text-white font-medium">
                     {formatDate(influencer.createdAt)}
                   </p>
                 </div>
@@ -486,7 +480,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
               {submittedJobs.length > 0 && (
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-xl font-semibold text-gray-400 flex items-center gap-2">
+                    <h4 className="text-xl font-semibold text-white flex items-center gap-2">
                       <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
                       Submitted Jobs
                     </h4>
@@ -534,7 +528,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                 </h5>
                               </div>
                               <div className="text-right">
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-white">
                                   Submitted
                                 </div>
                                 <div className="text-sm font-medium text-gray-900">
@@ -562,7 +556,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                     (key) => key.toLowerCase() === "metrics"
                                   )) && (
                                   <div>
-                                    <h6 className="text-sm font-semibold text-gray-400 mb-3 flex items-center gap-2">
+                                    <h6 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                                       <FaChartLine className="text-yellow-600" />
                                       Performance Metrics
                                     </h6>
@@ -759,12 +753,12 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
 
                                       return (
                                         <div key={key} className="space-y-1">
-                                          <div className="text-sm font-medium text-gray-400 capitalize">
+                                          <div className="text-sm font-medium text-white capitalize">
                                             {key
                                               .replace(/([A-Z])/g, " $1")
                                               .trim()}
                                           </div>
-                                          <div className="text-sm text-gray-400">
+                                          <div className="text-sm text-white">
                                             {isUrl ? (
                                               <a
                                                 href={value}
@@ -792,10 +786,10 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                             ) : (
                               /* Fallback for unstructured descriptions */
                               <div className="bg-gray-50 rounded-lg p-4">
-                                <div className="text-sm font-medium text-gray-600 mb-2">
+                                <div className="text-sm font-medium text-white mb-2">
                                   Job Description
                                 </div>
-                                <div className="text-sm text-gray-400 whitespace-pre-wrap leading-relaxed">
+                                <div className="text-sm text-white whitespace-pre-wrap leading-relaxed">
                                   {job.description}
                                 </div>
                               </div>

@@ -169,21 +169,32 @@ const InfluencersManagement: React.FC = () => {
 
       const influencerDate = new Date(date);
       const today = new Date();
+      today.setHours(23, 59, 59, 999); // Set to end of today
 
       switch (dateFilter) {
         case "today":
-          return influencerDate.toDateString() === today.toDateString();
+          const startOfToday = new Date(today);
+          startOfToday.setHours(0, 0, 0, 0);
+          return influencerDate >= startOfToday && influencerDate <= today;
+
         case "week":
           const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-          return influencerDate >= weekAgo;
+          weekAgo.setHours(0, 0, 0, 0);
+          return influencerDate >= weekAgo && influencerDate <= today;
+
         case "month":
           const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-          return influencerDate >= monthAgo;
+          monthAgo.setHours(0, 0, 0, 0);
+          return influencerDate >= monthAgo && influencerDate <= today;
+
         case "custom":
           if (!customDateFrom || !customDateTo) return true;
           const fromDate = new Date(customDateFrom);
+          fromDate.setHours(0, 0, 0, 0);
           const toDate = new Date(customDateTo);
+          toDate.setHours(23, 59, 59, 999);
           return influencerDate >= fromDate && influencerDate <= toDate;
+
         default:
           return true;
       }
@@ -409,14 +420,14 @@ const InfluencersManagement: React.FC = () => {
         )}
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h2 className="text-2xl font-bold text-gray-500">
+          <h2 className="text-2xl font-bold text-white">
             Influencers Management
           </h2>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-slate-200/20 border border-gray-200/10 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-slate-200/20 border border-gray-200/10 rounded-lg hover:bg-gray-50/10 disabled:opacity-50"
             >
               <BiRefresh
                 size={16}
@@ -426,7 +437,7 @@ const InfluencersManagement: React.FC = () => {
             </button>
             <div className="relative">
               <BiSearch
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
                 size={18}
               />
               <input
@@ -436,7 +447,7 @@ const InfluencersManagement: React.FC = () => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSearchTerm(e.target.value)
                 }
-                className="pl-10 pr-4 py-2 border border-gray-200/20 text-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
+                className="pl-10 pr-4 py-2 border border-gray-200/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
               />
             </div>
             <select
@@ -444,7 +455,7 @@ const InfluencersManagement: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setStatusFilter(e.target.value as StatusFilter)
               }
-              className="px-4 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
+              className="px-4 py-2 border text-white border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
@@ -456,7 +467,7 @@ const InfluencersManagement: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setDateFilter(e.target.value as DateFilter)
               }
-              className="px-4 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
+              className="px-4 py-2 border text-white border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
             >
               <option value="all">All Time</option>
               <option value="today">Today</option>
@@ -470,19 +481,19 @@ const InfluencersManagement: React.FC = () => {
         {/* Custom date range inputs */}
         {dateFilter === "custom" && (
           <div className="flex gap-4 items-center bg-slate-200/20 p-4 rounded-lg border border-gray-200/10">
-            <BiCalendar className="text-gray-400" size={18} />
+            <BiCalendar className="text-white" size={18} />
             <input
               type="date"
               value={customDateFrom}
               onChange={(e) => setCustomDateFrom(e.target.value)}
-              className="px-3 py-2 border text-gray-500 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              className="px-3 py-2 border text-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
-            <span className="text-gray-500">to</span>
+            <span className="text-white">to</span>
             <input
               type="date"
               value={customDateTo}
               onChange={(e) => setCustomDateTo(e.target.value)}
-              className="px-3 py-2 border text-gray-500 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              className="px-3 py-2 border text-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
           </div>
         )}
@@ -490,33 +501,33 @@ const InfluencersManagement: React.FC = () => {
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-slate-200/20 backdrop-blur-2xl p-4 rounded-lg border border-gray-200/10">
-            <div className="text-2xl font-bold text-gray-500">
+            <div className="text-2xl font-bold text-white">
               {totalInfluencers}
             </div>
-            <div className="text-sm text-gray-500">Total Influencers</div>
+            <div className="text-sm text-white">Total Influencers</div>
           </div>
           <div className="bg-slate-200/20 backdrop-blur-2xl p-4 rounded-lg border border-gray-200/10">
             <div className="text-2xl font-bold text-green-600">
               {statusCounts.approved}
             </div>
-            <div className="text-sm text-gray-500">Approved</div>
+            <div className="text-sm text-white">Approved</div>
           </div>
           <div className="bg-slate-200/20 backdrop-blur-2xl p-4 rounded-lg border border-gray-200/10">
             <div className="text-2xl font-bold text-yellow-600">
               {statusCounts.pending}
             </div>
-            <div className="text-sm text-gray-500">Pending</div>
+            <div className="text-sm text-white">Pending</div>
           </div>
           <div className="bg-slate-200/20 backdrop-blur-2xl p-4 rounded-lg border border-gray-200/10">
             <div className="text-2xl font-bold text-red-600">
               {statusCounts.rejected}
             </div>
-            <div className="text-sm text-gray-500">Rejected</div>
+            <div className="text-sm text-white">Rejected</div>
           </div>
         </div>
 
         {/* Results info */}
-        <div className="flex justify-between items-center text-sm text-gray-600">
+        <div className="flex justify-between items-center text-sm text-white">
           <div>
             Showing {startIndex + 1} to{" "}
             {Math.min(endIndex, filteredInfluencers.length)} of{" "}
@@ -532,19 +543,19 @@ const InfluencersManagement: React.FC = () => {
             <table className="w-full">
               <thead className="bg-slate-200/20 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Influencer
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-gray-100">
                     Join Date
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -573,24 +584,24 @@ const InfluencersManagement: React.FC = () => {
                             </div>
                           )}
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-500">
+                            <div className="text-sm font-medium text-white">
                               {influencer.name}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-white">
                               {influencer.email}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-500 max-w-[110px] truncate block">
+                        <span className="text-sm text-white max-w-[110px] truncate block">
                           {influencer.category}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {getStatusBadge(influencer.status)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {new Date(influencer.joinDate).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -624,7 +635,7 @@ const InfluencersManagement: React.FC = () => {
                   <tr>
                     <td
                       colSpan={5}
-                      className="px-6 py-8 text-center text-gray-500"
+                      className="px-6 py-8 text-center text-white"
                     >
                       {searchTerm ||
                       statusFilter !== "all" ||
@@ -676,7 +687,7 @@ const InfluencersManagement: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-white">
                   Total: {filteredInfluencers.length} influencers
                 </div>
               </div>

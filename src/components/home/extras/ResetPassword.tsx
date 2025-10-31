@@ -56,10 +56,10 @@ export default function ResetPasswordForm() {
 
   if (!isValidToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-black p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
-          <p className="text-gray-500">Validating reset link...</p>
+          <p className="text-white">Validating reset link...</p>
         </div>
       </div>
     );
@@ -84,10 +84,10 @@ export default function ResetPasswordForm() {
                   className="text-yellow-600"
                 />
               </div>
-              <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-gray-500">
+              <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-white">
                 Reset Password
               </h2>
-              <p className="text-gray-500 text-sm text-center">
+              <p className="text-white text-sm text-center">
                 Create a new secure password for your account
               </p>
             </div>
@@ -103,7 +103,7 @@ export default function ResetPasswordForm() {
                   {/* New Password */}
                   <div>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white" />
                       <Field
                         type={showPassword ? "text" : "password"}
                         name="password"
@@ -113,7 +113,7 @@ export default function ResetPasswordForm() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-gray-600"
                       >
                         {showPassword ? (
                           <EyeSlash size={20} />
@@ -132,7 +132,7 @@ export default function ResetPasswordForm() {
                   {/* Confirm Password */}
                   <div>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white" />
                       <Field
                         type={showConfirmPassword ? "text" : "password"}
                         name="confirmPassword"
@@ -144,7 +144,7 @@ export default function ResetPasswordForm() {
                         onClick={() =>
                           setShowConfirmPassword(!showConfirmPassword)
                         }
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-gray-600"
                       >
                         {showConfirmPassword ? (
                           <EyeSlash size={20} />
@@ -197,10 +197,10 @@ export default function ResetPasswordForm() {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
               <ShieldCheck size={32} weight="bold" className="text-green-600" />
             </div>
-            <h2 className="text-3xl font-extrabold mb-3 tracking-tight text-gray-500">
+            <h2 className="text-3xl font-extrabold mb-3 tracking-tight text-white">
               Password Reset!
             </h2>
-            <p className="text-gray-500 text-sm mb-6">
+            <p className="text-white text-sm mb-6">
               Your password has been successfully updated. You&apos;ll be
               redirected to the login page shortly.
             </p>

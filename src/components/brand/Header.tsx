@@ -322,7 +322,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                 &quot;{notification.data.brandName}&quot; campaign has been
                 approved and is now active
               </p>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-black">
                 {formatDate(notification.createdAt)}
               </span>
             </div>
@@ -345,7 +345,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                 &quot;{notification.data.brandName}&quot; campaign has been
                 rejected. Please contact support for more details
               </p>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-black">
                 {formatDate(notification.createdAt)}
               </span>
             </div>
@@ -369,7 +369,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                 influencer(s) assigned to &quot;{notification.data.brandName}
                 &quot; campaign
               </p>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-black">
                 {formatDate(notification.createdAt)}
               </span>
             </div>
@@ -386,11 +386,11 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
       <div className="flex items-center space-x-4">
         <button
           onClick={toggleSidebar}
-          className="lg:hidden text-gray-500 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="lg:hidden text-white p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
           {sidebarOpen ? <BiX size={20} /> : <BiMenu size={20} />}
         </button>
-        <h1 className="text-2xl font-bold lg:hidden block text-gray-500">
+        <h1 className="text-2xl font-bold lg:hidden block text-white">
           The•PR•God
         </h1>
       </div>
@@ -419,10 +419,10 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                 transition={{ duration: 0.2 }}
                 className="absolute right-0 mt-2 w-72 bg-slate-200/20 backdrop-blur-2xl shadow-lg rounded-lg border border-gray-200/10 z-50"
               >
-                <div className="p-3 bg-slate-200/10 font-semibold text-gray-400 flex items-center justify-between">
+                <div className="p-3 bg-slate-200/10 font-semibold text-white flex items-center justify-between">
                   <span>Notifications</span>
                   {allNotifications.length > 0 && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-white">
                       Showing{" "}
                       {Math.min(
                         notificationOffset + NOTIFICATIONS_PER_PAGE,
@@ -434,14 +434,14 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                 </div>
 
                 {hasNoActivity ? (
-                  <div className="flex flex-col items-center justify-center p-6 text-gray-500">
-                    <div className="p-4 rounded-full bg-gray-100 mb-3">
-                      <MdOutlineNotificationsPaused className="text-2xl text-gray-400" />
+                  <div className="flex flex-col items-center justify-center p-6 text-white">
+                    <div className="p-4 rounded-full bg-gray-100/10 mb-3">
+                      <MdOutlineNotificationsPaused className="text-2xl text-white" />
                     </div>
                     <p className="text-lg font-medium">
                       It&apos;s quiet for now
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-white">
                       Try refreshing or check back later.
                     </p>
                   </div>
@@ -505,10 +505,10 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
               className="bg-slate-200/20 backdrop-blur-2xl border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-gray-500 mb-4">
+              <h2 className="text-lg font-semibold text-white mb-4">
                 Confirm Logout
               </h2>
-              <p className="text-sm text-gray-400 mb-6">
+              <p className="text-sm text-white mb-6">
                 Are you sure you want to logout?
               </p>
               <div className="flex space-x-3">
@@ -522,7 +522,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, toggleSidebar }) => {
                   onClick={handleLogout}
                   className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition"
                 >
-                  {isLoggingOut ? "Logging Out..." : "Logout"}
+                  {isLoggingOut ? "..." : "Logout"}
                 </button>
               </div>
             </motion.div>

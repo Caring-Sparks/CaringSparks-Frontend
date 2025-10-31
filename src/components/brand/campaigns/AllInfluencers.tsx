@@ -254,7 +254,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
                 <h2 className="text-2xl font-bold text-gray-900">
                   Assigned Influencers
                 </h2>
-                <p className="text-gray-600 mt-1">
+                <p className="text-white mt-1">
                   {campaignName} • {influencers.length} influencer
                   {influencers.length !== 1 ? "s" : ""}
                 </p>
@@ -310,7 +310,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
                             )}
                           </div>
 
-                          <p className="text-gray-600 text-sm mb-2 truncate">
+                          <p className="text-white text-sm mb-2 truncate">
                             {influencer.email}
                           </p>
 
@@ -329,7 +329,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
                               </span>
                             ))}
                             {influencer.niches.length > 2 && (
-                              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
+                              <span className="px-2 py-0.5 bg-gray-100 text-white text-xs rounded">
                                 +{influencer.niches.length - 2}
                               </span>
                             )}
@@ -389,7 +389,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
                   <div className="text-gray-400 text-lg mb-2">
                     No influencers assigned
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-white">
                     This campaign doesn&apos;t have any assigned influencers
                     yet.
                   </p>
@@ -399,7 +399,7 @@ const AllInfluencers: React.FC<AllInfluencersProps> = ({
 
             {/* Footer */}
             <div className="bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-between items-center">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-white">
                 Click on any influencer to view detailed information
               </div>
               <button

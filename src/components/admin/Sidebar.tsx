@@ -120,8 +120,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                 <Image src="/Logo.svg" width={100} height={50} alt="Logo" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-500">The•PR•God</h2>
-                <p className="text-sm text-gray-500">Admin Panel</p>
+                <h2 className="text-xl font-bold text-white">The•PR•God</h2>
+                <p className="text-sm text-white">Admin Panel</p>
               </div>
             </div>
           </div>
@@ -142,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 ${
                     isActive
                       ? "txt border-s-2 border-txt bg-slate-200/20"
-                      : "text-gray-500 hover:bg-slate-200/10"
+                      : "text-white hover:bg-slate-200/10"
                   }`}
                 >
                   <Icon size={20} />
@@ -179,16 +179,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-500 truncate">
+                    <p className="text-sm font-bold text-white truncate">
                       {getDisplayName()}
                     </p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {user.email}
-                    </p>
+                    <p className="text-xs text-white truncate">{user.email}</p>
                     {user.role && (
-                      <p className="text-xs txt font-medium">
-                        {user.role}
-                      </p>
+                      <p className="text-xs txt font-medium">{user.role}</p>
                     )}
                   </div>
                 </div>

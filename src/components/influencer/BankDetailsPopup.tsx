@@ -190,10 +190,10 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                   )}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-400">
+                  <h2 className="text-xl font-bold text-white">
                     Welcome, {userName}!
                   </h2>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-white">
                     Set up your payment details
                   </p>
                 </div>
@@ -201,7 +201,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
               {!isSubmitting && (
                 <button
                   onClick={handleSkipForNow}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-white hover:text-gray-600 transition-colors"
                   title="Skip for now"
                 >
                   <FaTimes className="w-5 h-5" />
@@ -214,7 +214,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
           <div className="p-6">
             {/* Payment Type Toggle */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-400 mb-3">
+              <label className="block text-sm font-medium text-white mb-3">
                 Payment Method
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -269,7 +269,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                 <>
                   {/* Bank Name Input */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Bank Name *
                     </label>
                     <input
@@ -295,7 +295,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
 
                   {/* Account Number */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Account Number *
                     </label>
                     <input
@@ -324,7 +324,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
 
                   {/* Account Name */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Account Name *
                     </label>
                     <input
@@ -352,7 +352,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                 <>
                   {/* Crypto Network */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Network/Currency *
                     </label>
                     <select
@@ -383,7 +383,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
 
                   {/* Wallet Address */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Wallet Address *
                     </label>
                     <input
@@ -409,7 +409,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
 
                   {/* Wallet Type */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Wallet Type *
                     </label>
                     <input
@@ -459,7 +459,7 @@ const PaymentDetailsPopup: React.FC<PaymentDetailsPopupProps> = ({
                   <button
                     type="button"
                     onClick={handleSkipForNow}
-                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium transition-colors"
+                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-3 px-6 rounded-lg font-medium transition-colors"
                   >
                     Skip for Now
                   </button>

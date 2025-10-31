@@ -35,7 +35,7 @@ const BankDetailsDisplay: React.FC<InfluencerDetailsProps> = ({
     return (
       <div className="p-6">
         <div className="bg-slate-200/20 border border-gray-200 rounded-lg p-6">
-          <p className="text-gray-500 text-center">
+          <p className="text-white text-center">
             No payment details available
           </p>
         </div>
@@ -71,7 +71,7 @@ const BankDetailsDisplay: React.FC<InfluencerDetailsProps> = ({
             {selectedInfluencer.bankDetails.accountName && (
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                 <div className="flex-1">
-                  <p className="text-xs text-gray-500 font-medium mb-1">
+                  <p className="text-xs text-white font-medium mb-1">
                     Account Name
                   </p>
                   <p className="text-gray-900 font-medium">
@@ -124,7 +124,7 @@ const BankDetailsDisplay: React.FC<InfluencerDetailsProps> = ({
             {selectedInfluencer.bankDetails.accountNumber && (
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                 <div className="flex-1">
-                  <p className="text-xs text-gray-500 font-medium mb-1">
+                  <p className="text-xs text-white font-medium mb-1">
                     Account Number
                   </p>
                   <p className="text-gray-900 font-mono font-semibold text-lg">
@@ -177,7 +177,7 @@ const BankDetailsDisplay: React.FC<InfluencerDetailsProps> = ({
             {selectedInfluencer.bankDetails.bankName && (
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                 <div className="flex-1">
-                  <p className="text-xs text-gray-500 font-medium mb-1">
+                  <p className="text-xs text-white font-medium mb-1">
                     Bank Name
                   </p>
                   <p className="text-gray-900 font-medium">
@@ -256,7 +256,7 @@ const BankDetailsDisplay: React.FC<InfluencerDetailsProps> = ({
             {selectedInfluencer.cryptoDetails.walletType && (
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                 <div className="flex-1">
-                  <p className="text-xs text-gray-500 font-medium mb-1">
+                  <p className="text-xs text-white font-medium mb-1">
                     Wallet Type
                   </p>
                   <p className="text-gray-900 font-medium">
@@ -309,7 +309,7 @@ const BankDetailsDisplay: React.FC<InfluencerDetailsProps> = ({
             {selectedInfluencer.cryptoDetails.network && (
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                 <div className="flex-1">
-                  <p className="text-xs text-gray-500 font-medium mb-1">
+                  <p className="text-xs text-white font-medium mb-1">
                     Network
                   </p>
                   <p className="text-gray-900 font-medium">
@@ -362,7 +362,7 @@ const BankDetailsDisplay: React.FC<InfluencerDetailsProps> = ({
             {selectedInfluencer.cryptoDetails.walletAddress && (
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                 <div className="flex-1">
-                  <p className="text-xs text-gray-500 font-medium mb-1">
+                  <p className="text-xs text-white font-medium mb-1">
                     Wallet Address
                   </p>
                   <p className="text-gray-900 font-mono text-sm break-all">

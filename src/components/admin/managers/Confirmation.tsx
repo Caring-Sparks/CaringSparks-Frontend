@@ -31,7 +31,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex flex-col bg-slate-200/10 shadow-lg text-white border rounded-md border-slate-200/10 items-center gap-4 p-6"
+          className="flex flex-col bg-slate-200/10 shadow-lg text-white border rounded-xl border-slate-200/10 items-center gap-4 p-6"
           onClick={(e) => e.stopPropagation()}
         >
           <span className="bg-red-200 p-4 rounded-full">

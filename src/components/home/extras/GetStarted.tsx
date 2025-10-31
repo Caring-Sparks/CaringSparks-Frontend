@@ -63,7 +63,7 @@ const GetStarted: React.FC<GetStartedProps> = ({ onClose, login }) => {
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+          className="absolute top-4 right-4 text-white hover:text-gray-800"
         >
           ✕
         </button>
@@ -76,10 +76,10 @@ const GetStarted: React.FC<GetStartedProps> = ({ onClose, login }) => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
             >
-              <h1 className="text-3xl font-bold text-center text-slate-500">
+              <h1 className="text-3xl font-bold text-center text-white">
                 Get Started
               </h1>
-              <p className="text-gray-600 text-center mt-2">
+              <p className="text-white text-center mt-2">
                 Start your journey today by choosing your role
               </p>
 

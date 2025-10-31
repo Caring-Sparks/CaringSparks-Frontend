@@ -596,13 +596,13 @@ const InfluencerAssignment: React.FC = () => {
               onClick={() => router.push("/admin/campaigns")}
               className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
             >
-              <FaArrowLeft className="w-5 h-5 text-slate-500" />
+              <FaArrowLeft className="w-5 h-5 text-white" />
             </button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-500">
+              <h1 className="text-3xl font-bold text-white">
                 Assign Influencers
               </h1>
-              <p className="text-gray-500 mt-1">
+              <p className="text-white mt-1">
                 Campaign:{" "}
                 <span className="font-medium">{campaign.brandName}</span>
               </p>
@@ -613,54 +613,48 @@ const InfluencerAssignment: React.FC = () => {
           <div className="bg-slate-200/20 border-slate-200/10 rounded-lg p-6 shadow-sm mb-6">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
               <div>
-                <span className="font-medium text-gray-400">Location:</span>
-                <div className="text-gray-500">
-                  {campaign.location || "Any"}
-                </div>
+                <span className="font-medium text-white">Location:</span>
+                <div className="text-white">{campaign.location || "Any"}</div>
               </div>
               <div>
-                <span className="font-medium text-gray-400">
+                <span className="font-medium text-white">
                   Required Influencers:
                 </span>
-                <div className="text-gray-500">
+                <div className="text-white">
                   {campaign.influencersMin} - {campaign.influencersMax}
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-400">
+                <span className="font-medium text-white">
                   Currently Assigned:
                 </span>
-                <div className="text-gray-500">
+                <div className="text-white">
                   {assignmentSummary.currentlyAssigned}
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-400">Selected:</span>
-                <div className="text-gray-500">
+                <span className="font-medium text-white">Selected:</span>
+                <div className="text-white">
                   {assignmentSummary.totalSelected}
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-400">
-                  New Assignments:
-                </span>
-                <div className="text-gray-500">
+                <span className="font-medium text-white">New Assignments:</span>
+                <div className="text-white">
                   {assignmentSummary.newSelections}
                 </div>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="font-medium text-gray-400">Platforms:</span>
-                <div className="text-gray-500">
+                <span className="font-medium text-white">Platforms:</span>
+                <div className="text-white">
                   {campaign.platforms.join(", ")}
                 </div>
               </div>
               <div>
-                <span className="font-medium text-gray-400">
-                  Followers Range:
-                </span>
-                <div className="text-gray-500">
+                <span className="font-medium text-white">Followers Range:</span>
+                <div className="text-white">
                   {campaign.followersRange || "Any"}
                 </div>
               </div>
@@ -671,7 +665,7 @@ const InfluencerAssignment: React.FC = () => {
           <div className="space-y-4 mb-6">
             <div className="flex gap-4">
               <div className="flex-1 relative">
-                <FaSearch className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
+                <FaSearch className="absolute left-3 top-3 text-white w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Search influencers..."
@@ -685,7 +679,7 @@ const InfluencerAssignment: React.FC = () => {
                 className={`px-4 py-2 rounded-lg border-slate-200/10 font-medium transition-colors duration-200 flex items-center gap-2 ${
                   showFilters
                     ? "bg-yellow-500 text-white"
-                    : "bg-slate-200/20 text-gray-500 hover:bg-gray-50"
+                    : "bg-slate-200/20 text-white hover:bg-gray-50"
                 }`}
               >
                 <FaFilter className="w-4 h-4" />
@@ -705,13 +699,13 @@ const InfluencerAssignment: React.FC = () => {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">
+                      <label className="block text-sm font-medium text-white mb-1">
                         Platform
                       </label>
                       <select
                         value={platformFilter}
                         onChange={(e) => setPlatformFilter(e.target.value)}
-                        className="w-full px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       >
                         <option value="all">All Platforms</option>
                         {availablePlatforms.map((platform) => (
@@ -723,7 +717,7 @@ const InfluencerAssignment: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">
+                      <label className="block text-sm font-medium text-white mb-1">
                         Location
                       </label>
                       <input
@@ -731,18 +725,18 @@ const InfluencerAssignment: React.FC = () => {
                         placeholder="Type to filter location..."
                         value={locationFilter}
                         onChange={(e) => setLocationFilter(e.target.value)}
-                        className="w-full px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">
+                      <label className="block text-sm font-medium text-white mb-1">
                         Followers
                       </label>
                       <select
                         value={followersFilter}
                         onChange={(e) => setFollowersFilter(e.target.value)}
-                        className="w-full px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       >
                         <option value="all">All Followers</option>
                         <option value="1k-3k">1K - 3K</option>
@@ -754,13 +748,13 @@ const InfluencerAssignment: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">
+                      <label className="block text-sm font-medium text-white mb-1">
                         Niche
                       </label>
                       <select
                         value={nicheFilter}
                         onChange={(e) => setNicheFilter(e.target.value)}
-                        className="w-full px-3 py-2 border text-slate-500 border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       >
                         <option value="all">All Niches</option>
                         {getUniqueNiches().map((niche) => (
@@ -779,7 +773,7 @@ const InfluencerAssignment: React.FC = () => {
 
         {/* Results Count */}
         <div className="mb-6 flex justify-between items-center">
-          <p className="text-gray-500">
+          <p className="text-white">
             {filteredInfluencers.length} influencers found
           </p>
           {assignmentSummary.newSelections > 0 && (
@@ -853,10 +847,10 @@ const InfluencerAssignment: React.FC = () => {
                         </div>
                       )}
                       <div>
-                        <h3 className="font-semibold text-gray-400">
+                        <h3 className="font-semibold text-white">
                           {influencer.firstName} {influencer.lastName}
                         </h3>
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-white text-sm">
                           {influencer.location}
                         </p>
                       </div>
@@ -886,13 +880,13 @@ const InfluencerAssignment: React.FC = () => {
                               className="flex items-center gap-1 text-sm"
                             >
                               {getPlatformIcon(account.platform)}
-                              <span className="text-gray-500">
+                              <span className="text-white">
                                 {formatFollowers(account.followerCount)}
                               </span>
                             </div>
                           ))}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-white">
                         Total:{" "}
                         <span className="font-medium">
                           {formatFollowers(influencer.totalFollowers)} followers
@@ -903,7 +897,7 @@ const InfluencerAssignment: React.FC = () => {
                     {/* Niches */}
                     {influencer.niche.length > 0 && (
                       <div>
-                        <span className="text-gray-500 text-sm">Niches:</span>
+                        <span className="text-white text-sm">Niches:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {influencer.niche.slice(0, 3).map((niche, index) => (
                             <span
@@ -930,16 +924,14 @@ const InfluencerAssignment: React.FC = () => {
 
         {filteredInfluencers.length === 0 && !loading && (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-lg mb-2">
-              No influencers found
-            </div>
+            <div className="text-white text-lg mb-2">No influencers found</div>
             <p className="text-gray-600">
               {influencers.length === 0
                 ? "No influencers available in the system."
                 : "Try adjusting your search criteria or filters."}
             </p>
             {influencers.length > 0 && (
-              <p className="text-gray-500 text-sm mt-2">
+              <p className="text-white text-sm mt-2">
                 Note: Only approved influencers are shown for assignment.
               </p>
             )}
