@@ -743,13 +743,13 @@ const Jobs: React.FC = () => {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-400 mb-2">
+                    <h2 className="text-2xl font-bold text-white mb-2">
                       {selectedCampaign.brandName}
                     </h2>
                   </div>
                   <button
                     onClick={closeCampaignDetailsModal}
-                    className="text-gray-400 hover:text-gray-600 text-xl"
+                    className="text-white hover:text-white text-xl"
                   >
                     ×
                   </button>
@@ -757,10 +757,10 @@ const Jobs: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
-                    <h3 className="font-semibold text-gray-500 mb-2">
+                    <h3 className="font-semibold text-white mb-2">
                       Campaign Details
                     </h3>
-                    <div className="space-y-2 text-sm text-gray-400">
+                    <div className="space-y-2 text-sm text-white">
                       <div>
                         <span className="font-medium">Role:</span>{" "}
                         {selectedCampaign.role}
@@ -823,7 +823,7 @@ const Jobs: React.FC = () => {
                                         ? "text-red-600"
                                         : dueDateInfo.daysRemaining <= 2
                                         ? "text-orange-600"
-                                        : "text-gray-600"
+                                        : "text-white"
                                     }`}
                                   >
                                     (
@@ -851,7 +851,7 @@ const Jobs: React.FC = () => {
                 </div>
 
                 <div className="mb-6">
-                  <h3 className="font-semibold text-gray-500 mb-2">
+                  <h3 className="font-semibold text-white mb-2">
                     Campaign Materials
                   </h3>
                   {materialsLoading ? (
@@ -882,7 +882,7 @@ const Jobs: React.FC = () => {
                               />
                             </div>
                             {material.postDescription && (
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-white">
                                 <p className="font-medium mb-1">Description:</p>
                                 <p className="line-clamp-3">
                                   {material.postDescription}
@@ -890,7 +890,7 @@ const Jobs: React.FC = () => {
                               </div>
                             )}
                             {material.uploadedAt && (
-                              <div className="text-xs text-gray-500 mt-2">
+                              <div className="text-xs text-white mt-2">
                                 Uploaded:{" "}
                                 {new Date(
                                   material.uploadedAt
@@ -900,7 +900,7 @@ const Jobs: React.FC = () => {
                           </div>
                         ))}
                       </div>
-                      <div className="mt-4 text-sm text-gray-600">
+                      <div className="mt-4 text-sm text-white">
                         <p className="font-medium">Campaign Brief:</p>
                         <p>
                           Use these materials as reference for your content
@@ -986,7 +986,7 @@ const Jobs: React.FC = () => {
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-400">
+                  <h3 className="text-lg font-semibold text-white">
                     {isEditingDeliverables
                       ? "Edit Submitted Work"
                       : "Submitted Work"}
@@ -1002,7 +1002,7 @@ const Jobs: React.FC = () => {
                     )}
                     <button
                       onClick={() => setShowSubmittedJobsModal(false)}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-white hover:text-white"
                     >
                       ×
                     </button>
@@ -1018,7 +1018,7 @@ const Jobs: React.FC = () => {
                           className="p-4 border border-slate-200/10 rounded-lg"
                         >
                           <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium text-gray-400">
+                            <h4 className="font-medium text-white">
                               Deliverable {index + 1}
                             </h4>
                             <button
@@ -1031,7 +1031,7 @@ const Jobs: React.FC = () => {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-sm font-medium text-gray-400 mb-2">
+                              <label className="block text-sm font-medium text-white mb-2">
                                 Platform
                               </label>
                               <select
@@ -1057,7 +1057,7 @@ const Jobs: React.FC = () => {
                             </div>
 
                             <div>
-                              <label className="block text-sm font-medium text-gray-400 mb-2">
+                              <label className="block text-sm font-medium text-white mb-2">
                                 Post URL
                               </label>
                               <input
@@ -1076,7 +1076,7 @@ const Jobs: React.FC = () => {
                             </div>
 
                             <div className="md:col-span-2">
-                              <label className="block text-sm font-medium text-gray-400 mb-2">
+                              <label className="block text-sm font-medium text-white mb-2">
                                 Description
                               </label>
                               <textarea
@@ -1095,7 +1095,7 @@ const Jobs: React.FC = () => {
                             </div>
 
                             <div className="md:col-span-2">
-                              <label className="block text-sm font-medium text-gray-400 mb-2">
+                              <label className="block text-sm font-medium text-white mb-2">
                                 Performance Metrics (Optional)
                               </label>
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -1159,7 +1159,7 @@ const Jobs: React.FC = () => {
 
                       <button
                         onClick={addDeliverable}
-                        className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-yellow-400 transition flex items-center justify-center gap-2"
+                        className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-white hover:border-yellow-400 transition flex items-center justify-center gap-2"
                       >
                         <FaPlus /> Add Another Deliverable
                       </button>
@@ -1190,7 +1190,7 @@ const Jobs: React.FC = () => {
                           className="p-4 bg-slate-200/20 rounded-lg"
                         >
                           <div className="flex items-start justify-between mb-3">
-                            <h4 className="font-medium text-gray-400">
+                            <h4 className="font-medium text-white">
                               {deliverable.platform} - Deliverable {index + 1}
                             </h4>
                             <a
@@ -1203,7 +1203,7 @@ const Jobs: React.FC = () => {
                             </a>
                           </div>
 
-                          <p className="text-gray-400 text-sm mb-3">
+                          <p className="text-white text-sm mb-3">
                             {deliverable.description}
                           </p>
 
@@ -1242,7 +1242,7 @@ const Jobs: React.FC = () => {
                       ))}
                     </div>
 
-                    <div className="text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
+                    <div className="text-sm text-white bg-green-50 p-3 rounded-lg">
                       Work submitted on{" "}
                       {formatDate(
                         getInfluencerStatus(selectedCampaign)?.completedAt
@@ -1271,10 +1271,10 @@ const Jobs: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-500 mb-4">
+                <h3 className="text-lg font-semibold text-white mb-4">
                   Accept Campaign
                 </h3>
-                <h5 className="text-gray-400">
+                <h5 className="text-white">
                   The brand will be notified that you have accepted this task.
                 </h5>
                 <div className="flex gap-3 mt-4">
@@ -1313,10 +1313,10 @@ const Jobs: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-500 mb-4">
+                <h3 className="text-lg font-semibold text-white mb-4">
                   Reject Campaign
                 </h3>
-                <h5 className="text-gray-400">
+                <h5 className="text-white">
                   The brand will be notified that you have declined this task.
                 </h5>
                 <div className="flex gap-3 mt-4">
@@ -1356,12 +1356,12 @@ const Jobs: React.FC = () => {
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-400">
+                  <h3 className="text-lg font-semibold text-white">
                     Submit Campaign Deliverables
                   </h3>
                   <button
                     onClick={() => setShowDeliverableModal(false)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-white hover:text-white"
                   >
                     ×
                   </button>
@@ -1374,7 +1374,7 @@ const Jobs: React.FC = () => {
                       className="p-4 border border-slate-200/10 rounded-lg"
                     >
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-medium text-gray-400">
+                        <h4 className="font-medium text-white">
                           Deliverable {index + 1}
                         </h4>
                         <button
@@ -1387,7 +1387,7 @@ const Jobs: React.FC = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             Platform
                           </label>
                           <select
@@ -1413,7 +1413,7 @@ const Jobs: React.FC = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             Post URL
                           </label>
                           <input
@@ -1428,7 +1428,7 @@ const Jobs: React.FC = () => {
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             Description
                           </label>
                           <textarea
@@ -1447,7 +1447,7 @@ const Jobs: React.FC = () => {
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             Performance Metrics (Optional)
                           </label>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -1511,7 +1511,7 @@ const Jobs: React.FC = () => {
 
                   <button
                     onClick={addDeliverable}
-                    className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-yellow-400 hover:text-yellow-600 transition"
+                    className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-white hover:border-yellow-400 hover:text-yellow-600 transition"
                   >
                     + Add Deliverable
                   </button>
@@ -1543,16 +1543,16 @@ const Jobs: React.FC = () => {
           <div className="mb-8">
             <div className="flex justify-between items-center gap-6 mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-500">
+                <h1 className="text-3xl font-bold text-white">
                   Assigned Campaigns
                 </h1>
-                <p className="text-gray-500 mt-1">
+                <p className="text-white mt-1">
                   Manage your assigned campaigns and discover new opportunities.
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-white">
                     Proposed Monthly Earnings
                   </div>
                   <div className="text-xl font-bold text-green-600">
@@ -1584,7 +1584,7 @@ const Jobs: React.FC = () => {
                       className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                         filter === status
                           ? "bg-yellow-500 text-white"
-                          : "bg-slate-200/20 text-gray-400 hover:bg-gray-50/10 border border-slate-200/10"
+                          : "bg-slate-200/20 text-white hover:bg-gray-50/10 border border-slate-200/10"
                       }`}
                     >
                       {status.charAt(0).toUpperCase() +
@@ -1598,7 +1598,7 @@ const Jobs: React.FC = () => {
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-4 py-2 border border-slate-200/10 rounded-lg bg-slate-200/20 text-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                  className="px-4 py-2 border border-slate-200/10 rounded-lg bg-slate-200/20 text-white focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 >
                   <option value="all">All Types</option>
                   <option value="Brand">Brand</option>
@@ -1612,7 +1612,7 @@ const Jobs: React.FC = () => {
                 <select
                   value={platformFilter}
                   onChange={(e) => setPlatformFilter(e.target.value)}
-                  className="px-4 py-2 border border-slate-200/10 rounded-lg bg-slate-200/20 text-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                  className="px-4 py-2 border border-slate-200/10 rounded-lg bg-slate-200/20 text-white focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 >
                   <option value="all">All Platforms</option>
                   <option value="instagram">Instagram</option>
@@ -1630,25 +1630,25 @@ const Jobs: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-400">
+                <div className="text-2xl font-bold text-white">
                   {filteredCampaigns.length}
                 </div>
-                <div className="text-gray-400">
+                <div className="text-white">
                   {filter === "all" ? "Total" : "Filtered"} Campaigns
                 </div>
               </div>
               <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-400">
+                <div className="text-2xl font-bold text-white">
                   {
                     assignedCampaigns.filter(
                       (c: any) => getInfluencerStatus(c)?.isCompleted
                     ).length
                   }
                 </div>
-                <div className="text-gray-400">Completed</div>
+                <div className="text-white">Completed</div>
               </div>
               <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-gray-400">
+                <div className="text-2xl font-bold text-white">
                   {
                     assignedCampaigns.filter(
                       (c: any) =>
@@ -1656,18 +1656,18 @@ const Jobs: React.FC = () => {
                     ).length
                   }
                 </div>
-                <div className="text-gray-400">Pending Response</div>
+                <div className="text-white">Pending Response</div>
               </div>
               <div className="bg-slate-200/20 border border-slate-200/10 p-6 rounded-lg shadow-sm">
                 <div className="text-2xl font-bold text-red-600">
                   {assignedCampaigns.filter((c: any) => isOverdue(c)).length}
                 </div>
-                <div className="text-gray-400">Overdue</div>
+                <div className="text-white">Overdue</div>
               </div>
             </div>
 
             {filteredCampaigns.length > 0 && (
-              <div className="text-sm text-gray-600 mb-4">
+              <div className="text-sm text-white mb-4">
                 Showing {startIndex + 1} -{" "}
                 {Math.min(endIndex, filteredCampaigns.length)} of{" "}
                 {filteredCampaigns.length} campaigns
@@ -1678,10 +1678,10 @@ const Jobs: React.FC = () => {
           <div className="space-y-4 mb-8">
             {paginatedCampaigns.length === 0 ? (
               <div className="bg-slate-200/10 border border-slate-200/10 p-12 rounded-lg shadow-sm text-center">
-                <div className="text-gray-400 text-lg mb-2">
+                <div className="text-white text-lg mb-2">
                   No campaigns found
                 </div>
-                <p className="text-gray-600 mb-6">
+                <p className="text-white mb-6">
                   {searchTerm || filter !== "all"
                     ? "Try adjusting your search or filters"
                     : activeTab === "available"
@@ -1711,7 +1711,7 @@ const Jobs: React.FC = () => {
                       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 flex-wrap mb-2">
-                            <h3 className="text-xl font-semibold text-gray-400">
+                            <h3 className="text-xl font-semibold text-white">
                               {campaign.brandName}
                             </h3>
                             <span
@@ -1731,7 +1731,7 @@ const Jobs: React.FC = () => {
                             )}
                           </div>
 
-                          <p className="text-gray-400 mb-4">
+                          <p className="text-white mb-4">
                             {campaign.platforms.join(", ")} •{" "}
                             {campaign.location}
                             {campaign.additionalLocations &&
@@ -1741,30 +1741,30 @@ const Jobs: React.FC = () => {
 
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                             <div>
-                              <span className="font-medium text-gray-400">
+                              <span className="font-medium text-white">
                                 Followers Range:
                               </span>
-                              <div className="text-gray-400">
+                              <div className="text-white">
                                 {campaign.followersRange || "Any"}
                               </div>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-400">
+                              <span className="font-medium text-white">
                                 Duration:
                               </span>
-                              <div className="text-gray-400">
+                              <div className="text-white">
                                 {campaign.postDuration || "N/A"}
                               </div>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-400">
+                              <span className="font-medium text-white">
                                 Due Date:
                               </span>
                               <div
                                 className={
                                   dueDateInfo.isOverdue
                                     ? "text-red-600 font-semibold"
-                                    : "text-gray-400"
+                                    : "text-white"
                                 }
                               >
                                 {dueDateInfo.date}
@@ -1776,7 +1776,7 @@ const Jobs: React.FC = () => {
                                           ? "text-red-600"
                                           : dueDateInfo.daysRemaining <= 2
                                           ? "text-orange-600"
-                                          : "text-gray-600"
+                                          : "text-white"
                                       }`}
                                     >
                                       {dueDateInfo.isOverdue
@@ -1789,10 +1789,10 @@ const Jobs: React.FC = () => {
                               </div>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-400">
+                              <span className="font-medium text-white">
                                 Assigned:
                               </span>
-                              <div className="text-gray-400">
+                              <div className="text-white">
                                 {formatDate(status?.assignedAt)}
                               </div>
                             </div>
@@ -1809,7 +1809,7 @@ const Jobs: React.FC = () => {
                             const baseClasses =
                               "px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center flex items-center gap-2 justify-center";
                             const statusClasses = hasDeclined
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              ? "bg-gray-100 text-white cursor-not-allowed"
                               : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600";
 
                             return (
@@ -1876,7 +1876,7 @@ const Jobs: React.FC = () => {
                           )}
 
                           {activeTab === "history" && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg text-gray-600 text-sm">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg text-white text-sm">
                               <FaClock />
                               Completed {formatDate(status?.completedAt)}
                             </div>
@@ -1893,7 +1893,7 @@ const Jobs: React.FC = () => {
           {filteredCampaigns.length > itemsPerPage && (
             <div className="bg-slate-200/20 border border-slate-200/10 rounded-lg shadow-sm p-4">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-white">
                   Page {currentPage} of {totalPages}
                 </div>
 
@@ -1905,7 +1905,7 @@ const Jobs: React.FC = () => {
                     className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     title="Previous page"
                   >
-                    <FaChevronLeft className="w-4 h-4 text-gray-600" />
+                    <FaChevronLeft className="w-4 h-4 text-white" />
                   </button>
 
                   {/* Page Numbers */}
@@ -1921,8 +1921,8 @@ const Jobs: React.FC = () => {
                           page === currentPage
                             ? "bg-yellow-600 text-white"
                             : page === "..."
-                            ? "cursor-default text-gray-400"
-                            : "border border-gray-300 hover:bg-gray-50 text-gray-400"
+                            ? "cursor-default text-white"
+                            : "border border-gray-300 hover:bg-gray-50 text-white"
                         }`}
                       >
                         {page}
@@ -1937,13 +1937,13 @@ const Jobs: React.FC = () => {
                     className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     title="Next page"
                   >
-                    <FaChevronRight className="w-4 h-4 text-gray-600" />
+                    <FaChevronRight className="w-4 h-4 text-white" />
                   </button>
                 </div>
 
                 {/* Go to page input (optional) */}
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Go to:</span>
+                  <span className="text-sm text-white">Go to:</span>
                   <input
                     type="number"
                     min="1"

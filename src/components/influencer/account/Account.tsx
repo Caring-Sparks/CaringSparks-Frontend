@@ -482,10 +482,10 @@ const Account: React.FC = () => {
               className="bg-slate-200/10 border border-slate-200/10 rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-gray-400 mb-4">
+              <h2 className="text-lg font-semibold text-white mb-4">
                 Delete Account
               </h2>
-              <p className="text-sm text-gray-400 mb-6">
+              <p className="text-sm text-white mb-6">
                 Are you sure you want to permanently delete your account? This
                 action cannot be undone and will remove all your data,
                 campaigns, and earnings history.
@@ -512,10 +512,10 @@ const Account: React.FC = () => {
       <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-500">
+            <h1 className="text-3xl font-bold text-white">
               Account Management
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-white mt-1">
               Manage your influencer profile and preferences
             </p>
           </div>
@@ -545,21 +545,21 @@ const Account: React.FC = () => {
                   <User className="text-white" size={28} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-400">
+                  <h2 className="text-2xl font-bold text-white">
                     {user?.name || "Influencer Account"}
                   </h2>
-                  <div className="flex items-center space-x-2 text-gray-500 mb-2">
+                  <div className="flex items-center space-x-2 text-white mb-2">
                     <CgMail size={16} />
                     <span>{user?.email}</span>
                   </div>
                   {user?.location && (
-                    <div className="flex items-center space-x-2 text-gray-500 mb-2">
+                    <div className="flex items-center space-x-2 text-white mb-2">
                       <MapPin size={16} />
                       <span>{user.location}</span>
                     </div>
                   )}
                   {user?.createdAt && (
-                    <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                    <div className="flex items-center space-x-2 text-white text-sm">
                       <Calendar size={16} />
                       <span>Member since {formatDate(user.createdAt)}</span>
                     </div>
@@ -604,7 +604,7 @@ const Account: React.FC = () => {
                     className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
                       activeTab === key
                         ? "border-b-2 border-yellow-600 text-yellow-600 bg-yellow-50/10"
-                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50/10"
+                        : "text-white hover:text-gray-900 hover:bg-gray-50/10"
                     }`}
                   >
                     <Icon size={18} />
@@ -619,10 +619,10 @@ const Account: React.FC = () => {
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-400">
+                      <h3 className="text-xl font-semibold text-white">
                         Profile Information
                       </h3>
-                      <p className="text-gray-400 text-sm mt-1">
+                      <p className="text-white text-sm mt-1">
                         Update your personal information and professional
                         details
                       </p>
@@ -642,17 +642,17 @@ const Account: React.FC = () => {
 
                   <form onSubmit={handleProfileUpdate} className="space-y-6">
                     <div className="bg-slate-200/10 border border-slate-200/10 rounded-lg p-6">
-                      <h4 className="font-medium text-gray-400 mb-4">
+                      <h4 className="font-medium text-white mb-4">
                         Basic Information
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             Full Name *
                           </label>
                           <div className="relative">
                             <User
-                              className="absolute left-3 top-3 text-gray-400"
+                              className="absolute left-3 top-3 text-white"
                               size={18}
                             />
                             <input
@@ -668,12 +668,12 @@ const Account: React.FC = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             Email Address *
                           </label>
                           <div className="relative">
                             <CgMail
-                              className="absolute left-3 top-3 text-gray-400"
+                              className="absolute left-3 top-3 text-white"
                               size={18}
                             />
                             <input
@@ -689,12 +689,12 @@ const Account: React.FC = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             Phone Number
                           </label>
                           <div className="relative">
                             <Phone
-                              className="absolute left-3 top-3 text-gray-400"
+                              className="absolute left-3 top-3 text-white"
                               size={18}
                             />
                             <input
@@ -709,12 +709,12 @@ const Account: React.FC = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             WhatsApp Number
                           </label>
                           <div className="relative">
                             <Phone
-                              className="absolute left-3 top-3 text-gray-400"
+                              className="absolute left-3 top-3 text-white"
                               size={18}
                             />
                             <input
@@ -729,12 +729,12 @@ const Account: React.FC = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             Location
                           </label>
                           <div className="relative">
                             <MapPin
-                              className="absolute left-3 top-3 text-gray-400"
+                              className="absolute left-3 top-3 text-white"
                               size={18}
                             />
                             <input
@@ -749,12 +749,12 @@ const Account: React.FC = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-2">
+                          <label className="block text-sm font-medium text-white mb-2">
                             Audience Location
                           </label>
                           <div className="relative">
                             <Users
-                              className="absolute left-3 top-3 text-gray-400"
+                              className="absolute left-3 top-3 text-white"
                               size={18}
                             />
                             <input
@@ -783,7 +783,7 @@ const Account: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setIsEditing(false)}
-                          className="px-6 py-3 border border-gray-300 rounded-lg text-gray-400 hover:bg-gray-50 font-medium transition-colors"
+                          className="px-6 py-3 border border-gray-300 rounded-lg text-white hover:bg-gray-50 font-medium transition-colors"
                         >
                           Cancel
                         </button>
@@ -797,10 +797,10 @@ const Account: React.FC = () => {
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-500">
+                      <h3 className="text-xl font-semibold text-white">
                         Profile Information
                       </h3>
-                      <p className="text-gray-500 text-sm mt-1">
+                      <p className="text-white text-sm mt-1">
                         Update your personal information and professional
                         details
                       </p>
@@ -823,7 +823,7 @@ const Account: React.FC = () => {
                     className="space-y-6"
                   >
                     <div className="bg-slate-200/10 rounded-lg p-6">
-                      <label className="block text-sm font-medium text-gray-500 mb-3">
+                      <label className="block text-sm font-medium text-white mb-3">
                         Payment Method
                       </label>
                       <div className="grid grid-cols-2 gap-3">
@@ -839,7 +839,7 @@ const Account: React.FC = () => {
                           className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
                             formData.paymentType === "bank"
                               ? "border-yellow-500/20 bg-yellow-50 text-yellow-700"
-                              : "border-slate-200/10 bg-slate-200/20 text-gray-400"
+                              : "border-slate-200/10 bg-slate-200/20 text-white"
                           } disabled:opacity-50`}
                         >
                           <BiBuilding size={20} />
@@ -857,7 +857,7 @@ const Account: React.FC = () => {
                           className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
                             formData.paymentType === "crypto"
                               ? "border-yellow-500/20 bg-yellow-50 text-yellow-700"
-                              : "border-slate-200/10 bg-slate-200/20 text-gray-400"
+                              : "border-slate-200/10 bg-slate-200/20 text-white"
                           } disabled:opacity-50`}
                         >
                           <CurrencyBtc size={20} />
@@ -868,12 +868,12 @@ const Account: React.FC = () => {
 
                     {formData.paymentType === "bank" && (
                       <div className="bg-slate-200/10 border border-slate-200/10 rounded-lg p-6">
-                        <h4 className="font-medium text-gray-500 mb-4">
+                        <h4 className="font-medium text-white mb-4">
                           Bank Account Information
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-2">
+                            <label className="block text-sm font-medium text-white mb-2">
                               Bank Name *
                             </label>
                             <input
@@ -889,7 +889,7 @@ const Account: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-2">
+                            <label className="block text-sm font-medium text-white mb-2">
                               Account Number *
                             </label>
                             <input
@@ -906,7 +906,7 @@ const Account: React.FC = () => {
                           </div>
 
                           <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-400 mb-2">
+                            <label className="block text-sm font-medium text-white mb-2">
                               Account Name *
                             </label>
                             <input
@@ -937,12 +937,12 @@ const Account: React.FC = () => {
 
                     {formData.paymentType === "crypto" && (
                       <div className="bg-slate-200/10 border border-slate-200/10 rounded-lg p-6">
-                        <h4 className="font-medium text-gray-400 mb-4">
+                        <h4 className="font-medium text-white mb-4">
                           Cryptocurrency Wallet Information
                         </h4>
                         <div className="space-y-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-2">
+                            <label className="block text-sm font-medium text-white mb-2">
                               Network/Currency *
                             </label>
                             <select
@@ -963,7 +963,7 @@ const Account: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-2">
+                            <label className="block text-sm font-medium text-white mb-2">
                               Wallet Address *
                             </label>
                             <input
@@ -979,7 +979,7 @@ const Account: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-2">
+                            <label className="block text-sm font-medium text-white mb-2">
                               Wallet Type *
                             </label>
                             <input
@@ -1023,7 +1023,7 @@ const Account: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setIsEditing(false)}
-                          className="px-6 py-3 border border-gray-300 rounded-lg text-gray-400 hover:bg-gray-50 font-medium transition-colors"
+                          className="px-6 py-3 border border-gray-300 rounded-lg text-white hover:bg-gray-50 font-medium transition-colors"
                         >
                           Cancel
                         </button>
@@ -1036,26 +1036,26 @@ const Account: React.FC = () => {
               {activeTab === "security" && (
                 <div className="space-y-8">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-400">
+                    <h3 className="text-xl font-semibold text-white">
                       Security Settings
                     </h3>
-                    <p className="text-gray-400 text-sm mt-1">
+                    <p className="text-white text-sm mt-1">
                       Manage your password and account security
                     </p>
                   </div>
 
                   <div className="bg-slate-200/10 border border-slate-200/10 rounded-lg p-6">
-                    <h4 className="font-medium text-gray-400 mb-4">
+                    <h4 className="font-medium text-white mb-4">
                       Change Password
                     </h4>
                     <form onSubmit={handlePasswordChange} className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                        <label className="block text-sm font-medium text-white mb-2">
                           Current Password
                         </label>
                         <div className="relative">
                           <Shield
-                            className="absolute left-3 top-3 text-gray-400"
+                            className="absolute left-3 top-3 text-white"
                             size={18}
                           />
                           <input
@@ -1071,7 +1071,7 @@ const Account: React.FC = () => {
                             onClick={() =>
                               setShowCurrentPassword(!showCurrentPassword)
                             }
-                            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-3 text-white hover:text-white"
                           >
                             {showCurrentPassword ? (
                               <EyeSlash size={18} />
@@ -1083,12 +1083,12 @@ const Account: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                        <label className="block text-sm font-medium text-white mb-2">
                           New Password
                         </label>
                         <div className="relative">
                           <Shield
-                            className="absolute left-3 top-3 text-gray-400"
+                            className="absolute left-3 top-3 text-white"
                             size={18}
                           />
                           <input
@@ -1102,7 +1102,7 @@ const Account: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setShowNewPassword(!showNewPassword)}
-                            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-3 text-white hover:text-white"
                           >
                             {showNewPassword ? (
                               <EyeSlash size={18} />
@@ -1114,12 +1114,12 @@ const Account: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                        <label className="block text-sm font-medium text-white mb-2">
                           Confirm New Password
                         </label>
                         <div className="relative">
                           <Shield
-                            className="absolute left-3 top-3 text-gray-400"
+                            className="absolute left-3 top-3 text-white"
                             size={18}
                           />
                           <input

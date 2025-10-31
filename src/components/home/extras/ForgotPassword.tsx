@@ -53,7 +53,7 @@ export default function ForgotPassword({
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-black text-gray-800 border border-slate-200/10 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
+            className="bg-black border border-slate-200/10 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative"
             initial={{ scale: 0.9, y: 50, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 50, opacity: 0 }}
@@ -62,7 +62,7 @@ export default function ForgotPassword({
             {/* Close Button */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute top-4 right-4 text-white hover:text-gray-600 transition-colors"
             >
               <X size={22} weight="bold" />
             </button>
@@ -71,7 +71,7 @@ export default function ForgotPassword({
             {!isSubmitted && (
               <button
                 onClick={onBackToLogin}
-                className="absolute top-4 left-4 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute top-4 left-4 text-white hover:text-gray-600 transition-colors"
               >
                 <ArrowLeft size={22} weight="bold" />
               </button>
@@ -88,10 +88,10 @@ export default function ForgotPassword({
                       className="text-yellow-600"
                     />
                   </div>
-                  <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-gray-500">
+                  <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-white">
                     Forgot Password?
                   </h2>
-                  <p className="text-gray-500 text-sm text-center">
+                  <p className="text-white text-sm text-center">
                     Enter your email address and we&apos;ll send you a link to
                     reset your password
                   </p>
@@ -109,7 +109,7 @@ export default function ForgotPassword({
                         {/* Email */}
                         <div>
                           <div className="relative">
-                            <EnvelopeSimple className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <EnvelopeSimple className="absolute left-3 top-1/2 -translate-y-1/2 text-white" />
                             <Field
                               type="email"
                               name="email"
@@ -127,12 +127,12 @@ export default function ForgotPassword({
                         {/* Role Selection */}
                         <div>
                           <div className="relative">
-                            <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-white" />
                             <Field as="select" name="role" className="frm2">
                               <option
                                 value=""
                                 disabled
-                                className="text-gray-400"
+                                className="text-white"
                               >
                                 Select your role
                               </option>
@@ -178,7 +178,7 @@ export default function ForgotPassword({
                       </motion.button>
 
                       {/* Back to login */}
-                      <p className="text-center text-gray-500 text-sm mt-1">
+                      <p className="text-center text-white text-sm mt-1">
                         Remember your password?{" "}
                         <button
                           type="button"
@@ -210,7 +210,7 @@ export default function ForgotPassword({
                 <h2 className="text-3xl font-extrabold mb-3 tracking-tight text-gray-900">
                   Check Your Email
                 </h2>
-                <p className="text-gray-500 text-sm mb-6">
+                <p className="text-white text-sm mb-6">
                   We&apos;ve sent a password reset link to{" "}
                   <span className="font-semibold text-gray-700">
                     {submittedEmail}
@@ -234,7 +234,7 @@ export default function ForgotPassword({
                   Got it, thanks!
                 </motion.button>
 
-                <p className="text-gray-500 text-xs">
+                <p className="text-white text-xs">
                   Didn&apos;t receive the email?{" "}
                   <button
                     onClick={() => setIsSubmitted(false)}

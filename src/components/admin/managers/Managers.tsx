@@ -187,8 +187,8 @@ const Managers: React.FC = () => {
       {/* header */}
       <div className="flex justify-between items-center gap-4">
         <span className="flex flex-col justify-start">
-          <h2 className="text-2xl font-bold text-slate-500">Your Managers</h2>
-          <p className="text-slate-500">All Managers: {totaladmins}</p>
+          <h2 className="text-2xl font-bold text-white">Your Managers</h2>
+          <p className="text-white">All Managers: {totaladmins}</p>
         </span>
         <button
           onClick={() => setAddManager(true)}
@@ -203,7 +203,7 @@ const Managers: React.FC = () => {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-slate-200/20 border border-gray-200/10 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-slate-200/20 border border-gray-200/10 rounded-lg hover:bg-gray-50/10 disabled:opacity-50"
           >
             <BiRefresh
               size={16}
@@ -213,7 +213,7 @@ const Managers: React.FC = () => {
           </button>
           <div className="relative">
             <BiSearch
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
               size={18}
             />
             <input
@@ -223,7 +223,7 @@ const Managers: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setSearchTerm(e.target.value)
               }
-              className="pl-10 pr-4 py-2 border text-slate-400 border-gray-200/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
+              className="frm2"
             />
           </div>
           <select
@@ -231,7 +231,7 @@ const Managers: React.FC = () => {
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
               setDateFilter(e.target.value as DateFilter)
             }
-            className="px-4 py-2 border border-gray-200/10 text-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
+            className="px-4 py-2 border border-gray-200/10 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
           >
             <option value="all">All Time</option>
             <option value="today">Today</option>
@@ -245,14 +245,14 @@ const Managers: React.FC = () => {
       {/* Custom date range inputs */}
       {dateFilter === "custom" && (
         <div className="flex gap-4 items-center bg-slate-200/20 p-4 rounded-lg border border-gray-200/10">
-          <BiCalendar className="text-gray-400" size={18} />
+          <BiCalendar className="text-white" size={18} />
           <input
             type="date"
             value={customDateFrom}
             onChange={(e) => setCustomDateFrom(e.target.value)}
             className="px-3 py-2 border border-gray-200/10 text-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
-          <span className="text-gray-500">to</span>
+          <span className="text-white">to</span>
           <input
             type="date"
             value={customDateTo}
@@ -267,16 +267,16 @@ const Managers: React.FC = () => {
           <table className="w-full">
             <thead className="bg-slate-200/20 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                   Administrator
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                   Phone Number
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                   Join Date
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -304,21 +304,21 @@ const Managers: React.FC = () => {
                           </div>
                         )}
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-400">
+                          <div className="text-sm font-medium text-white">
                             {admin.name}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-white">
                             {admin.email}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-500 whitespace-nowrap">
+                    <td className="px-6 py-4 text-white whitespace-nowrap">
                       {admin.phoneNumber
                         ? `${admin.phoneNumber}`
                         : "Not provided"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                       {new Date(admin.joinDate ?? "").toLocaleDateString()}
                     </td>
 
@@ -351,10 +351,7 @@ const Managers: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="px-6 py-8 text-center text-gray-500"
-                  >
+                  <td colSpan={5} className="px-6 py-8 text-center text-white">
                     {searchTerm ||
                     statusFilter !== "all" ||
                     dateFilter !== "all"

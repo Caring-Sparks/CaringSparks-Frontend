@@ -78,16 +78,16 @@ const Overview = () => {
     <div className="space-y-8 mt-8 p-6">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="bg-slate-200/10 backdrop-blur-2xl rounded-xl shadow-sm border border-gray-200/10 p-6">
-          <h3 className="text-lg font-semibold text-gray-500 mb-4">
+          <h3 className="text-lg font-semibold text-white mb-4">
             Recent Activity
           </h3>
           {!recentActivity ? (
-            <div className="flex flex-col items-center justify-center text-gray-500">
+            <div className="flex flex-col items-center justify-center text-white">
               <div className="p-4 rounded-full bg-gray-100 mb-3">
-                <MdOutlineNotificationsPaused className="text-2xl text-gray-400" />
+                <MdOutlineNotificationsPaused className="text-2xl text-white" />
               </div>
               <p className="text-lg font-medium">No data yet</p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-white">
                 Try refreshing or check back later.
               </p>
             </div>
@@ -99,14 +99,14 @@ const Overview = () => {
                   <div className="flex items-center space-x-3 p-3 bg-slate-200/20 rounded-lg">
                     <BiUserCheck className="text-blue-600" size={20} />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-300">
+                      <p className="text-sm font-medium text-white">
                         New influencer joined!
                       </p>
-                      <p className="text-xs text-gray-300">
+                      <p className="text-xs text-white">
                         {newInfluencer.name} joined as an influencer
                       </p>
                     </div>
-                    <span className="text-xs text-gray-300">
+                    <span className="text-xs text-white">
                       {formatDate(newInfluencer.createdAt)}
                     </span>
                   </div>
@@ -119,15 +119,15 @@ const Overview = () => {
                   <div className="flex items-center space-x-3 mt-2 p-3 bg-slate-200/20 rounded-lg">
                     <FaDollarSign className="text-green-600" size={20} />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-300">
+                      <p className="text-sm font-medium text-white">
                         Campaign payment processed!
                       </p>
-                      <p className="text-xs text-gray-300">
+                      <p className="text-xs text-white">
                         ₦{newPayment.totalCost?.toLocaleString() || "0"} has
                         been paid for {newPayment.brandName}&apos;s campaign
                       </p>
                     </div>
-                    <span className="text-xs text-gray-300">
+                    <span className="text-xs text-white">
                       {formatDate(
                         newPayment.updatedAt || newPayment.createdAt || ""
                       )}
@@ -142,14 +142,14 @@ const Overview = () => {
                   <div className="flex items-center space-x-3 p-3 mt-2 bg-slate-200/20 rounded-lg">
                     <BiTrendingUp className="text-purple-600" size={20} />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-300">
+                      <p className="text-sm font-medium text-white">
                         New campaign created!
                       </p>
-                      <p className="text-xs text-gray-300">
+                      <p className="text-xs text-white">
                         {newCampaign.brandName} created a new campaign
                       </p>
                     </div>
-                    <span className="text-xs text-gray-300">
+                    <span className="text-xs text-white">
                       {formatDate(newCampaign.createdAt || "")}
                     </span>
                   </div>
@@ -160,24 +160,24 @@ const Overview = () => {
         </div>
 
         <div className="bg-slate-200/10 backdrop-blur-2xl rounded-xl shadow-sm border border-gray-200/10 p-6">
-          <h3 className="text-lg font-semibold text-gray-500 mb-4">
+          <h3 className="text-lg font-semibold text-white mb-4">
             Pending Approvals
           </h3>
           {pendingApprovals.length > 0 ? (
             <>
               {pendingApprovals.map((user, index) => (
                 <Link key={index} href="/admin/influencers">
-                  <div className="space-y-3" key={user._id}>
+                  <div className="gap-2" key={user._id}>
                     <div className="flex items-center justify-between p-3 bg-slate-200/20 rounded-lg">
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                           <Users size={16} className="text-yellow-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-300">
+                          <p className="text-sm font-medium text-white">
                             {user.name}
                           </p>
-                          <p className="text-xs text-gray-300 truncate max-w-[200px]">
+                          <p className="text-xs text-white truncate max-w-[200px]">
                             {user?.niches?.length ? user.niches.join(", ") : ""}
                           </p>
                         </div>
@@ -188,7 +188,7 @@ const Overview = () => {
               ))}
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center text-gray-500">
+            <div className="flex flex-col items-center justify-center text-white">
               <div className="p-4 rounded-full bg-gray-100 mb-3">
                 <MdOutlineNotificationsPaused className="text-2xl text-gray-400" />
               </div>

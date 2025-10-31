@@ -96,7 +96,7 @@ const SectionCard = ({
     transition={{ duration: 0.3 }}
     className="bg-slate-200/20 rounded-xl p-5 shadow-sm border border-gray-200/20"
   >
-    <h4 className="text-base font-semibold text-gray-500 mb-4">{title}</h4>
+    <h4 className="text-base font-semibold text-white mb-4">{title}</h4>
     <div className="space-y-3">{children}</div>
   </motion.div>
 );
@@ -238,13 +238,13 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
 
           {/* Header */}
           <div className="sticky top-0 bg-slate-200/20 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
-            <h3 className="text-xl font-bold text-gray-500">
+            <h3 className="text-xl font-bold text-white">
               Influencer Profile
             </h3>
             <button
               onClick={handleCloseModal}
               disabled={isLoading}
-              className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-white hover:text-gray-600 p-2 hover:bg-gray-100 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <BiX size={24} />
             </button>
@@ -516,8 +516,8 @@ const Info = ({
   raw?: boolean;
 }) => (
   <div>
-    <p className="text-sm font-medium text-gray-400">{label}</p>
-    <div className="mt-0.5 text-gray-500 text-sm font-semibold">
+    <p className="text-sm font-medium text-white">{label}</p>
+    <div className="mt-0.5 text-white text-sm font-semibold">
       {raw ? value : <span>{value}</span>}
     </div>
   </div>

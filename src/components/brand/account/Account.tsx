@@ -394,7 +394,7 @@ const Account: React.FC = () => {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-4xl mx-auto">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-gray-200 rounded w-1/4"></div>
@@ -414,7 +414,7 @@ const Account: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-center justify-center p-8 z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center p-8 z-50"
             onClick={() => setShowDeleteModal(false)}
           >
             <motion.div
@@ -423,13 +423,13 @@ const Account: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+              className="bg-slate-200/20 backdrop-blur-2xl rounded-xl shadow-2xl w-full max-w-sm p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-white mb-4">
                 Confirm Action
               </h2>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-white mb-6">
                 Are you sure you want to delete your account?
               </p>
               <div className="flex space-x-3">
@@ -455,10 +455,10 @@ const Account: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-400">
+            <h1 className="text-3xl font-bold text-white">
               Account Management
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-white mt-1">
               Manage your account settings and preferences
             </p>
           </div>
@@ -477,31 +477,31 @@ const Account: React.FC = () => {
                 <User className="text-yellow-600" size={24} />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-400">
+                <h2 className="text-xl font-semibold text-white">
                   {user?.brandName || "Brand Account"}
                 </h2>
-                <p className="text-gray-600">{user?.email}</p>
+                <p className="text-white">{user?.email}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-200/10">
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-400">
+                <div className="text-2xl font-bold text-white">
                   {totalCampaigns}
                 </div>
-                <div className="text-gray-400 text-sm">Total Campaigns</div>
+                <div className="text-white text-sm">Total Campaigns</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-400">
+                <div className="text-2xl font-bold text-white">
                   {paidCampaigns}
                 </div>
-                <div className="text-gray-400 text-sm">Paid Campaigns</div>
+                <div className="text-white text-sm">Paid Campaigns</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-400">
+                <div className="text-2xl font-bold text-white">
                   {formatCurrency(totalSpent)}
                 </div>
-                <div className="text-gray-400 text-sm">Total Spent</div>
+                <div className="text-white text-sm">Total Spent</div>
               </div>
             </div>
           </div>
@@ -537,7 +537,7 @@ const Account: React.FC = () => {
               {activeTab === "profile" && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-400">
+                    <h3 className="text-lg font-semibold text-white">
                       Profile Information
                     </h3>
                     <button
@@ -552,12 +552,12 @@ const Account: React.FC = () => {
                   <form onSubmit={handleProfileUpdate} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                        <label className="block text-sm font-medium text-white mb-2">
                           Brand Name
                         </label>
                         <div className="relative">
                           <BiBuilding
-                            className="absolute left-3 top-3 text-gray-400"
+                            className="absolute left-3 top-3 text-white"
                             size={18}
                           />
                           <input
@@ -572,7 +572,7 @@ const Account: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                        <label className="block text-sm font-medium text-white mb-2">
                           Role
                         </label>
                         <select
@@ -593,12 +593,12 @@ const Account: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                        <label className="block text-sm font-medium text-white mb-2">
                           Email Address
                         </label>
                         <div className="relative">
                           <CgMail
-                            className="absolute left-3 top-3 text-gray-400"
+                            className="absolute left-3 top-3 text-white"
                             size={18}
                           />
                           <input
@@ -613,12 +613,12 @@ const Account: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                        <label className="block text-sm font-medium text-white mb-2">
                           Phone Number
                         </label>
                         <div className="relative">
                           <Phone
-                            className="absolute left-3 top-3 text-gray-400"
+                            className="absolute left-3 top-3 text-white"
                             size={18}
                           />
                           <input
@@ -646,7 +646,7 @@ const Account: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setIsEditing(false)}
-                          className="px-6 py-2 border border-slate-200/10 rounded-lg text-gray-400 hover:bg-gray-50/10 font-medium transition-colors"
+                          className="px-6 py-2 border border-slate-200/10 rounded-lg text-white hover:bg-gray-50/10 font-medium transition-colors"
                         >
                           Cancel
                         </button>
@@ -659,13 +659,13 @@ const Account: React.FC = () => {
               {/* Security Tab */}
               {activeTab === "security" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-400">
+                  <h3 className="text-lg font-semibold text-white">
                     Security Settings
                   </h3>
 
                   <form onSubmit={handlePasswordChange} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-white mb-2">
                         Current Password
                       </label>
                       <div className="relative">
@@ -682,7 +682,7 @@ const Account: React.FC = () => {
                           onClick={() =>
                             setShowCurrentPassword(!showCurrentPassword)
                           }
-                          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3 top-3 text-white hover:text-white"
                         >
                           {showCurrentPassword ? (
                             <EyeSlash size={18} />
@@ -694,7 +694,7 @@ const Account: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-white mb-2">
                         New Password
                       </label>
                       <div className="relative">
@@ -709,7 +709,7 @@ const Account: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setShowNewPassword(!showNewPassword)}
-                          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3 top-3 text-white hover:text-white"
                         >
                           {showNewPassword ? (
                             <EyeSlash size={18} />
@@ -721,7 +721,7 @@ const Account: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-white mb-2">
                         Confirm New Password
                       </label>
                       <input
@@ -795,7 +795,7 @@ const Account: React.FC = () => {
                           <div className="font-medium text-gray-900">
                             {label}
                           </div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-white">
                             {description}
                           </div>
                         </div>
@@ -832,12 +832,12 @@ const Account: React.FC = () => {
               {/* Billing Tab */}
               {activeTab === "billing" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-400">
+                  <h3 className="text-lg font-semibold text-white">
                     Billing & Account
                   </h3>
 
                   <div className="bg-slate-200/10 border border-slate-200/10 rounded-lg p-6">
-                    <h4 className="font-medium text-gray-400 mb-4">
+                    <h4 className="font-medium text-white mb-4">
                       Account Statistics
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

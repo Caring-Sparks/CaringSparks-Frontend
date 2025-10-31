@@ -207,7 +207,7 @@ const PhoneNumberInput: React.FC<{
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+      <label className="text-sm font-medium text-white flex items-center gap-2">
         <Icon className="w-4 h-4" />
         {placeholder} *
       </label>
@@ -537,7 +537,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                     <button
                       type="button"
                       onClick={onBack}
-                      className="flex items-center gap-2 px-4 py-2 bg-slate-200/20 border border-slate-200/10 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-slate-200/20 border border-slate-200/10 text-white rounded-lg hover:bg-gray-50/10 transition-colors"
                     >
                       <ArrowLeft /> Back
                     </button>
@@ -548,16 +548,16 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                     <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                       <Star className="w-6 h-6 text-yellow-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-500 mb-2">
+                    <h2 className="text-2xl font-bold text-white mb-2">
                       Join as an Influencer
                     </h2>
-                    <p className="text-gray-500 mb-4">
+                    <p className="text-white mb-4">
                       Get a side income and feel good promoting startups
                     </p>
 
                     {/* Progress Bar */}
                     <div className="space-y-2">
-                      <div className="flex justify-between text-sm text-gray-600">
+                      <div className="flex justify-between text-sm text-white">
                         <span>Profile Completion</span>
                         <span>{Math.round(progress)}%</span>
                       </div>
@@ -574,11 +574,11 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                     <Form className="space-y-8">
                       {/* Social Media Accounts Selection */}
                       <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-500 flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                           <Camera className="w-5 h-5" />
                           Social Media Accounts
                         </h3>
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-white text-sm">
                           Which social media accounts do you have?
                         </p>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -590,7 +590,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-all ${
                                 selectedPlatforms.includes(key)
                                   ? "bg-yellow-50 border-yellow-400 text-yellow-700"
-                                  : "bg-slate-200/20 border-slate-200/10 text-gray-500 hover:bg-gray-50/10"
+                                  : "bg-slate-200/20 border-slate-200/10 text-white hover:bg-gray-50/10"
                               }`}
                             >
                               <Icon className="w-8 h-8 mb-2" />
@@ -615,13 +615,13 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             key={platformKey}
                             className="border border-gray-200 rounded-lg p-6 space-y-4"
                           >
-                            <h4 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                            <h4 className="text-base font-semibold text-white flex items-center gap-2">
                               <Icon className="w-5 h-5" />
                               {platform.name} Account Details
                             </h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-500">
+                                <label className="text-sm font-medium text-white">
                                   {getFollowersLabel(platformKey)}
                                 </label>
                                 <Field
@@ -638,7 +638,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                 />
                               </div>
                               <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-500">
+                                <label className="text-sm font-medium text-white">
                                   Account URL *
                                 </label>
                                 <Field
@@ -655,7 +655,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               </div>
                             </div>
                             <div className="space-y-2">
-                              <label className="text-sm font-medium text-gray-500">
+                              <label className="text-sm font-medium text-white">
                                 {platformKey === "discord"
                                   ? "Last 30 days message interactions *"
                                   : "Last 30 days impressions *"}
@@ -678,7 +678,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               />
                             </div>
                             <div className="space-y-2">
-                              <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                              <label className="text-sm font-medium text-white flex items-center gap-2">
                                 <Upload className="w-4 h-4" />
                                 {platformKey === "discord"
                                   ? "Proof of last 30 days message interactions *"
@@ -702,10 +702,10 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                   className="cursor-pointer"
                                 >
                                   <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                                  <p className="text-sm text-gray-600">
+                                  <p className="text-sm text-white">
                                     Click to upload or drag and drop
                                   </p>
-                                  <p className="text-xs text-gray-500 mt-1">
+                                  <p className="text-xs text-white mt-1">
                                     PNG, JPG or PDF (max 10MB)
                                   </p>
                                 </label>
@@ -733,7 +733,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                       {/* Content Niche */}
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-500 flex items-center gap-2">
+                        <label className="text-sm font-semibold text-white flex items-center gap-2">
                           <FileText className="w-4 h-4 text-slate-500" />I post
                           content about:
                         </label>
@@ -763,7 +763,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                           ))}
                         </Field>
 
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-white">
                           Hold{" "}
                           <kbd className="px-1 py-0.5 bg-slate-200/20 border border-slate-200/10 rounded">
                             Ctrl
@@ -784,7 +784,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                       {/* Location */}
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                        <label className="text-sm font-medium text-white flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
                           My location: *
                         </label>
@@ -807,13 +807,13 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                       {/* Audience Demographics */}
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-500 flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                           <Users className="w-5 h-5" />
                           Audience Demographics
                         </h3>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-500">
+                          <label className="text-sm font-medium text-white">
                             Most of my audience are in:
                           </label>
                           <Field
@@ -826,12 +826,12 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         </div>
 
                         <div className="space-y-3">
-                          <label className="text-sm font-medium text-gray-500">
+                          <label className="text-sm font-medium text-white">
                             My gender audience for last 30 days:
                           </label>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <label className="text-sm text-gray-600">
+                              <label className="text-sm text-white">
                                 Male %
                               </label>
                               <Field
@@ -844,7 +844,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               />
                             </div>
                             <div className="space-y-2">
-                              <label className="text-sm text-gray-600">
+                              <label className="text-sm text-white">
                                 Female %
                               </label>
                               <Field
@@ -860,7 +860,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                          <label className="text-sm font-medium text-white flex items-center gap-2">
                             <Upload className="w-4 h-4" />
                             Upload proof of audience data
                           </label>
@@ -882,10 +882,10 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               className="cursor-pointer"
                             >
                               <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-white">
                                 Click to upload or drag and drop
                               </p>
-                              <p className="text-xs text-gray-500 mt-1">
+                              <p className="text-xs text-white mt-1">
                                 PNG, JPG or PDF (max 10MB)
                               </p>
                             </label>
@@ -900,14 +900,14 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                       {/* Contact Information */}
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-500 flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                           <User className="w-5 h-5" />
                           Contact Information
                         </h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-500">
+                            <label className="text-sm font-medium text-white">
                               Full name *
                             </label>
                             <Field
@@ -928,7 +928,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                            <label className="text-sm font-medium text-white flex items-center gap-2">
                               <Envelope className="w-4 h-4" />
                               Email address *
                             </label>

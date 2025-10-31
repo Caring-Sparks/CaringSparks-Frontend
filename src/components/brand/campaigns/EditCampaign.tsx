@@ -242,7 +242,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
           onClick={onBack}
         >
           <motion.div
-            className="relative w-[90%] lg:w-[80%] max-h-[90vh] no-scrollbar overflow-y-auto mx-auto bg-black rounded-xl shadow-lg border border-gray-200/10"
+            className="relative w-[90%] lg:w-[70%] max-h-[90vh] no-scrollbar overflow-y-auto mx-auto bg-black rounded-xl shadow-lg border border-gray-200/10"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
@@ -263,7 +263,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                   <button
                     type="button"
                     onClick={onBack}
-                    className="px-4 flex items-center gap-2 py-2 border border-gray-200/10 text-gray-400 bg-slate-200/20 rounded-lg hover:bg-gray-50/10 transition-colors"
+                    className="px-4 flex items-center gap-2 py-2 border border-gray-200/10 text-white bg-slate-200/20 rounded-lg hover:bg-gray-50/10 transition-colors"
                   >
                     <ArrowLeft /> Back
                   </button>
@@ -274,11 +274,11 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                   <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                     <Buildings className="w-6 h-6 text-yellow-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-400 mb-2">
+                  <h2 className="text-2xl font-bold text-white mb-2">
                     Edit Campaign
                   </h2>
-                  <p className="text-gray-600">Update your campaign details</p>
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-white">Update your campaign details</p>
+                  <p className="text-sm text-white mt-2">
                     Campaign: {campaignData.brandName}
                   </p>
                 </div>
@@ -294,7 +294,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                       <Form className="space-y-6">
                         {/* Role Selection */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                          <label className="text-sm font-medium text-white flex items-center gap-2">
                             <User className="w-4 h-4" />I am a:
                           </label>
                           <Field
@@ -322,7 +322,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
 
                         {/* Platform Selection */}
                         <div className="space-y-3">
-                          <label className="text-sm font-medium text-gray-400">
+                          <label className="text-sm font-medium text-white">
                             I want to advertise & promote my brand on:
                           </label>
                           <div className="mt-2 flex items-center gap-4 flex-wrap">
@@ -351,7 +351,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                                   }}
                                   className="w-4 h-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
                                 />
-                                <span className="text-sm text-gray-400">
+                                <span className="text-sm text-white">
                                   {platform}
                                 </span>
                               </label>
@@ -366,13 +366,13 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
 
                         {/* Number of Influencers */}
                         <div className="space-y-3">
-                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                          <label className="text-sm font-medium text-white flex items-center gap-2">
                             <Users className="w-4 h-4" />
                             Number of influencers needed:
                           </label>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-sm text-gray-600 mb-1">
+                              <label className="block text-sm text-white mb-1">
                                 Minimum
                               </label>
                               <Field name="influencersMin">
@@ -406,7 +406,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                               />
                             </div>
                             <div>
-                              <label className="block text-sm text-gray-600 mb-1">
+                              <label className="block text-sm text-white mb-1">
                                 Maximum
                               </label>
                               <Field name="influencersMax">
@@ -444,7 +444,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
 
                         {/* Followers Range */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-400">
+                          <label className="text-sm font-medium text-white">
                             Preferred followers range:
                           </label>
                           <Field
@@ -463,7 +463,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
 
                         {/* Location */}
                         <div className="space-y-3">
-                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                          <label className="text-sm font-medium text-white flex items-center gap-2">
                             <MapPin className="w-4 h-4" />
                             Target location:
                           </label>
@@ -551,7 +551,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
 
                         {/* Posting Frequency */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                          <label className="text-sm font-medium text-white flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
                             Posting frequency:
                           </label>
@@ -573,7 +573,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
 
                         {/* Post Duration */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                          <label className="text-sm font-medium text-white flex items-center gap-2">
                             <Clock className="w-4 h-4" />
                             Post stays on page for:
                           </label>
@@ -593,16 +593,16 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
 
                         {/* Brand Information - Read Only */}
                         <div className="space-y-4 pt-4 border-t border-gray-200">
-                          <h3 className="text-lg font-semibold text-gray-400">
+                          <h3 className="text-lg font-semibold text-white">
                             Brand Information
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-white">
                             Brand information cannot be changed during campaign
                             editing.
                           </p>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-400">
+                            <label className="text-sm font-medium text-white">
                               Brand name
                             </label>
                             <Field
@@ -614,7 +614,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                            <label className="text-sm font-medium text-white flex items-center gap-2">
                               <Phone className="w-4 h-4" />
                               Brand phone number
                             </label>

@@ -52,7 +52,7 @@ const BrandLayout: React.FC<BrandLayoutProps> = ({ children }) => {
     return (
       <div className="flex justify-center flex-col items-center h-screen bg-black">
         <div className="animate-spin rounded-full h-16 w-16 border-4 border-yellow-500 border-t-transparent"></div>
-        <p className="mt-4 text-gray-400 text-lg">Loading Brand data...</p>
+        <p className="mt-4 text-white text-lg">Loading Brand data...</p>
       </div>
     );
   }
@@ -63,10 +63,10 @@ const BrandLayout: React.FC<BrandLayoutProps> = ({ children }) => {
       <div className="flex justify-center flex-col items-center h-screen bg-black">
         <div className="text-center">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-400 mb-2">
+          <h2 className="text-2xl font-bold text-white mb-2">
             Failed to Load Brand Data
           </h2>
-          <p className="text-gray-400 mb-4">{userError}</p>
+          <p className="text-white mb-4">{userError}</p>
           <button
             onClick={() => router.push("/")}
             className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-700 transition-colors"

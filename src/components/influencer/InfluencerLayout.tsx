@@ -147,7 +147,7 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = ({ children }) => {
       <div className="flex justify-center flex-col items-center h-screen bg-black">
         <div className="text-center">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="text-2xl font-bold text-white mb-2">
             Failed to Load Influencer Data
           </h2>
           <p className="text-gray-600 mb-4">{userError}</p>

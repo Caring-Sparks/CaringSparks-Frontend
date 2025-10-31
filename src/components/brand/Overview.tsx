@@ -184,7 +184,7 @@ const Overview: React.FC = () => {
       <div className="flex items-center justify-center min-h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-yellow-500 border-t-transparent mx-auto mb-4"></div>
-          <div className="text-lg text-gray-400">Loading brand data...</div>
+          <div className="text-lg text-white">Loading brand data...</div>
         </div>
       </div>
     );
@@ -224,10 +224,10 @@ const Overview: React.FC = () => {
       {/* Header with user info and refresh */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-500">
+          <h1 className="text-2xl font-bold text-white">
             Welcome back{safeUser?.brandName ? `, ${safeUser.brandName}` : ""}!
           </h1>
-          <p className="text-gray-500">
+          <p className="text-white">
             Here&apos;s what&apos;s happening with your campaigns
           </p>
         </div>
@@ -245,12 +245,8 @@ const Overview: React.FC = () => {
         <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-400">
-                Total Campaigns
-              </p>
-              <p className="text-2xl font-bold text-gray-400">
-                {totalCampaigns}
-              </p>
+              <p className="text-sm font-medium text-white">Total Campaigns</p>
+              <p className="text-2xl font-bold text-white">{totalCampaigns}</p>
             </div>
             <div className="p-3 bg-blue-100 rounded-full">
               <Briefcase size={24} className="text-blue-600" />
@@ -261,12 +257,8 @@ const Overview: React.FC = () => {
         <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-400">
-                Paid Campaigns
-              </p>
-              <p className="text-2xl font-bold text-gray-400">
-                {paidCampaigns}
-              </p>
+              <p className="text-sm font-medium text-white">Paid Campaigns</p>
+              <p className="text-2xl font-bold text-white">{paidCampaigns}</p>
             </div>
             <div className="p-3 bg-green-100 rounded-full">
               <GiCheckMark size={24} className="text-green-600" />
@@ -277,12 +269,8 @@ const Overview: React.FC = () => {
         <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-400">
-                Pending Payment
-              </p>
-              <p className="text-2xl font-bold text-gray-400">
-                {unpaidCampaigns}
-              </p>
+              <p className="text-sm font-medium text-white">Pending Payment</p>
+              <p className="text-2xl font-bold text-white">{unpaidCampaigns}</p>
             </div>
             <div className="p-3 bg-yellow-100 rounded-full">
               <Clock size={24} className="text-yellow-600" />
@@ -293,8 +281,8 @@ const Overview: React.FC = () => {
         <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-400">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-400">
+              <p className="text-sm font-medium text-white">Total Spent</p>
+              <p className="text-2xl font-bold text-white">
                 {formatCurrency(totalSpent)}
               </p>
             </div>
@@ -309,7 +297,7 @@ const Overview: React.FC = () => {
         {/* Recent Activity */}
         <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-400">
+            <h3 className="text-lg font-semibold text-white">
               Recent Activity
             </h3>
             <Link
@@ -321,17 +309,17 @@ const Overview: React.FC = () => {
           </div>
 
           {!recentCampaign && recentPayments.length === 0 ? (
-            <div className="flex flex-col items-center justify-center text-gray-500 py-12">
+            <div className="flex flex-col items-center justify-center text-white py-12">
               <div className="p-4 rounded-full bg-gradient-to-br from-yellow-100/20 to-yellow-100/20 mb-4">
                 <div className="flex items-center space-x-2">
                   <MdOutlineNotificationsPaused className="text-2xl text-yellow-500" />
                   <FaNairaSign className="text-xl text-yellow-500" />
                 </div>
               </div>
-              <p className="text-lg font-medium text-gray-500 mb-2">
+              <p className="text-lg font-medium text-white mb-2">
                 Get Started with Your First Campaign
               </p>
-              <p className="text-sm text-gray-500 text-center max-w-sm mb-6">
+              <p className="text-sm text-white text-center max-w-sm mb-6">
                 Create campaigns, connect with influencers, and track your
                 payments all in one place.
               </p>
@@ -347,10 +335,10 @@ const Overview: React.FC = () => {
                 <div className="flex items-center space-x-3 p-4 bg-blue-50/10 rounded-lg border border-blue-200/10">
                   <Briefcase className="text-yellow-500" size={24} />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-400">
+                    <p className="text-sm font-medium text-white">
                       Latest Campaign
                     </p>
-                    <p className="text-lg font-semibold text-gray-400">
+                    <p className="text-lg font-semibold text-white">
                       {recentCampaign.brandName}
                     </p>
                     <div className="flex items-center space-x-4 mt-2">
@@ -369,10 +357,10 @@ const Overview: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-gray-400">
+                    <p className="text-sm font-medium text-white">
                       {formatCurrency(recentCampaign.totalCost || 0)}
                     </p>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-white">
                       {formatDate(recentCampaign.createdAt)}
                     </span>
                   </div>
@@ -383,17 +371,17 @@ const Overview: React.FC = () => {
         </div>
 
         <div className="bg-slate-200/20 rounded-xl shadow-sm border border-gray-200/10 p-6">
-          <h3 className="text-lg font-semibold text-gray-400 mb-4">
+          <h3 className="text-lg font-semibold text-white mb-4">
             Campaign Analytics
           </h3>
 
           {totalCampaigns === 0 ? (
-            <div className="flex flex-col items-center justify-center text-gray-500 py-8">
+            <div className="flex flex-col items-center justify-center text-white py-8">
               <div className="p-4 rounded-full bg-gray-100 mb-3">
-                <BiChart className="text-2xl text-gray-400" />
+                <BiChart className="text-2xl text-white" />
               </div>
               <p className="text-lg font-medium">No data available</p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-white">
                 Analytics will appear after creating campaigns.
               </p>
             </div>
@@ -402,11 +390,11 @@ const Overview: React.FC = () => {
               <div className="flex items-center justify-between p-3 bg-slate-200/20 border border-slate-200/10 rounded-lg">
                 <div className="flex items-center space-x-3">
                   <BiTrendingUp className="text-green-600" size={20} />
-                  <span className="text-sm font-medium text-gray-400">
+                  <span className="text-sm font-medium text-white">
                     Average Campaign Cost
                   </span>
                 </div>
-                <span className="text-lg font-semibold text-gray-400">
+                <span className="text-lg font-semibold text-white">
                   {formatCurrency(averageCampaignCost)}
                 </span>
               </div>
@@ -414,11 +402,11 @@ const Overview: React.FC = () => {
               <div className="flex items-center justify-between p-3 bg-slate-200/20 border border-slate-200/10 rounded-lg">
                 <div className="flex items-center space-x-3">
                   <Users className="text-yellow-500" size={20} />
-                  <span className="text-sm font-medium text-gray-400">
+                  <span className="text-sm font-medium text-white">
                     Approved Campaigns
                   </span>
                 </div>
-                <span className="text-lg font-semibold text-gray-400">
+                <span className="text-lg font-semibold text-white">
                   {validatedCampaigns}
                 </span>
               </div>
@@ -426,11 +414,11 @@ const Overview: React.FC = () => {
               <div className="flex items-center justify-between p-3 bg-slate-200/20 border-slate-200/10 border rounded-lg">
                 <div className="flex items-center space-x-3">
                   <BiCalendar className="text-indigo-700" size={20} />
-                  <span className="text-sm font-medium text-gray-400">
+                  <span className="text-sm font-medium text-white">
                     Payment Success Rate
                   </span>
                 </div>
-                <span className="text-lg font-semibold text-gray-400">
+                <span className="text-lg font-semibold text-white">
                   {totalCampaigns > 0
                     ? Math.round((paidCampaigns / totalCampaigns) * 100)
                     : 0}

@@ -177,7 +177,7 @@ const PhoneNumberInput = ({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+      <label className="text-sm font-medium text-white flex items-center gap-2">
         <Phone className="w-4 h-4" />
         Brand phone number (Preferably WhatsApp)*
       </label>
@@ -186,7 +186,7 @@ const PhoneNumberInput = ({
         <select
           value={selectedCountryCode}
           onChange={handleCountryChange}
-          className="px-3 py-2 bg-slate-200/20 rounded-l-xl border border-r-0 border-slate-200/10 text-gray-500 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+          className="px-3 py-2 bg-slate-200/20 rounded-l-xl border border-r-0 border-slate-200/10 text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
           style={{ minWidth: "140px" }}
         >
           {countryCodes.map((country) => (
@@ -203,7 +203,7 @@ const PhoneNumberInput = ({
             value={formattedDisplay}
             onChange={handlePhoneChange}
             onBlur={handleBlur}
-            className={`w-full px-3 py-2 bg-slate-200/20 rounded-r-xl border border-slate-200/10 border-l-1 text-gray-500 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all ${
+            className={`w-full px-3 py-2 bg-slate-200/20 rounded-r-xl border border-slate-200/10 border-l-1 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all ${
               (isTouched || touched.brandPhone) && !isValid && localNumber
                 ? "border-red-500 focus:ring-red-500"
                 : (isTouched || touched.brandPhone) && isValid
@@ -321,7 +321,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
               <button
                 type="button"
                 onClick={onBack}
-                className="px-4 flex items-center gap-2 py-2 border bg-slate-200/20 border-slate-200/10 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 flex items-center gap-2 py-2 border bg-slate-200/20 border-slate-200/10 text-white rounded-lg hover:bg-gray-50/10 transition-colors"
               >
                 <ArrowLeft /> Back
               </button>
@@ -332,10 +332,10 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
               <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                 <Buildings className="w-6 h-6 text-yellow-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-500 mb-2">
+              <h2 className="text-2xl font-bold text-white mb-2">
                 Brand Registration
               </h2>
-              <p className="text-gray-500">
+              <p className="text-white">
                 Connect with influencers and grow your brand reach
               </p>
             </div>
@@ -379,7 +379,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                   <Form className="space-y-6">
                     {/* Role Selection */}
                     <div className="space-y-2 ">
-                      <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                      <label className="text-sm font-medium text-white flex items-center gap-2">
                         <User className="w-4 h-4" />I am a:
                       </label>
                       <Field
@@ -407,7 +407,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
 
                     {/* Platform Selection */}
                     <div className="space-y-3">
-                      <label className="text-sm font-medium text-gray-500">
+                      <label className="text-sm font-medium text-white">
                         I want to advertise & promote my brand on:
                       </label>
                       <div className="mt-2 flex flex-wrap items-center gap-4">
@@ -436,7 +436,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                               }}
                               className="w-4 h-4 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-yellow-500"
                             />
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-white">
                               {platform}
                             </span>
                           </label>
@@ -450,13 +450,13 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                     </div>
 
                     <div className="space-y-3">
-                      <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                      <label className="text-sm font-medium text-white flex items-center gap-2">
                         <Users className="w-4 h-4" />
                         Number of influencers needed:
                       </label>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="text-gray-500">Minimum</label>
+                          <label className="text-white">Minimum</label>
                           <Field
                             name="influencersMin"
                             type="number"
@@ -466,7 +466,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                           />
                         </div>
                         <div>
-                          <label className="text-gray-500">Maximum</label>
+                          <label className="text-white">Maximum</label>
                           <Field
                             name="influencersMax"
                             type="number"
@@ -480,7 +480,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
 
                     {/* Followers Range */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-500">
+                      <label className="text-sm font-medium text-white">
                         Preferred followers range:
                       </label>
                       <Field as="select" name="followersRange" className="frm">
@@ -495,7 +495,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
 
                     {/* Location */}
                     <div className="space-y-3">
-                      <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                      <label className="text-sm font-medium text-white flex items-center gap-2">
                         <MapPin className="w-4 h-4" />
                         Target location:
                       </label>
@@ -576,7 +576,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
 
                     {/* Posting Frequency */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                      <label className="text-sm font-medium text-white flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         Posting frequency:
                       </label>
@@ -601,7 +601,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                       {/* Custom Frequency Options */}
                       {customFrequency && (
                         <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
-                          <h4 className="text-sm font-medium text-gray-500 mb-3">
+                          <h4 className="text-sm font-medium text-white mb-3">
                             Customize your posting schedule:
                           </h4>
                           <div className="grid grid-cols-2 gap-4">
@@ -707,7 +707,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
 
                     {/* Post Duration */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                      <label className="text-sm font-medium text-white flex items-center gap-2">
                         <Clock className="w-4 h-4" />
                         Post stays on page for:
                       </label>
@@ -723,12 +723,12 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
 
                     {/* Brand Information */}
                     <div className="space-y-4 pt-4 border-t border-gray-200">
-                      <h3 className="text-lg font-semibold text-gray-500">
+                      <h3 className="text-lg font-semibold text-white">
                         Brand Information
                       </h3>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-500">
+                        <label className="text-sm font-medium text-white">
                           Brand name *
                         </label>
                         <Field
@@ -749,7 +749,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                        <label className="text-sm font-medium text-white flex items-center gap-2">
                           <Envelope className="w-4 h-4" />
                           Brand email *
                         </label>

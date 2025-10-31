@@ -145,7 +145,7 @@ const Stats = () => {
   return (
     <div className="space-y-6 p-6">
       <span className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-500">Dashboard Overview</h2>
+        <h2 className="text-2xl font-bold text-white">Dashboard Overview</h2>
         <button
           onClick={handleRefresh}
           disabled={loading}
@@ -154,7 +154,7 @@ const Stats = () => {
         >
           <IoReload
             className={`text-xl ${
-              loading ? "animate-spin text-yellow-500" : "text-gray-500"
+              loading ? "animate-spin text-yellow-500" : "text-white"
             }`}
           />
         </button>
