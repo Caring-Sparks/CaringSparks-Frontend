@@ -94,6 +94,10 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
               </p>
               <p>• You&apos;ll receive influencer profiles for approval</p>
               <p>• Campaign launch after final confirmation and payment</p>
+              <p>
+                • Be sure to <b>check your spam</b> folder just incase the mail does not
+                show up in your inbox
+              </p>
             </div>
           ) : (
             <div className="space-y-2 text-yellow-800">
@@ -108,6 +112,10 @@ const CampaignSummary: React.FC<CampaignSummaryProps> = ({
               <p>• You&apos;ll receive an email confirmation once approved</p>
               <p>
                 • Start receiving campaign opportunities that match your profile
+              </p>
+              <p>
+                • Be sure to <b>check your spam</b> folder just incase the mail does not
+                show up in your inbox
               </p>
             </div>
           )}

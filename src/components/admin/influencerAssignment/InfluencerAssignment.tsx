@@ -15,13 +15,13 @@ import {
   FaFilter,
   FaSearch,
   FaCheck,
-  FaTimes,
   FaDiscord,
 } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/utils/ToastNotification";
 import Image from "next/image";
 import { BsThreads } from "react-icons/bs";
+import { Country, State, City } from "country-state-city";
 
 interface SocialMediaAccount {
   platform: string;
@@ -58,14 +58,6 @@ interface AssignedInfluencer {
   respondedAt?: Date;
   isCompleted: boolean;
   completedAt?: Date;
-  submittedJobs: Array<{
-    description: string;
-    imageUrl: string;
-    submittedAt: Date;
-    isApproved?: boolean;
-    approvedAt?: Date;
-    rejectionReason?: string;
-  }>;
 }
 
 interface Campaign {
@@ -78,7 +70,7 @@ interface Campaign {
   followersRange?: string;
   influencersMin: number;
   influencersMax: number;
-  assignedInfluencers?: AssignedInfluencer[]; // Updated type
+  assignedInfluencers?: AssignedInfluencer[];
 }
 
 const InfluencerAssignment: React.FC = () => {
@@ -87,7 +79,6 @@ const InfluencerAssignment: React.FC = () => {
   const campaignId = searchParams.get("campaignId");
   const { showToast } = useToast();
 
-  // Using the store
   const {
     campaigns,
     influencers,
@@ -110,9 +101,12 @@ const InfluencerAssignment: React.FC = () => {
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [platformFilter, setPlatformFilter] = useState("all");
-  const [locationFilter, setLocationFilter] = useState("");
+  const [locationCountry, setLocationCountry] = useState("");
+  const [locationState, setLocationState] = useState("");
+  const [locationCity, setLocationCity] = useState("");
+  const [locationStates, setLocationStates] = useState<any[]>([]);
+  const [locationCities, setLocationCities] = useState<any[]>([]);
   const [followersFilter, setFollowersFilter] = useState("all");
-  const [dateJoinedFilter, setDateJoinedFilter] = useState("all");
   const [nicheFilter, setNicheFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -127,6 +121,36 @@ const InfluencerAssignment: React.FC = () => {
     "Discord",
     "Snapchat",
   ];
+
+  const countries = Country.getAllCountries();
+
+  // Location filter handlers
+  const handleLocationCountryChange = (countryCode: string) => {
+    setLocationCountry(countryCode);
+    setLocationState("");
+    setLocationCity("");
+
+    if (countryCode) {
+      const countryStates = State.getStatesOfCountry(countryCode);
+      setLocationStates(countryStates);
+      setLocationCities([]);
+    } else {
+      setLocationStates([]);
+      setLocationCities([]);
+    }
+  };
+
+  const handleLocationStateChange = (stateCode: string) => {
+    setLocationState(stateCode);
+    setLocationCity("");
+
+    if (stateCode && locationCountry) {
+      const stateCities = City.getCitiesOfState(locationCountry, stateCode);
+      setLocationCities(stateCities);
+    } else {
+      setLocationCities([]);
+    }
+  };
 
   const getAuthToken = () => {
     if (typeof window !== "undefined") {
@@ -157,7 +181,7 @@ const InfluencerAssignment: React.FC = () => {
         if (typeof item === "string") {
           return item;
         }
-        return item.influencerId?._id || item._id;
+        return item.influencerId?._id || item.influencerId || item._id;
       })
       .filter(Boolean);
   };
@@ -169,14 +193,13 @@ const InfluencerAssignment: React.FC = () => {
       }
 
       if (!campaignId) {
-        router.push("admin/campaigns");
+        router.push("/admin/campaigns");
         return;
       }
 
       const foundCampaign = campaigns.find((c) => c._id === campaignId);
       if (foundCampaign) {
         setCampaign(foundCampaign);
-
         const assignedIds = getAssignedInfluencerIds(
           foundCampaign.assignedInfluencers
         );
@@ -214,9 +237,7 @@ const InfluencerAssignment: React.FC = () => {
     }
 
     const convertedInfluencers: Influencer[] = influencers
-      .filter((inf) => {
-        return inf.status === "approved";
-      })
+      .filter((inf) => inf.status === "approved")
       .map((inf) => {
         const parseFollowers = (
           followers: string | number | undefined | null
@@ -243,7 +264,6 @@ const InfluencerAssignment: React.FC = () => {
           (sum, count) => sum + count,
           0
         );
-
         const socialMediaAccounts: SocialMediaAccount[] = [];
 
         const addPlatform = (platformName: string, platformData: any) => {
@@ -295,7 +315,6 @@ const InfluencerAssignment: React.FC = () => {
         };
       });
 
-    // Apply filters
     let filtered = convertedInfluencers.filter((influencer) => {
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch =
@@ -313,11 +332,29 @@ const InfluencerAssignment: React.FC = () => {
             account.platform.toLowerCase() === platformFilter.toLowerCase()
         );
 
-      const matchesLocation =
-        !locationFilter ||
-        influencer.location
+      // Location filter with dropdowns
+      let matchesLocation = true;
+      if (locationCountry) {
+        const country = countries.find((c) => c.isoCode === locationCountry);
+        if (country) {
+          matchesLocation = influencer.location
+            .toLowerCase()
+            .includes(country.name.toLowerCase());
+        }
+      }
+      if (locationState && matchesLocation) {
+        const state = locationStates.find((s) => s.isoCode === locationState);
+        if (state) {
+          matchesLocation = influencer.location
+            .toLowerCase()
+            .includes(state.name.toLowerCase());
+        }
+      }
+      if (locationCity && matchesLocation) {
+        matchesLocation = influencer.location
           .toLowerCase()
-          .includes(locationFilter.toLowerCase());
+          .includes(locationCity.toLowerCase());
+      }
 
       // Followers filter
       let matchesFollowers = true;
@@ -345,16 +382,6 @@ const InfluencerAssignment: React.FC = () => {
         }
       }
 
-      // Date joined filter
-      let matchesDateJoined = true;
-      if (dateJoinedFilter !== "all") {
-        const joinedDate = new Date(influencer.joinedDate);
-        const now = new Date();
-        const monthsAgo = new Date();
-        monthsAgo.setMonth(now.getMonth() - parseInt(dateJoinedFilter));
-        matchesDateJoined = joinedDate >= monthsAgo;
-      }
-
       // Niche filter
       const matchesNiche =
         nicheFilter === "all" ||
@@ -367,7 +394,6 @@ const InfluencerAssignment: React.FC = () => {
         matchesPlatform &&
         matchesLocation &&
         matchesFollowers &&
-        matchesDateJoined &&
         matchesNiche &&
         influencer.isActive
       );
@@ -383,16 +409,20 @@ const InfluencerAssignment: React.FC = () => {
     influencers,
     searchTerm,
     platformFilter,
-    locationFilter,
+    locationCountry,
+    locationState,
+    locationCity,
     followersFilter,
-    dateJoinedFilter,
     nicheFilter,
+    countries,
+    locationStates,
   ]);
 
   const handleInfluencerSelect = (influencerId: string) => {
     const newSelected = new Set(selectedInfluencers);
 
     if (newSelected.has(influencerId)) {
+      // Allow deselection
       newSelected.delete(influencerId);
     } else {
       if (campaign && newSelected.size < campaign.influencersMax) {
@@ -412,22 +442,24 @@ const InfluencerAssignment: React.FC = () => {
   };
 
   const handleAssignInfluencers = async () => {
-    if (!campaignId || selectedInfluencers.size === 0) return;
+    if (!campaignId) return;
 
     const currentlyAssignedIds = getAssignedInfluencerIds(
       campaign?.assignedInfluencers
     );
-
-    const newInfluencerIds = Array.from(selectedInfluencers).filter(
+    const selectedArray = Array.from(selectedInfluencers);
+    const newInfluencerIds = selectedArray.filter(
       (id) => !currentlyAssignedIds.includes(id)
     );
+    const removedInfluencerIds = currentlyAssignedIds.filter(
+      (id) => !selectedArray.includes(id)
+    );
 
-    if (newInfluencerIds.length === 0) {
+    if (newInfluencerIds.length === 0 && removedInfluencerIds.length === 0) {
       showToast({
         type: "warning",
-        title: "No New Assignments",
-        message:
-          "All selected influencers are already assigned to this campaign.",
+        title: "No Changes",
+        message: "No changes detected in influencer assignments.",
         duration: 4000,
       });
       return;
@@ -438,7 +470,7 @@ const InfluencerAssignment: React.FC = () => {
       showToast({
         type: "error",
         title: "Authentication Error",
-        message: "Please log in to assign influencers.",
+        message: "Please log in to manage influencer assignments.",
         duration: 4000,
       });
       return;
@@ -446,45 +478,71 @@ const InfluencerAssignment: React.FC = () => {
 
     setAssignLoading(true);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/${campaignId}/assign`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            influencerIds: newInfluencerIds,
-          }),
+      // Handle additions
+      if (newInfluencerIds.length > 0) {
+        const addResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/${campaignId}/assign`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ influencerIds: newInfluencerIds }),
+          }
+        );
+
+        const addData = await addResponse.json();
+        if (!addResponse.ok) {
+          throw new Error(addData.message || "Failed to assign influencers");
         }
-      );
+      }
 
-      const data = await response.json();
+      // Handle removals
+      if (removedInfluencerIds.length > 0) {
+        const removeResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/${campaignId}/unassign`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ influencerIds: removedInfluencerIds }),
+          }
+        );
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to assign influencers");
+        const removeData = await removeResponse.json();
+        if (!removeResponse.ok) {
+          throw new Error(removeData.message || "Failed to remove influencers");
+        }
+      }
+
+      let message = "";
+      if (newInfluencerIds.length > 0 && removedInfluencerIds.length > 0) {
+        message = `${newInfluencerIds.length} influencer(s) assigned and ${removedInfluencerIds.length} removed.`;
+      } else if (newInfluencerIds.length > 0) {
+        message = `${newInfluencerIds.length} new influencer(s) assigned.`;
+      } else {
+        message = `${removedInfluencerIds.length} influencer(s) removed.`;
       }
 
       showToast({
         type: "success",
         title: "Success!",
-        message:
-          data.message ||
-          `${newInfluencerIds.length} new influencers have been assigned to the campaign.`,
+        message,
         duration: 6000,
       });
 
       await fetchData();
-
       router.push("/admin/campaigns");
     } catch (error: any) {
-      console.error("Error assigning influencers:", error);
+      console.error("Error managing influencer assignments:", error);
       showToast({
         type: "error",
-        title: "Assignment Failed",
+        title: "Operation Failed",
         message:
-          error.message || "Failed to assign influencers. Please try again.",
+          error.message || "Failed to update assignments. Please try again.",
         duration: 6000,
       });
     } finally {
@@ -531,20 +589,24 @@ const InfluencerAssignment: React.FC = () => {
     return [...new Set(niches)].sort();
   };
 
-  // Calculate assignment summary
   const getAssignmentSummary = () => {
     const currentlyAssignedIds = getAssignedInfluencerIds(
       campaign?.assignedInfluencers
     );
-    const newSelections = Array.from(selectedInfluencers).filter(
+    const selectedArray = Array.from(selectedInfluencers);
+    const newSelections = selectedArray.filter(
       (id) => !currentlyAssignedIds.includes(id)
+    );
+    const removedSelections = currentlyAssignedIds.filter(
+      (id) => !selectedArray.includes(id)
     );
 
     return {
       currentlyAssigned: currentlyAssignedIds.length,
       newSelections: newSelections.length,
+      removedSelections: removedSelections.length,
       totalSelected: selectedInfluencers.size,
-      totalAfterAssignment: currentlyAssignedIds.length + newSelections.length,
+      totalAfterAssignment: selectedArray.length,
     };
   };
 
@@ -585,16 +647,18 @@ const InfluencerAssignment: React.FC = () => {
   }
 
   const assignmentSummary = getAssignmentSummary();
+  const hasChanges =
+    assignmentSummary.newSelections > 0 ||
+    assignmentSummary.removedSelections > 0;
 
   return (
     <div className="min-h-screen bg-black p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <button
               onClick={() => router.push("/admin/campaigns")}
-              className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-200/20 rounded-lg transition-colors"
             >
               <FaArrowLeft className="w-5 h-5 text-white" />
             </button>
@@ -609,7 +673,6 @@ const InfluencerAssignment: React.FC = () => {
             </div>
           </div>
 
-          {/* Campaign Info */}
           <div className="bg-slate-200/20 border-slate-200/10 rounded-lg p-6 shadow-sm mb-6">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
               <div>
@@ -639,29 +702,27 @@ const InfluencerAssignment: React.FC = () => {
                 </div>
               </div>
               <div>
-                <span className="font-medium text-white">New Assignments:</span>
+                <span className="font-medium text-white">Changes:</span>
                 <div className="text-white">
-                  {assignmentSummary.newSelections}
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-medium text-white">Platforms:</span>
-                <div className="text-white">
-                  {campaign.platforms.join(", ")}
-                </div>
-              </div>
-              <div>
-                <span className="font-medium text-white">Followers Range:</span>
-                <div className="text-white">
-                  {campaign.followersRange || "Any"}
+                  {assignmentSummary.newSelections > 0 && (
+                    <span className="text-green-400">
+                      +{assignmentSummary.newSelections}
+                    </span>
+                  )}
+                  {assignmentSummary.newSelections > 0 &&
+                    assignmentSummary.removedSelections > 0 &&
+                    " "}
+                  {assignmentSummary.removedSelections > 0 && (
+                    <span className="text-red-400">
+                      -{assignmentSummary.removedSelections}
+                    </span>
+                  )}
+                  {!hasChanges && <span>None</span>}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Search and Filters */}
           <div className="space-y-4 mb-6">
             <div className="flex gap-4">
               <div className="flex-1 relative">
@@ -676,10 +737,10 @@ const InfluencerAssignment: React.FC = () => {
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`px-4 py-2 rounded-lg border-slate-200/10 font-medium transition-colors duration-200 flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 ${
                   showFilters
                     ? "bg-yellow-500 text-white"
-                    : "bg-slate-200/20 text-white hover:bg-gray-50"
+                    : "bg-slate-200/20 text-white hover:bg-gray-50/10"
                 }`}
               >
                 <FaFilter className="w-4 h-4" />
@@ -687,7 +748,6 @@ const InfluencerAssignment: React.FC = () => {
               </button>
             </div>
 
-            {/* Filter Panel */}
             <AnimatePresence>
               {showFilters && (
                 <motion.div
@@ -697,72 +757,131 @@ const InfluencerAssignment: React.FC = () => {
                   transition={{ duration: 0.2 }}
                   className="bg-slate-200/20 rounded-lg p-6 shadow-sm overflow-hidden"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">
-                        Platform
-                      </label>
-                      <select
-                        value={platformFilter}
-                        onChange={(e) => setPlatformFilter(e.target.value)}
-                        className="w-full px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                      >
-                        <option value="all">All Platforms</option>
-                        {availablePlatforms.map((platform) => (
-                          <option key={platform} value={platform}>
-                            {platform}
-                          </option>
-                        ))}
-                      </select>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-white mb-1">
+                          Platform
+                        </label>
+                        <select
+                          value={platformFilter}
+                          onChange={(e) => setPlatformFilter(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-200/20 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                        >
+                          <option value="all">All Platforms</option>
+                          {availablePlatforms.map((platform) => (
+                            <option key={platform} value={platform}>
+                              {platform}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-white mb-1">
+                          Followers
+                        </label>
+                        <select
+                          value={followersFilter}
+                          onChange={(e) => setFollowersFilter(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-200/20 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                        >
+                          <option value="all">All Followers</option>
+                          <option value="1k-3k">1K - 3K</option>
+                          <option value="3k-10k">3K - 10K</option>
+                          <option value="10k-20k">10K - 20K</option>
+                          <option value="20k-50k">20K - 50K</option>
+                          <option value="50k+">50K+</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-white mb-1">
+                          Niche
+                        </label>
+                        <select
+                          value={nicheFilter}
+                          onChange={(e) => setNicheFilter(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-200/20 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                        >
+                          <option value="all">All Niches</option>
+                          {getUniqueNiches().map((niche) => (
+                            <option key={niche} value={niche}>
+                              {niche}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-white mb-1">
-                        Location
+                      <label className="block text-sm font-medium text-white mb-2">
+                        Location Filter
                       </label>
-                      <input
-                        type="text"
-                        placeholder="Type to filter location..."
-                        value={locationFilter}
-                        onChange={(e) => setLocationFilter(e.target.value)}
-                        className="w-full px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                      />
-                    </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">
+                            Country
+                          </label>
+                          <select
+                            value={locationCountry}
+                            onChange={(e) =>
+                              handleLocationCountryChange(e.target.value)
+                            }
+                            className="w-full px-3 py-2 bg-slate-200/20 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                          >
+                            <option value="">All Countries</option>
+                            {countries.map((country) => (
+                              <option
+                                key={country.isoCode}
+                                value={country.isoCode}
+                              >
+                                {country.flag} {country.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">
-                        Followers
-                      </label>
-                      <select
-                        value={followersFilter}
-                        onChange={(e) => setFollowersFilter(e.target.value)}
-                        className="w-full px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                      >
-                        <option value="all">All Followers</option>
-                        <option value="1k-3k">1K - 3K</option>
-                        <option value="3k-10k">3K - 10K</option>
-                        <option value="10k-20k">10K - 20K</option>
-                        <option value="20k-50k">20K - 50K</option>
-                        <option value="50k+">50K+</option>
-                      </select>
-                    </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">
+                            State/Province
+                          </label>
+                          <select
+                            value={locationState}
+                            onChange={(e) =>
+                              handleLocationStateChange(e.target.value)
+                            }
+                            disabled={!locationCountry}
+                            className="w-full px-3 py-2 bg-slate-200/20 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <option value="">All States</option>
+                            {locationStates.map((state) => (
+                              <option key={state.isoCode} value={state.isoCode}>
+                                {state.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">
-                        Niche
-                      </label>
-                      <select
-                        value={nicheFilter}
-                        onChange={(e) => setNicheFilter(e.target.value)}
-                        className="w-full px-3 py-2 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                      >
-                        <option value="all">All Niches</option>
-                        {getUniqueNiches().map((niche) => (
-                          <option key={niche} value={niche}>
-                            {niche}
-                          </option>
-                        ))}
-                      </select>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">
+                            City
+                          </label>
+                          <select
+                            value={locationCity}
+                            onChange={(e) => setLocationCity(e.target.value)}
+                            disabled={!locationState}
+                            className="w-full px-3 py-2 bg-slate-200/20 border text-white border-gray-200/10 rounded-lg focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <option value="">All Cities</option>
+                            {locationCities.map((city) => (
+                              <option key={city.name} value={city.name}>
+                                {city.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -771,38 +890,45 @@ const InfluencerAssignment: React.FC = () => {
           </div>
         </div>
 
-        {/* Results Count */}
         <div className="mb-6 flex justify-between items-center">
           <p className="text-white">
             {filteredInfluencers.length} influencers found
           </p>
-          {assignmentSummary.newSelections > 0 && (
+          {hasChanges && (
             <button
               onClick={handleAssignInfluencers}
               disabled={assignLoading}
               className="bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-400 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
             >
-              {assignLoading
-                ? "Assigning..."
-                : `Assign ${assignmentSummary.newSelections} New Influencers`}
+              {assignLoading ? "Saving..." : "Save Changes"}
             </button>
           )}
         </div>
 
-        {/* Assignment Status Info */}
-        {assignmentSummary.currentlyAssigned > 0 && (
-          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-yellow-800">
-              <div className="text-sm">
-                <strong>{assignmentSummary.currentlyAssigned}</strong>{" "}
-                influencers already assigned. Selecting additional influencers
-                will add them to the campaign.
+        {hasChanges && (
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 text-blue-800 text-sm">
+              <div>
+                {assignmentSummary.newSelections > 0 && (
+                  <span className="font-medium">
+                    {assignmentSummary.newSelections} new influencer(s) will be
+                    added.
+                  </span>
+                )}
+                {assignmentSummary.newSelections > 0 &&
+                  assignmentSummary.removedSelections > 0 &&
+                  " "}
+                {assignmentSummary.removedSelections > 0 && (
+                  <span className="font-medium">
+                    {assignmentSummary.removedSelections} influencer(s) will be
+                    removed.
+                  </span>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* Influencers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredInfluencers.map((influencer) => {
             const isSelected = selectedInfluencers.has(influencer._id);
@@ -815,17 +941,10 @@ const InfluencerAssignment: React.FC = () => {
                 key={influencer._id}
                 className={`bg-slate-200/20 border-slate-200/10 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer relative ${
                   isSelected ? "ring-2 ring-yellow-500 border-yellow-500" : ""
-                } ${isAlreadyAssigned ? "opacity-75" : ""}`}
+                }`}
                 onClick={() => handleInfluencerSelect(influencer._id)}
               >
                 <div className="p-6">
-                  {/* Already Assigned Badge */}
-                  {isAlreadyAssigned && (
-                    <div className="absolute top-3 right-3 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                      Already Assigned
-                    </div>
-                  )}
-
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       {influencer.profileImage ? (
@@ -869,7 +988,6 @@ const InfluencerAssignment: React.FC = () => {
                   </div>
 
                   <div className="space-y-3">
-                    {/* Social Media Accounts */}
                     <div>
                       <div className="flex flex-wrap gap-2 mb-2">
                         {influencer.socialMediaAccounts
@@ -894,7 +1012,6 @@ const InfluencerAssignment: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Niches */}
                     {influencer.niche.length > 0 && (
                       <div>
                         <span className="text-white text-sm">Niches:</span>
@@ -925,7 +1042,7 @@ const InfluencerAssignment: React.FC = () => {
         {filteredInfluencers.length === 0 && !loading && (
           <div className="text-center py-12">
             <div className="text-white text-lg mb-2">No influencers found</div>
-            <p className="text-gray-600">
+            <p className="text-gray-400">
               {influencers.length === 0
                 ? "No influencers available in the system."
                 : "Try adjusting your search criteria or filters."}

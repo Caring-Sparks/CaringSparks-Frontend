@@ -20,16 +20,15 @@ import {
   TiktokLogo,
   YoutubeLogo,
   FacebookLogo,
-  LinkedinLogo,
-  DiscordLogo,
-  SnapchatLogo,
   Check,
+  Plus,
+  X,
 } from "phosphor-react";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import CampaignSummary from "../extras/CampaignSummary";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateInfluencerEarnings } from "@/utils/calculations";
-import { BsThreads } from "react-icons/bs";
+import { Country, State, City } from "country-state-city";
 
 const countryCodes = [
   { code: "+1", country: "US/Canada", flag: "🇺🇸" },
@@ -64,6 +63,7 @@ interface InfluencerFormData {
   location: string;
   niches: string[];
   audienceLocation: string;
+  audienceLocations: string[];
   malePercentage: string;
   femalePercentage: string;
   audienceProof: File | null;
@@ -106,37 +106,37 @@ const PhoneNumberInput: React.FC<{
       mask: "(###) ###-####",
       placeholder: "(555) 123-4567",
       maxLength: 10,
-    }, // US/Canada
-    "+44": { mask: "#### ### ####", placeholder: "7700 900123", maxLength: 10 }, // UK
+    },
+    "+44": { mask: "#### ### ####", placeholder: "7700 900123", maxLength: 10 },
     "+234": {
       mask: "### ### ####",
       placeholder: "803 123 4567",
       maxLength: 10,
-    }, // Nigeria
-    "+233": { mask: "### ### ####", placeholder: "244 123 456", maxLength: 9 }, // Ghana
-    "+254": { mask: "### ######", placeholder: "712 123456", maxLength: 9 }, // Kenya
-    "+256": { mask: "### ######", placeholder: "712 123456", maxLength: 9 }, // Uganda
-    "+91": { mask: "##### #####", placeholder: "98765 43210", maxLength: 10 }, // India
+    },
+    "+233": { mask: "### ### ####", placeholder: "244 123 456", maxLength: 9 },
+    "+254": { mask: "### ######", placeholder: "712 123456", maxLength: 9 },
+    "+256": { mask: "### ######", placeholder: "712 123456", maxLength: 9 },
+    "+91": { mask: "##### #####", placeholder: "98765 43210", maxLength: 10 },
     "+86": {
       mask: "### #### ####",
       placeholder: "138 0013 8000",
       maxLength: 11,
-    }, // China
-    "+81": { mask: "##-####-####", placeholder: "90-1234-5678", maxLength: 10 }, // Japan
-    "+49": { mask: "### ########", placeholder: "151 12345678", maxLength: 11 }, // Germany
+    },
+    "+81": { mask: "##-####-####", placeholder: "90-1234-5678", maxLength: 10 },
+    "+49": { mask: "### ########", placeholder: "151 12345678", maxLength: 11 },
     "+33": {
       mask: "# ## ## ## ##",
       placeholder: "6 12 34 56 78",
       maxLength: 9,
-    }, // France
-    "+61": { mask: "### ### ###", placeholder: "412 345 678", maxLength: 9 }, // Australia
-    "+27": { mask: "## ### ####", placeholder: "82 123 4567", maxLength: 9 }, // South Africa
+    },
+    "+61": { mask: "### ### ###", placeholder: "412 345 678", maxLength: 9 },
+    "+27": { mask: "## ### ####", placeholder: "82 123 4567", maxLength: 9 },
     "+55": {
       mask: "(##) #####-####",
       placeholder: "(11) 98765-4321",
       maxLength: 11,
-    }, // Brazil
-    "+52": { mask: "### ### ####", placeholder: "222 123 4567", maxLength: 10 }, // Mexico
+    },
+    "+52": { mask: "### ### ####", placeholder: "222 123 4567", maxLength: 10 },
   };
 
   const formatPhoneNumber = (value: string, mask: any) => {
@@ -273,8 +273,18 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
   const [formValues, setFormValues] = useState<InfluencerFormData | null>(null);
   const [phoneCountryCode, setPhoneCountryCode] = useState("+234");
   const [whatsappCountryCode, setWhatsappCountryCode] = useState("+234");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [whatsappNumber, setWhatsappNumber] = useState("");
+
+  // Location states
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [states, setStates] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>([]);
+
+  // Audience location states
+  const [audienceCountry, setAudienceCountry] = useState("");
+  const [audienceState, setAudienceState] = useState("");
+  const [audienceStates, setAudienceStates] = useState<any[]>([]);
+  const [audienceCities, setAudienceCities] = useState<any[]>([]);
 
   const allPlatforms = [
     { name: "Instagram", icon: InstagramLogo, key: "instagram" },
@@ -282,11 +292,100 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
     { name: "Twitter / X", icon: TwitterLogo, key: "twitter" },
     { name: "TikTok", icon: TiktokLogo, key: "tiktok" },
     { name: "YouTube", icon: YoutubeLogo, key: "youtube" },
-    { name: "LinkedIn", icon: LinkedinLogo, key: "linkedin" },
-    { name: "Discord", icon: DiscordLogo, key: "discord" },
-    { name: "Snapchat", icon: SnapchatLogo, key: "snapchat" },
-    { name: "Threads", icon: BsThreads, key: "threads" },
   ];
+
+  const countries = Country.getAllCountries();
+
+  // Location handlers
+  const handleCountryChange = (countryCode: string, setFieldValue: any) => {
+    setSelectedCountry(countryCode);
+    setSelectedState("");
+    setFieldValue("location", "");
+
+    if (countryCode) {
+      const countryStates = State.getStatesOfCountry(countryCode);
+      setStates(countryStates);
+      setCities([]);
+    } else {
+      setStates([]);
+      setCities([]);
+    }
+  };
+
+  const handleStateChange = (stateCode: string, setFieldValue: any) => {
+    setSelectedState(stateCode);
+    setFieldValue("location", "");
+
+    if (stateCode && selectedCountry) {
+      const stateCities = City.getCitiesOfState(selectedCountry, stateCode);
+      setCities(stateCities);
+    } else {
+      setCities([]);
+    }
+  };
+
+  const handleCityChange = (cityName: string, setFieldValue: any) => {
+    const country = countries.find((c) => c.isoCode === selectedCountry);
+    const state = states.find((s) => s.isoCode === selectedState);
+
+    const locationString = `${cityName}, ${state?.name || ""}, ${
+      country?.name || ""
+    }`;
+    setFieldValue("location", locationString);
+  };
+
+  // Audience location handlers
+  const handleAudienceCountryChange = (countryCode: string) => {
+    setAudienceCountry(countryCode);
+    setAudienceState("");
+
+    if (countryCode) {
+      const countryStates = State.getStatesOfCountry(countryCode);
+      setAudienceStates(countryStates);
+      setAudienceCities([]);
+    } else {
+      setAudienceStates([]);
+      setAudienceCities([]);
+    }
+  };
+
+  const handleAudienceStateChange = (stateCode: string) => {
+    setAudienceState(stateCode);
+
+    if (stateCode && audienceCountry) {
+      const stateCities = City.getCitiesOfState(audienceCountry, stateCode);
+      setAudienceCities(stateCities);
+    } else {
+      setAudienceCities([]);
+    }
+  };
+
+  const handleAudienceCityAdd = (
+    cityName: string,
+    setFieldValue: any,
+    currentLocations: string[]
+  ) => {
+    const country = countries.find((c) => c.isoCode === audienceCountry);
+    const state = audienceStates.find((s) => s.isoCode === audienceState);
+
+    const locationString = `${cityName}, ${state?.name || ""}, ${
+      country?.name || ""
+    }`;
+
+    if (!currentLocations.includes(locationString)) {
+      const newLocations = [...currentLocations, locationString];
+      setFieldValue("audienceLocations", newLocations);
+
+      // Update the audienceLocation field as comma-separated string
+      setFieldValue("audienceLocation", newLocations.join("; "));
+    }
+
+    // Reset dropdowns
+    setAudienceCountry("");
+    setAudienceState("");
+    setAudienceStates([]);
+    setAudienceCities([]);
+  };
 
   const { initialValues, validationSchema } = useMemo(() => {
     const coreInitialValues: InfluencerFormData = {
@@ -297,6 +396,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
       location: formValues?.location || "",
       niches: formValues?.niches || [],
       audienceLocation: formValues?.audienceLocation || "",
+      audienceLocations: formValues?.audienceLocations || [],
       malePercentage: formValues?.malePercentage || "",
       femalePercentage: formValues?.femalePercentage || "",
       audienceProof: formValues?.audienceProof || null,
@@ -364,6 +464,36 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
     "Gaming",
     "Music",
     "Art",
+    "Automobile",
+    "Fashion and Beauty",
+    "Business",
+    "Consumer electronics",
+    "Entertainment and Pop Culture",
+    "Fitness",
+    "Sport",
+    "Food and Beverages",
+    "Health and Wellness",
+    "Home goods",
+    "Lifestyle and influencer lifestyle",
+    "Moms, kids, babies",
+    "Non profit",
+    "Pets",
+    "Retail",
+    "Toys and hobbies",
+    "Travel and hospitality",
+    "Relationships & Advice",
+    "Politics & Social Commentary",
+    "Real Estate & Interior Design",
+    "Tech & Gadgets",
+    "AI & Innovation",
+    "Gaming & Esports",
+    "Finance & Investing",
+    "Sustainability & Eco-Living",
+    "Education & EdTech",
+    "Self-Development & Mental Health",
+    "Art & Design",
+    "DIY & Crafts",
+    "OTHERS",
   ];
 
   const calculateProgress = (values: InfluencerFormData) => {
@@ -532,7 +662,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
               return (
                 <>
-                  {/* Action Buttons */}
                   <div className="p-6">
                     <button
                       type="button"
@@ -543,7 +672,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                     </button>
                   </div>
 
-                  {/* Header */}
                   <div className="text-center p-6 border-b border-gray-100">
                     <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                       <Star className="w-6 h-6 text-yellow-600" />
@@ -555,7 +683,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                       Get a side income and feel good promoting startups
                     </p>
 
-                    {/* Progress Bar */}
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm text-white">
                         <span>Profile Completion</span>
@@ -572,7 +699,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                   <div className="p-4">
                     <Form className="space-y-8">
-                      {/* Social Media Accounts Selection */}
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                           <Camera className="w-5 h-5" />
@@ -602,7 +728,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         </div>
                       </div>
 
-                      {/* Dynamically Generated Platform Forms */}
                       {selectedPlatforms.map((platformKey) => {
                         const platform = allPlatforms.find(
                           (p) => p.key === platformKey
@@ -731,7 +856,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         );
                       })}
 
-                      {/* Content Niche */}
                       <div className="space-y-2">
                         <label className="text-sm font-semibold text-white flex items-center gap-2">
                           <FileText className="w-4 h-4 text-slate-500" />I post
@@ -741,7 +865,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                           as="select"
                           name="niches"
                           multiple
-                          className="w-full px-4 py-2 rounded-xl border border-slate-200/10 text-gray-400 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors bg-slate-200/20 hover:border-yellow-400"
+                          className="w-full h-[500px] px-4 py-2 rounded-xl border border-slate-200/10 text-gray-400 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors bg-slate-200/20 hover:border-yellow-400"
                           onChange={(
                             e: React.ChangeEvent<HTMLSelectElement>
                           ) => {
@@ -782,22 +906,92 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         />
                       </div>
 
-                      {/* Location */}
-                      <div className="space-y-2">
+                      <div className="space-y-4">
                         <label className="text-sm font-medium text-white flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
                           My location: *
                         </label>
-                        <Field
-                          name="location"
-                          type="text"
-                          placeholder="City, State, Country"
-                          className={`frm ${
-                            errors.location && touched.location
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                        />
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-400">
+                              Country
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                handleCountryChange(
+                                  e.target.value,
+                                  setFieldValue
+                                )
+                              }
+                              value={selectedCountry}
+                              className="frm"
+                            >
+                              <option value="">Select Country</option>
+                              {countries.map((country) => (
+                                <option
+                                  key={country.isoCode}
+                                  value={country.isoCode}
+                                >
+                                  {country.flag} {country.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-400">
+                              State/Province
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                handleStateChange(e.target.value, setFieldValue)
+                              }
+                              value={selectedState}
+                              disabled={!selectedCountry}
+                              className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <option value="">Select State</option>
+                              {states.map((state) => (
+                                <option
+                                  key={state.isoCode}
+                                  value={state.isoCode}
+                                >
+                                  {state.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-400">
+                              City
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                handleCityChange(e.target.value, setFieldValue)
+                              }
+                              disabled={!selectedState}
+                              className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <option value="">Select City</option>
+                              {cities.map((city) => (
+                                <option key={city.name} value={city.name}>
+                                  {city.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <Field name="location" type="hidden" />
+
+                        {values.location && (
+                          <div className="bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg text-sm">
+                            Selected: {values.location}
+                          </div>
+                        )}
+
                         <ErrorMessage
                           name="location"
                           component="p"
@@ -805,24 +999,137 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         />
                       </div>
 
-                      {/* Audience Demographics */}
                       <div className="space-y-6">
                         <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                           <Users className="w-5 h-5" />
                           Audience Demographics
                         </h3>
 
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                           <label className="text-sm font-medium text-white">
                             Most of my audience are in:
                           </label>
-                          <Field
-                            as="textarea"
-                            name="audienceLocation"
-                            placeholder="Top 3 countries, top 3 towns/cities, top 3 age ranges"
-                            rows={4}
-                            className="frm"
-                          />
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-xs font-medium text-gray-400">
+                                Country
+                              </label>
+                              <select
+                                onChange={(e) =>
+                                  handleAudienceCountryChange(e.target.value)
+                                }
+                                value={audienceCountry}
+                                className="frm"
+                              >
+                                <option value="">Select Country</option>
+                                {countries.map((country) => (
+                                  <option
+                                    key={country.isoCode}
+                                    value={country.isoCode}
+                                  >
+                                    {country.flag} {country.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <label className="text-xs font-medium text-gray-400">
+                                State/Province
+                              </label>
+                              <select
+                                onChange={(e) =>
+                                  handleAudienceStateChange(e.target.value)
+                                }
+                                value={audienceState}
+                                disabled={!audienceCountry}
+                                className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <option value="">Select State</option>
+                                {audienceStates.map((state) => (
+                                  <option
+                                    key={state.isoCode}
+                                    value={state.isoCode}
+                                  >
+                                    {state.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <label className="text-xs font-medium text-gray-400">
+                                City
+                              </label>
+                              <div className="flex gap-2">
+                                <select
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      handleAudienceCityAdd(
+                                        e.target.value,
+                                        setFieldValue,
+                                        values.audienceLocations
+                                      );
+                                      e.target.value = "";
+                                    }
+                                  }}
+                                  disabled={!audienceState}
+                                  className="frm disabled:opacity-50 disabled:cursor-not-allowed flex-1"
+                                >
+                                  <option value="">Select & Add City</option>
+                                  {audienceCities.map((city) => (
+                                    <option key={city.name} value={city.name}>
+                                      {city.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+
+                          {values.audienceLocations &&
+                            values.audienceLocations.length > 0 && (
+                              <div className="space-y-2">
+                                <label className="text-xs font-medium text-gray-400">
+                                  Selected Audience Locations:
+                                </label>
+                                <div className="flex flex-wrap gap-2">
+                                  {values.audienceLocations.map(
+                                    (location, index) => (
+                                      <div
+                                        key={index}
+                                        className="flex items-center gap-2 bg-yellow-50 text-yellow-700 px-3 py-1 rounded-lg text-sm"
+                                      >
+                                        <span>{location}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const newLocations =
+                                              values.audienceLocations.filter(
+                                                (_, i) => i !== index
+                                              );
+                                            setFieldValue(
+                                              "audienceLocations",
+                                              newLocations
+                                            );
+                                            setFieldValue(
+                                              "audienceLocation",
+                                              newLocations.join("; ")
+                                            );
+                                          }}
+                                          className="text-yellow-800 hover:text-yellow-900"
+                                        >
+                                          <X className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                          <Field name="audienceLocation" type="hidden" />
                         </div>
 
                         <div className="space-y-3">
@@ -898,7 +1205,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         </div>
                       </div>
 
-                      {/* Contact Information */}
                       <div className="space-y-6">
                         <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                           <User className="w-5 h-5" />

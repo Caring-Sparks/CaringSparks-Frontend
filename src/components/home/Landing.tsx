@@ -435,6 +435,16 @@ export default function LandingPage() {
                   iconBg: "bg-orange-100",
                   textColor: "text-orange-700",
                 },
+                {
+                  title: "New/Existing Business",
+                  description:
+                    "Push your businness to millions of people worldwide",
+                  icon: "/icons/campaign.png",
+                  gradient: "from-yellow-500/10 to-yellow-600/20",
+                  border: "border-yellow-200",
+                  iconBg: "bg-yellow-100",
+                  textColor: "text-yellow-700",
+                },
               ].map((item, index) => (
                 <motion.div
                   key={index}

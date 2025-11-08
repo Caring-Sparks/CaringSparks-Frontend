@@ -12,7 +12,6 @@ import {
   Envelope,
   MapPin,
   Phone,
-  Plus,
   User,
   Users,
   X,
@@ -21,6 +20,7 @@ import { useEffect, useState } from "react";
 import CampaignSummary from "../extras/CampaignSummary";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateBrandQuotation, type BrandData } from "@/utils/calculations";
+import { Country, State, City } from "country-state-city";
 
 const validationSchema = Yup.object({
   role: Yup.string().required("Please select your role"),
@@ -50,25 +50,25 @@ const phoneFormats: any = {
     mask: "(###) ###-####",
     placeholder: "(555) 123-4567",
     maxLength: 10,
-  }, // US/Canada
-  "+44": { mask: "#### ### ####", placeholder: "7700 900123", maxLength: 10 }, // UK
-  "+234": { mask: "### ### ####", placeholder: "803 123 4567", maxLength: 10 }, // Nigeria
-  "+233": { mask: "### ### ####", placeholder: "244 123 456", maxLength: 9 }, // Ghana
-  "+254": { mask: "### ######", placeholder: "712 123456", maxLength: 9 }, // Kenya
-  "+256": { mask: "### ######", placeholder: "712 123456", maxLength: 9 }, // Uganda
-  "+91": { mask: "##### #####", placeholder: "98765 43210", maxLength: 10 }, // India
-  "+86": { mask: "### #### ####", placeholder: "138 0013 8000", maxLength: 11 }, // China
-  "+81": { mask: "##-####-####", placeholder: "90-1234-5678", maxLength: 10 }, // Japan
-  "+49": { mask: "### ########", placeholder: "151 12345678", maxLength: 11 }, // Germany
-  "+33": { mask: "# ## ## ## ##", placeholder: "6 12 34 56 78", maxLength: 9 }, // France
-  "+61": { mask: "### ### ###", placeholder: "412 345 678", maxLength: 9 }, // Australia
-  "+27": { mask: "## ### ####", placeholder: "82 123 4567", maxLength: 9 }, // South Africa
+  },
+  "+44": { mask: "#### ### ####", placeholder: "7700 900123", maxLength: 10 },
+  "+234": { mask: "### ### ####", placeholder: "803 123 4567", maxLength: 10 },
+  "+233": { mask: "### ### ####", placeholder: "244 123 456", maxLength: 9 },
+  "+254": { mask: "### ######", placeholder: "712 123456", maxLength: 9 },
+  "+256": { mask: "### ######", placeholder: "712 123456", maxLength: 9 },
+  "+91": { mask: "##### #####", placeholder: "98765 43210", maxLength: 10 },
+  "+86": { mask: "### #### ####", placeholder: "138 0013 8000", maxLength: 11 },
+  "+81": { mask: "##-####-####", placeholder: "90-1234-5678", maxLength: 10 },
+  "+49": { mask: "### ########", placeholder: "151 12345678", maxLength: 11 },
+  "+33": { mask: "# ## ## ## ##", placeholder: "6 12 34 56 78", maxLength: 9 },
+  "+61": { mask: "### ### ###", placeholder: "412 345 678", maxLength: 9 },
+  "+27": { mask: "## ### ####", placeholder: "82 123 4567", maxLength: 9 },
   "+55": {
     mask: "(##) #####-####",
     placeholder: "(11) 98765-4321",
     maxLength: 11,
-  }, // Brazil
-  "+52": { mask: "### ### ####", placeholder: "222 123 4567", maxLength: 10 }, // Mexico
+  },
+  "+52": { mask: "### ### ####", placeholder: "222 123 4567", maxLength: 10 },
 };
 
 const countryCodes = [
@@ -241,7 +241,48 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
     weeks: 1,
   });
   const [selectedCountryCode, setSelectedCountryCode] = useState("+234");
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [states, setStates] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>([]);
   const { registerBrand, loading } = useAuth();
+  const [additionalLocationCountry, setAdditionalLocationCountry] =
+    useState("");
+  const [additionalLocationState, setAdditionalLocationState] = useState("");
+  const [additionalLocationStates, setAdditionalLocationStates] = useState<
+    any[]
+  >([]);
+  const [additionalLocationCities, setAdditionalLocationCities] = useState<
+    any[]
+  >([]);
+
+  const handleAdditionalCountryChange = (countryCode: string) => {
+    setAdditionalLocationCountry(countryCode);
+    setAdditionalLocationState("");
+
+    if (countryCode) {
+      const countryStates = State.getStatesOfCountry(countryCode);
+      setAdditionalLocationStates(countryStates);
+      setAdditionalLocationCities([]);
+    } else {
+      setAdditionalLocationStates([]);
+      setAdditionalLocationCities([]);
+    }
+  };
+
+  const handleAdditionalStateChange = (stateCode: string) => {
+    setAdditionalLocationState(stateCode);
+
+    if (stateCode && additionalLocationCountry) {
+      const stateCities = City.getCitiesOfState(
+        additionalLocationCountry,
+        stateCode
+      );
+      setAdditionalLocationCities(stateCities);
+    } else {
+      setAdditionalLocationCities([]);
+    }
+  };
 
   const initialValues: BrandData = {
     role: "",
@@ -258,20 +299,8 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
     postDuration: "",
   };
 
-  const platforms = [
-    "Instagram",
-    "X",
-    "TikTok",
-    "Youtube",
-    "Facebook",
-    "Linkedin",
-    "Threads",
-    "Discord",
-    "Snapchat",
-  ];
-
+  const platforms = ["Instagram", "X", "TikTok", "Youtube", "Facebook"];
   const roles = ["Brand", "Business", "Person", "Movie", "Music", "Other"];
-
   const followerRanges = [
     "1k-3k",
     "3k-10k",
@@ -279,7 +308,6 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
     "20k-50k",
     "50k & above",
   ];
-
   const postFrequencies = [
     "5 times per week for 3 weeks = 15 posts in total",
     "3 times per week for 4 weeks = 12 posts in total",
@@ -288,8 +316,46 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
     "3 times per month for 2 months = 6 posts in total",
     "custom",
   ];
-
   const postDurations = ["1 day", "1 week", "2 weeks", "1 month"];
+
+  const countries = Country.getAllCountries();
+
+  const handleCountryChange = (countryCode: string, setFieldValue: any) => {
+    setSelectedCountry(countryCode);
+    setSelectedState("");
+    setFieldValue("location", "");
+
+    if (countryCode) {
+      const countryStates = State.getStatesOfCountry(countryCode);
+      setStates(countryStates);
+      setCities([]);
+    } else {
+      setStates([]);
+      setCities([]);
+    }
+  };
+
+  const handleStateChange = (stateCode: string, setFieldValue: any) => {
+    setSelectedState(stateCode);
+    setFieldValue("location", "");
+
+    if (stateCode && selectedCountry) {
+      const stateCities = City.getCitiesOfState(selectedCountry, stateCode);
+      setCities(stateCities);
+    } else {
+      setCities([]);
+    }
+  };
+
+  const handleCityChange = (cityName: string, setFieldValue: any) => {
+    const country = countries.find((c) => c.isoCode === selectedCountry);
+    const state = states.find((s) => s.isoCode === selectedState);
+
+    const locationString = `${cityName}, ${state?.name || ""}, ${
+      country?.name || ""
+    }`;
+    setFieldValue("location", locationString);
+  };
 
   const generateCustomFrequencyString = () => {
     const { postsPerWeek, weeks } = customFrequencyValues;
@@ -304,19 +370,15 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
   return (
     <>
       <div className="w-full mx-auto bg-black rounded-xl shadow-lg border border-slate-200/10">
-        {/* SUMMARY POPUP */}
         {submittedData ? (
           <CampaignSummary
             data={submittedData}
-            onBack={() => {
-              setSubmittedData(null);
-            }}
+            onBack={() => setSubmittedData(null)}
             login={login}
             type="brand"
           />
         ) : (
           <>
-            {/* Action Buttons */}
             <div className="p-6">
               <button
                 type="button"
@@ -327,13 +389,12 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
               </button>
             </div>
 
-            {/* Header */}
             <div className="text-center p-6 border-b border-slate-200/10">
               <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                 <Buildings className="w-6 h-6 text-yellow-600" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
-                Brand Registration
+                Advertiser Registration
               </h2>
               <p className="text-white">
                 Connect with influencers and grow your brand reach
@@ -346,7 +407,6 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                 validationSchema={validationSchema}
                 onSubmit={async (values, { resetForm }) => {
                   const fullPhoneNumber = `${selectedCountryCode}${values.brandPhone}`;
-
                   const dataForBackend = {
                     ...values,
                     brandPhone: fullPhoneNumber,
@@ -354,9 +414,7 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                       ? generateCustomFrequencyString()
                       : values.postFrequency,
                   };
-
                   const quotation = calculateBrandQuotation(dataForBackend);
-
                   const brandDataWithCalculations = {
                     ...dataForBackend,
                     avgInfluencers: quotation.avgInfluencers,
@@ -367,7 +425,6 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                     platformFee: quotation.platformFee,
                     totalCost: quotation.totalCost,
                   };
-
                   const res = await registerBrand(brandDataWithCalculations);
                   if (res) {
                     setSubmittedData(dataForBackend);
@@ -375,432 +432,576 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
                   }
                 }}
               >
-                {({ values, setFieldValue, errors, touched }) => (
-                  <Form className="space-y-6">
-                    {/* Role Selection */}
-                    <div className="space-y-2 ">
-                      <label className="text-sm font-medium text-white flex items-center gap-2">
-                        <User className="w-4 h-4" />I am a:
-                      </label>
-                      <Field
-                        as="select"
-                        name="role"
-                        className={`frm ${
-                          errors.role && touched.role
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      >
-                        <option value="">Select your role...</option>
-                        {roles.map((role) => (
-                          <option key={role} value={role}>
-                            {role}
-                          </option>
-                        ))}
-                      </Field>
-                      <ErrorMessage
-                        name="role"
-                        component="p"
-                        className="text-sm text-red-600"
-                      />
-                    </div>
+                {({ values, setFieldValue, errors, touched }) => {
+                  const handleAdditionalCitySelect = (
+                    cityName: string,
+                    push: (value: string) => void
+                  ) => {
+                    const country = countries.find(
+                      (c) => c.isoCode === additionalLocationCountry
+                    );
+                    const state = additionalLocationStates.find(
+                      (s) => s.isoCode === additionalLocationState
+                    );
 
-                    {/* Platform Selection */}
-                    <div className="space-y-3">
-                      <label className="text-sm font-medium text-white">
-                        I want to advertise & promote my brand on:
-                      </label>
-                      <div className="mt-2 flex flex-wrap items-center gap-4">
-                        {platforms.map((platform) => (
-                          <label
-                            key={platform}
-                            className="flex items-center space-x-3 cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={values.platforms.includes(platform)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setFieldValue("platforms", [
-                                    ...values.platforms,
-                                    platform,
-                                  ]);
-                                } else {
-                                  setFieldValue(
-                                    "platforms",
-                                    values.platforms.filter(
-                                      (p) => p !== platform
-                                    )
-                                  );
-                                }
-                              }}
-                              className="w-4 h-4 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-yellow-500"
-                            />
-                            <span className="text-sm text-white">
-                              {platform}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                      <ErrorMessage
-                        name="platforms"
-                        component="p"
-                        className="text-sm text-red-600"
-                      />
-                    </div>
+                    const locationString = `${cityName}, ${
+                      state?.name || ""
+                    }, ${country?.name || ""}`;
 
-                    <div className="space-y-3">
-                      <label className="text-sm font-medium text-white flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        Number of influencers needed:
-                      </label>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-white">Minimum</label>
-                          <Field
-                            name="influencersMin"
-                            type="number"
-                            min="1"
-                            placeholder="Minimum"
-                            className="frm"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-white">Maximum</label>
-                          <Field
-                            name="influencersMax"
-                            type="number"
-                            min="1"
-                            placeholder="Maximum"
-                            className="frm"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    // Check if location already exists
+                    if (!values.additionalLocations.includes(locationString)) {
+                      push(locationString);
+                    }
 
-                    {/* Followers Range */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white">
-                        Preferred followers range:
-                      </label>
-                      <Field as="select" name="followersRange" className="frm">
-                        <option value="">Select followers range...</option>
-                        {followerRanges.map((range) => (
-                          <option key={range} value={range}>
-                            {range}
-                          </option>
-                        ))}
-                      </Field>
-                    </div>
+                    // Reset the additional location form
+                    setAdditionalLocationCountry("");
+                    setAdditionalLocationState("");
+                    setAdditionalLocationStates([]);
+                    setAdditionalLocationCities([]);
+                  };
 
-                    {/* Location */}
-                    <div className="space-y-3">
-                      <label className="text-sm font-medium text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        Target location:
-                      </label>
-                      <Field
-                        name="location"
-                        type="text"
-                        placeholder="e.g., Ikeja, Lagos, Nigeria"
-                        className={`frm ${
-                          errors.location && touched.location
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      />
-                      <ErrorMessage
-                        name="location"
-                        component="p"
-                        className="text-sm text-red-600"
-                      />
-
-                      {/* Additional Locations */}
-                      <FieldArray name="additionalLocations">
-                        {({ push, remove }) => (
-                          <div className="space-y-2">
-                            {values.additionalLocations.map((loc, index) => (
-                              <div
-                                key={`${loc}-${index}`}
-                                className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg"
-                              >
-                                <span className="flex-1 text-sm">{loc}</span>
-                                <button
-                                  type="button"
-                                  onClick={() => remove(index)}
-                                  className="text-red-500 hover:text-red-700"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
-                            ))}
-
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                placeholder="Add additional location"
-                                value={newLocation}
-                                onChange={(e) => setNewLocation(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    e.preventDefault();
-                                    const trimmed = newLocation.trim();
-                                    if (trimmed) {
-                                      push(trimmed);
-                                      setNewLocation("");
-                                    }
-                                  }
-                                }}
-                                className="flex-1 frm"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const trimmed = newLocation.trim();
-                                  if (trimmed) {
-                                    push(trimmed);
-                                    setNewLocation("");
-                                  }
-                                }}
-                                className="px-3 py-2 bg-yellow-100 rounded-xl border border-yellow-300 text-yellow-800 placeholder-yellow-400 hover:bg-yellow-50"
-                                aria-label="Add location"
-                                title="Add location"
-                              >
-                                <Plus className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </FieldArray>
-                    </div>
-
-                    {/* Posting Frequency */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        Posting frequency:
-                      </label>
-                      <Field
-                        as="select"
-                        name="postFrequency"
-                        className="frm"
-                        onChange={(e: any) => {
-                          const value = e.target.value;
-                          setFieldValue("postFrequency", value);
-                          setCustomFrequency(value === "custom");
-                        }}
-                      >
-                        <option value="">Select posting frequency...</option>
-                        {postFrequencies.map((freq) => (
-                          <option key={freq} value={freq}>
-                            {freq === "custom" ? "Custom frequency" : freq}
-                          </option>
-                        ))}
-                      </Field>
-
-                      {/* Custom Frequency Options */}
-                      {customFrequency && (
-                        <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
-                          <h4 className="text-sm font-medium text-white mb-3">
-                            Customize your posting schedule:
-                          </h4>
-                          <div className="grid grid-cols-2 gap-4">
-                            {/* Posts per week */}
-                            <div>
-                              <label className="text-xs text-gray-600 mb-1 block">
-                                Posts per week
-                              </label>
-                              <input
-                                type="number"
-                                min="1"
-                                max="7"
-                                value={customFrequencyValues.postsPerWeek ?? ""}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  const newValue =
-                                    value === "" ? "" : parseInt(value, 10);
-
-                                  setCustomFrequencyValues({
-                                    ...customFrequencyValues,
-                                    postsPerWeek: newValue,
-                                  });
-
-                                  if (
-                                    newValue !== "" &&
-                                    customFrequencyValues.weeks !== ""
-                                  ) {
-                                    const updatedFrequency = `${newValue} time${
-                                      newValue > 1 ? "s" : ""
-                                    } per week for ${
-                                      customFrequencyValues.weeks
-                                    } week${
-                                      customFrequencyValues.weeks > 1 ? "s" : ""
-                                    } = ${
-                                      newValue * customFrequencyValues.weeks
-                                    } posts in total`;
-
-                                    setFieldValue(
-                                      "postFrequency",
-                                      updatedFrequency
-                                    );
-                                  }
-                                }}
-                                className="w-full px-2 py-1 text-sm bg-white rounded border border-gray-300 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-                              />
-                            </div>
-
-                            {/* Number of weeks */}
-                            <div>
-                              <label className="text-xs text-gray-600 mb-1 block">
-                                Number of weeks
-                              </label>
-                              <input
-                                type="number"
-                                min="1"
-                                max="52"
-                                value={customFrequencyValues.weeks ?? ""}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  const newValue =
-                                    value === "" ? "" : parseInt(value, 10);
-
-                                  setCustomFrequencyValues({
-                                    ...customFrequencyValues,
-                                    weeks: newValue,
-                                  });
-
-                                  if (
-                                    newValue !== "" &&
-                                    customFrequencyValues.postsPerWeek !== ""
-                                  ) {
-                                    const updatedFrequency = `${
-                                      customFrequencyValues.postsPerWeek
-                                    } time${
-                                      customFrequencyValues.postsPerWeek > 1
-                                        ? "s"
-                                        : ""
-                                    } per week for ${newValue} week${
-                                      newValue > 1 ? "s" : ""
-                                    } = ${
-                                      customFrequencyValues.postsPerWeek *
-                                      newValue
-                                    } posts in total`;
-
-                                    setFieldValue(
-                                      "postFrequency",
-                                      updatedFrequency
-                                    );
-                                  }
-                                }}
-                                className="w-full px-2 py-1 text-sm bg-white rounded border border-gray-300 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="mt-3 text-sm text-gray-600 bg-white p-2 rounded border">
-                            <strong>Preview:</strong>{" "}
-                            {generateCustomFrequencyString()}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Post Duration */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        Post stays on page for:
-                      </label>
-                      <Field as="select" name="postDuration" className="frm">
-                        <option value="">Select duration...</option>
-                        {postDurations.map((duration) => (
-                          <option key={duration} value={duration}>
-                            {duration}
-                          </option>
-                        ))}
-                      </Field>
-                    </div>
-
-                    {/* Brand Information */}
-                    <div className="space-y-4 pt-4 border-t border-gray-200">
-                      <h3 className="text-lg font-semibold text-white">
-                        Brand Information
-                      </h3>
-
+                  return (
+                    <Form className="space-y-6">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-white">
-                          Brand name *
+                        <label className="text-sm font-medium text-white flex items-center gap-2">
+                          <User className="w-4 h-4" />I am a:
                         </label>
                         <Field
-                          name="brandName"
-                          type="text"
-                          placeholder="Enter your brand name"
+                          as="select"
+                          name="role"
                           className={`frm ${
-                            errors.brandName && touched.brandName
+                            errors.role && touched.role
                               ? "border-red-500"
                               : "border-gray-300"
                           }`}
-                        />
+                        >
+                          <option value="">Select your role...</option>
+                          {roles.map((role) => (
+                            <option key={role} value={role}>
+                              {role}
+                            </option>
+                          ))}
+                        </Field>
                         <ErrorMessage
-                          name="brandName"
+                          name="role"
                           component="p"
                           className="text-sm text-red-600"
                         />
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-sm font-medium text-white">
+                          I want to advertise & promote my brand on:
+                        </label>
+                        <div className="mt-2 flex flex-wrap items-center gap-4">
+                          {platforms.map((platform) => (
+                            <label
+                              key={platform}
+                              className="flex items-center space-x-3 cursor-pointer"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={values.platforms.includes(platform)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFieldValue("platforms", [
+                                      ...values.platforms,
+                                      platform,
+                                    ]);
+                                  } else {
+                                    setFieldValue(
+                                      "platforms",
+                                      values.platforms.filter(
+                                        (p) => p !== platform
+                                      )
+                                    );
+                                  }
+                                }}
+                                className="w-4 h-4 bg-gray-100 rounded-xl border border-gray-300 text-gray-800 placeholder-gray-400 focus:ring-yellow-500"
+                              />
+                              <span className="text-sm text-white">
+                                {platform}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                        <ErrorMessage
+                          name="platforms"
+                          component="p"
+                          className="text-sm text-red-600"
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-sm font-medium text-white flex items-center gap-2">
+                          <Users className="w-4 h-4" />
+                          Number of influencers needed:
+                        </label>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-white">Minimum</label>
+                            <Field
+                              name="influencersMin"
+                              type="number"
+                              min="1"
+                              placeholder="Minimum"
+                              className="frm"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-white">Maximum</label>
+                            <Field
+                              name="influencersMax"
+                              type="number"
+                              min="1"
+                              placeholder="Maximum"
+                              className="frm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-white">
+                          Preferred followers range:
+                        </label>
+                        <Field
+                          as="select"
+                          name="followersRange"
+                          className="frm"
+                        >
+                          <option value="">Select followers range...</option>
+                          {followerRanges.map((range) => (
+                            <option key={range} value={range}>
+                              {range}
+                            </option>
+                          ))}
+                        </Field>
+                      </div>
+
+                      <div className="space-y-4">
+                        <label className="text-sm font-medium text-white flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          Target location: *
+                        </label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-400">
+                              Country
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                handleCountryChange(
+                                  e.target.value,
+                                  setFieldValue
+                                )
+                              }
+                              value={selectedCountry}
+                              className="frm"
+                            >
+                              <option value="">Select Country</option>
+                              {countries.map((country) => (
+                                <option
+                                  key={country.isoCode}
+                                  value={country.isoCode}
+                                >
+                                  {country.flag} {country.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-400">
+                              State/Province
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                handleStateChange(e.target.value, setFieldValue)
+                              }
+                              value={selectedState}
+                              disabled={!selectedCountry}
+                              className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <option value="">Select State</option>
+                              {states.map((state) => (
+                                <option
+                                  key={state.isoCode}
+                                  value={state.isoCode}
+                                >
+                                  {state.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-400">
+                              City
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                handleCityChange(e.target.value, setFieldValue)
+                              }
+                              disabled={!selectedState}
+                              className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <option value="">Select City</option>
+                              {cities.map((city) => (
+                                <option key={city.name} value={city.name}>
+                                  {city.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <Field name="location" type="hidden" />
+                        {values.location && (
+                          <div className="bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg text-sm">
+                            Selected: {values.location}
+                          </div>
+                        )}
+                        <ErrorMessage
+                          name="location"
+                          component="p"
+                          className="text-sm text-red-600"
+                        />
+                        <FieldArray name="additionalLocations">
+                          {({ push, remove }) => (
+                            <div className="space-y-3">
+                              <label className="text-sm font-medium text-white">
+                                Additional Locations (Optional)
+                              </label>
+
+                              {/* Display added locations */}
+                              {values.additionalLocations.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                  {values.additionalLocations.map(
+                                    (loc, index) => (
+                                      <div
+                                        key={`${loc}-${index}`}
+                                        className="flex items-center gap-2 bg-yellow-50 text-yellow-700 px-3 py-1 rounded-lg text-sm"
+                                      >
+                                        <span>{loc}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => remove(index)}
+                                          className="text-yellow-800 hover:text-yellow-900"
+                                        >
+                                          <X className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Add new location form */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {/* Country Dropdown */}
+                                <div className="space-y-2">
+                                  <label className="text-xs font-medium text-gray-400">
+                                    Country
+                                  </label>
+                                  <select
+                                    value={additionalLocationCountry}
+                                    onChange={(e) =>
+                                      handleAdditionalCountryChange(
+                                        e.target.value
+                                      )
+                                    }
+                                    className="frm"
+                                  >
+                                    <option value="">Select Country</option>
+                                    {countries.map((country) => (
+                                      <option
+                                        key={country.isoCode}
+                                        value={country.isoCode}
+                                      >
+                                        {country.flag} {country.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                {/* State Dropdown */}
+                                <div className="space-y-2">
+                                  <label className="text-xs font-medium text-gray-400">
+                                    State/Province
+                                  </label>
+                                  <select
+                                    value={additionalLocationState}
+                                    onChange={(e) =>
+                                      handleAdditionalStateChange(
+                                        e.target.value
+                                      )
+                                    }
+                                    disabled={!additionalLocationCountry}
+                                    className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    <option value="">Select State</option>
+                                    {additionalLocationStates.map((state) => (
+                                      <option
+                                        key={state.isoCode}
+                                        value={state.isoCode}
+                                      >
+                                        {state.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                {/* City Dropdown */}
+                                <div className="space-y-2">
+                                  <label className="text-xs font-medium text-gray-400">
+                                    City
+                                  </label>
+                                  <select
+                                    onChange={(e) => {
+                                      if (e.target.value) {
+                                        handleAdditionalCitySelect(
+                                          e.target.value,
+                                          push
+                                        );
+                                        e.target.value = "";
+                                      }
+                                    }}
+                                    disabled={!additionalLocationState}
+                                    className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    <option value="">Select & Add City</option>
+                                    {additionalLocationCities.map((city) => (
+                                      <option key={city.name} value={city.name}>
+                                        {city.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </FieldArray>
                       </div>
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-white flex items-center gap-2">
-                          <Envelope className="w-4 h-4" />
-                          Brand email *
+                          <Calendar className="w-4 h-4" />
+                          Posting frequency:
                         </label>
                         <Field
-                          name="email"
-                          type="email"
-                          placeholder="Enter your brand email"
-                          className={`frm ${
-                            errors.email && touched.email
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                        />
-                        <ErrorMessage
-                          name="email"
-                          component="p"
-                          className="text-sm text-red-600"
+                          as="select"
+                          name="postFrequency"
+                          className="frm"
+                          onChange={(e: any) => {
+                            const value = e.target.value;
+                            setFieldValue("postFrequency", value);
+                            setCustomFrequency(value === "custom");
+                          }}
+                        >
+                          <option value="">Select posting frequency...</option>
+                          {postFrequencies.map((freq) => (
+                            <option key={freq} value={freq}>
+                              {freq === "custom" ? "Custom frequency" : freq}
+                            </option>
+                          ))}
+                        </Field>
+
+                        {customFrequency && (
+                          <div className="mt-4 p-4 bg-slate-200/20 rounded-lg border border-slate-200/10">
+                            <h4 className="text-sm font-medium text-white mb-3">
+                              Customize your posting schedule:
+                            </h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">
+                                  Posts per week
+                                </label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="7"
+                                  value={
+                                    customFrequencyValues.postsPerWeek ?? ""
+                                  }
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const newValue =
+                                      value === ""
+                                        ? ""
+                                        : Number.parseInt(value, 10);
+                                    setCustomFrequencyValues({
+                                      ...customFrequencyValues,
+                                      postsPerWeek: newValue,
+                                    });
+                                    if (
+                                      newValue !== "" &&
+                                      customFrequencyValues.weeks !== ""
+                                    ) {
+                                      const updatedFrequency = `${newValue} time${
+                                        newValue > 1 ? "s" : ""
+                                      } per week for ${
+                                        customFrequencyValues.weeks
+                                      } week${
+                                        customFrequencyValues.weeks > 1
+                                          ? "s"
+                                          : ""
+                                      } = ${
+                                        newValue * customFrequencyValues.weeks
+                                      } posts in total`;
+                                      setFieldValue(
+                                        "postFrequency",
+                                        updatedFrequency
+                                      );
+                                    }
+                                  }}
+                                  className="w-full px-2 py-1 text-sm bg-slate-200/20 text-white rounded border border-slate-200/10 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">
+                                  Number of weeks
+                                </label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="52"
+                                  value={customFrequencyValues.weeks ?? ""}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const newValue =
+                                      value === ""
+                                        ? ""
+                                        : Number.parseInt(value, 10);
+                                    setCustomFrequencyValues({
+                                      ...customFrequencyValues,
+                                      weeks: newValue,
+                                    });
+                                    if (
+                                      newValue !== "" &&
+                                      customFrequencyValues.postsPerWeek !== ""
+                                    ) {
+                                      const updatedFrequency = `${
+                                        customFrequencyValues.postsPerWeek
+                                      } time${
+                                        customFrequencyValues.postsPerWeek > 1
+                                          ? "s"
+                                          : ""
+                                      } per week for ${newValue} week${
+                                        newValue > 1 ? "s" : ""
+                                      } = ${
+                                        customFrequencyValues.postsPerWeek *
+                                        newValue
+                                      } posts in total`;
+                                      setFieldValue(
+                                        "postFrequency",
+                                        updatedFrequency
+                                      );
+                                    }
+                                  }}
+                                  className="w-full px-2 py-1 text-sm bg-slate-200/20 text-white rounded border border-slate-200/10 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                />
+                              </div>
+                            </div>
+                            <div className="mt-3 text-sm text-gray-400 bg-slate-200/20 p-2 rounded border border-slate-200/10">
+                              <strong>Preview:</strong>{" "}
+                              {generateCustomFrequencyString()}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-white flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          Post stays on page for:
+                        </label>
+                        <Field as="select" name="postDuration" className="frm">
+                          <option value="">Select duration...</option>
+                          {postDurations.map((duration) => (
+                            <option key={duration} value={duration}>
+                              {duration}
+                            </option>
+                          ))}
+                        </Field>
+                      </div>
+
+                      <div className="space-y-4 pt-4 border-t border-gray-200">
+                        <h3 className="text-lg font-semibold text-white">
+                          Brand Information
+                        </h3>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-white">
+                            Brand name *
+                          </label>
+                          <Field
+                            name="brandName"
+                            type="text"
+                            placeholder="Enter your brand name"
+                            className={`frm ${
+                              errors.brandName && touched.brandName
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            }`}
+                          />
+                          <ErrorMessage
+                            name="brandName"
+                            component="p"
+                            className="text-sm text-red-600"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-white flex items-center gap-2">
+                            <Envelope className="w-4 h-4" />
+                            Brand email *
+                          </label>
+                          <Field
+                            name="email"
+                            type="email"
+                            placeholder="Enter your brand email"
+                            className={`frm ${
+                              errors.email && touched.email
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            }`}
+                          />
+                          <ErrorMessage
+                            name="email"
+                            component="p"
+                            className="text-sm text-red-600"
+                          />
+                        </div>
+                        <PhoneNumberInput
+                          selectedCountryCode={selectedCountryCode}
+                          setSelectedCountryCode={setSelectedCountryCode}
+                          setFieldValue={setFieldValue}
+                          value={values.brandPhone}
+                          errors={errors}
+                          touched={touched}
                         />
                       </div>
 
-                      <PhoneNumberInput
-                        selectedCountryCode={selectedCountryCode}
-                        setSelectedCountryCode={setSelectedCountryCode}
-                        setFieldValue={setFieldValue}
-                        value={values.brandPhone}
-                        errors={errors}
-                        touched={touched}
-                      />
-                    </div>
-
-                    {loading ? (
-                      <button
-                        disabled
-                        className="w-full flex justify-center px-4 py-2 bg-yellow-500 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
-                      >
-                        <div className="loader">
-                          <span className="bar"></span>
-                          <span className="bar"></span>
-                          <span className="bar"></span>
-                        </div>
-                      </button>
-                    ) : (
-                      <button
-                        type="submit"
-                        className="w-full px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-700 transition-colors"
-                      >
-                        Submit & Get Quotation
-                      </button>
-                    )}
-                  </Form>
-                )}
+                      {loading ? (
+                        <button
+                          disabled
+                          className="w-full flex justify-center px-4 py-2 bg-yellow-500 opacity-50 text-white rounded-xl hover:cursor-not-allowed"
+                        >
+                          <div className="loader">
+                            <span className="bar"></span>
+                            <span className="bar"></span>
+                            <span className="bar"></span>
+                          </div>
+                        </button>
+                      ) : (
+                        <button
+                          type="submit"
+                          className="w-full px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+                        >
+                          Submit & Get Quotation
+                        </button>
+                      )}
+                    </Form>
+                  );
+                }}
               </Formik>
             </div>
           </>

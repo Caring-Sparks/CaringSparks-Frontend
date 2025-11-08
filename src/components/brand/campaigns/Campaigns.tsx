@@ -102,11 +102,22 @@ interface Influencer {
   updatedAt?: string;
 }
 
+interface ReviewComment {
+  _id: string;
+  authorType: "brand" | "influencer";
+  authorId: string;
+  authorName: string;
+  comment: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 interface SubmittedJob {
   _id: string;
   id: string;
   description: string;
   submittedAt: string;
+  reviews: ReviewComment[];
 }
 
 interface AssignedInfluencer {
@@ -114,7 +125,7 @@ interface AssignedInfluencer {
   acceptanceStatus: string;
   assignedAt: string;
   completedAt?: string;
-  isCompleted: boolean;
+  isCompleted: string;
   respondedAt?: string;
   submittedJobs: SubmittedJob[];
   _id: string;
@@ -157,7 +168,9 @@ interface CampaignMaterial {
   id: string;
   file: File | null;
   description: string;
+  contentType: string;
   preview?: string;
+  fileType?: "image" | "video";
 }
 
 interface UploadedMaterial {
@@ -165,6 +178,8 @@ interface UploadedMaterial {
   imageUrl: string;
   postDescription: string;
   uploadedAt: string;
+  fileType?: "image" | "video";
+  contentType: string;
 }
 
 const Campaigns: React.FC = () => {
@@ -216,6 +231,7 @@ const Campaigns: React.FC = () => {
     influencer: Influencer;
     jobs: SubmittedJob[];
     campaignName: string;
+    campaignId?: string;
   } | null>(null);
 
   const [showMaterialsModal, setShowMaterialsModal] = useState<boolean>(false);
@@ -223,7 +239,14 @@ const Campaigns: React.FC = () => {
     useState<Campaign | null>(null);
   const [campaignMaterials, setCampaignMaterials] = useState<
     CampaignMaterial[]
-  >([{ id: "1", file: null, description: "" }]);
+  >([
+    {
+      id: "1",
+      file: null,
+      description: "",
+      contentType: "",
+    },
+  ]);
   const [isUploadingMaterials, setIsUploadingMaterials] =
     useState<boolean>(false);
 
@@ -324,6 +347,7 @@ const Campaigns: React.FC = () => {
       influencer,
       jobs: assignedInfluencerData?.submittedJobs || [],
       campaignName: campaign.brandName,
+      campaignId: campaign._id!,
     });
     setShowInfluencerDetails(true);
   };
@@ -343,21 +367,48 @@ const Campaigns: React.FC = () => {
   const handleOpenMaterialsModal = (campaign: Campaign) => {
     setSelectedCampaignForMaterials(campaign);
     setShowMaterialsModal(true);
-    setCampaignMaterials([{ id: "1", file: null, description: "" }]);
+    setCampaignMaterials([
+      {
+        id: "1",
+        file: null,
+        description: "",
+        contentType: "",
+      },
+    ]);
   };
 
   const closeMaterialsModal = () => {
     setShowMaterialsModal(false);
     setSelectedCampaignForMaterials(null);
-    setCampaignMaterials([{ id: "1", file: null, description: "" }]);
+    setCampaignMaterials([
+      {
+        id: "1",
+        file: null,
+        description: "",
+        contentType: "",
+      },
+    ]);
   };
 
   const addNewMaterial = () => {
     const newId = Date.now().toString();
     setCampaignMaterials((prev) => [
       ...prev,
-      { id: newId, file: null, description: "" },
+      {
+        id: newId,
+        file: null,
+        description: "",
+        contentType: "",
+      },
     ]);
+  };
+
+  const handleContentTypeChange = (id: string, contentType: string) => {
+    setCampaignMaterials((prev) =>
+      prev.map((material) =>
+        material.id === id ? { ...material, contentType } : material
+      )
+    );
   };
 
   const removeMaterial = (id: string) => {
@@ -373,10 +424,19 @@ const Campaigns: React.FC = () => {
       prev.map((material) => {
         if (material.id === id) {
           let preview = undefined;
-          if (file && file.type.startsWith("image/")) {
-            preview = URL.createObjectURL(file);
+          let fileType: "image" | "video" | undefined = undefined;
+
+          if (file) {
+            if (file.type.startsWith("image/")) {
+              preview = URL.createObjectURL(file);
+              fileType = "image";
+            } else if (file.type.startsWith("video/")) {
+              preview = URL.createObjectURL(file);
+              fileType = "video";
+            }
           }
-          return { ...material, file, preview };
+
+          return { ...material, file, preview, fileType };
         }
         return material;
       })
@@ -411,15 +471,50 @@ const Campaigns: React.FC = () => {
     if (!selectedCampaignForMaterials) return;
 
     const validMaterials = campaignMaterials.filter(
-      (material) => material.file && material.description.trim()
+      (material) =>
+        material.file && material.description.trim() && material.contentType
     );
 
     if (validMaterials.length === 0) {
       showToast({
         type: "error",
-        title: "No Materials",
+        title: "Incomplete Materials",
         message:
-          "Please add at least one material with both file and description.",
+          "Please add file, description, and content type for at least one material.",
+        duration: 4000,
+      });
+      return;
+    }
+
+    // Check for materials missing content type
+    const incompleteMaterials = campaignMaterials.filter(
+      (material) =>
+        material.file && material.description.trim() && !material.contentType
+    );
+
+    if (incompleteMaterials.length > 0) {
+      showToast({
+        type: "error",
+        title: "Missing Content Type",
+        message: "Please select a content type for all materials.",
+        duration: 4000,
+      });
+      return;
+    }
+
+    // Validate file sizes
+    const oversizedFiles = validMaterials.filter((material) => {
+      if (!material.file) return false;
+      const maxSize =
+        material.fileType === "video" ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+      return material.file.size > maxSize;
+    });
+
+    if (oversizedFiles.length > 0) {
+      showToast({
+        type: "error",
+        title: "File Too Large",
+        message: "Videos must be under 50MB and images under 10MB.",
         duration: 4000,
       });
       return;
@@ -429,15 +524,22 @@ const Campaigns: React.FC = () => {
 
     try {
       const formData = new FormData();
-
       formData.append("campaignId", selectedCampaignForMaterials._id || "");
 
       validMaterials.forEach((material, index) => {
         if (material.file) {
-          formData.append("images", material.file);
+          formData.append("media", material.file);
           formData.append(
             `materials[${index}][description]`,
             material.description
+          );
+          formData.append(
+            `materials[${index}][fileType]`,
+            material.fileType || "image"
+          );
+          formData.append(
+            `materials[${index}][contentType]`,
+            material.contentType
           );
         }
       });
@@ -462,7 +564,7 @@ const Campaigns: React.FC = () => {
       showToast({
         type: "success",
         title: "Materials Uploaded!",
-        message: `Successfully uploaded ${validMaterials.length} campaign materials.`,
+        message: `Successfully uploaded ${validMaterials.length} campaign material(s).`,
         duration: 6000,
       });
 
@@ -884,7 +986,7 @@ const Campaigns: React.FC = () => {
     const assigned = campaign.assignedInfluencers?.find(
       (assigned) => assigned.influencerId === influencerId
     );
-    return assigned?.isCompleted ?? false;
+    return assigned?.isCompleted === "Completed";
   };
 
   const handleShowAllInfluencers = (campaign: Campaign) => {
@@ -911,6 +1013,78 @@ const Campaigns: React.FC = () => {
       campaignName: campaign.brandName,
     });
     setShowInfluencerDetails(true);
+  };
+
+  const handleAddReview = async (
+    campaignId: string,
+    influencerId: string,
+    jobId: string,
+    comment: string
+  ) => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${campaignId}/jobs/${jobId}/reviews`,
+        {
+          comment,
+          influencerId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        const newReview = response.data.data.review;
+
+        setSelectedInfluencerJobs((prev) => {
+          if (!prev) return prev;
+
+          const updatedJobs = prev.jobs.map((job) => {
+            if (job._id === jobId) {
+              return {
+                ...job,
+                reviews: [...(job.reviews || []), newReview],
+              };
+            }
+            return job;
+          });
+
+          return {
+            ...prev,
+            jobs: updatedJobs,
+          };
+        });
+
+        showToast({
+          type: "success",
+          title: "Comment Posted!",
+          message: "Your comment has been added successfully.",
+          duration: 4000,
+        });
+
+        if (user?.email) {
+          fetchCampaignsByEmail(user.email);
+        } else {
+          fetchCampaigns();
+        }
+
+        return newReview;
+      }
+    } catch (error: any) {
+      console.error("Error adding review:", error);
+      showToast({
+        type: "error",
+        title: "Failed to Post Comment",
+        message:
+          error.response?.data?.message ||
+          "There was an error posting your comment. Please try again.",
+        duration: 6000,
+      });
+      throw error;
+    }
   };
 
   if (campaignsLoading) {
@@ -964,6 +1138,21 @@ const Campaigns: React.FC = () => {
         isOpen={showInfluencerDetails}
         onClose={closeInfluencerDetailsModal}
         submittedJobs={selectedInfluencerJobs?.jobs || []}
+        currentUser={{
+          id: user?._id,
+          name: user?.brandName || user?.brandName,
+          type: user?.role === "brand" ? "brand" : "influencer",
+        }}
+        onAddReview={async (jobId: string, comment: string) => {
+          if (selectedInfluencerJobs?.campaignId && selectedInfluencer) {
+            await handleAddReview(
+              selectedInfluencerJobs.campaignId,
+              selectedInfluencer._id,
+              jobId,
+              comment
+            );
+          }
+        }}
       />
 
       <AllInfluencersModal
@@ -1039,25 +1228,46 @@ const Campaigns: React.FC = () => {
                         className="bg-slate-200/20 border border-slate-200/10 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                       >
                         <div className="aspect-square relative">
-                          <Image
-                            src={material.imageUrl || "/placeholder.svg"}
-                            width={200}
-                            height={200}
-                            alt="Campaign material"
-                            className="w-full h-full object-cover"
-                          />
+                          {material.fileType === "video" ||
+                          material.imageUrl?.match(/\.(mp4|mov|avi|webm)$/i) ? (
+                            <video
+                              src={material.imageUrl}
+                              controls
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Image
+                              src={material.imageUrl || "/placeholder.svg"}
+                              width={200}
+                              height={200}
+                              alt="Campaign material"
+                              className="w-full h-full object-cover"
+                            />
+                          )}
                           <button
                             onClick={() => handleDeleteMaterial(material._id)}
                             className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-colors"
                             title="Delete material"
                           >
-                            {isDeletingMaterial ? <FaSpinner /> : <FaTimes />}
+                            {isDeletingMaterial ? (
+                              <FaSpinner className="animate-spin" />
+                            ) : (
+                              <FaTimes />
+                            )}
                           </button>
                         </div>
                         <div className="p-4">
                           <p className="text-white text-sm leading-relaxed mb-2">
                             {material.postDescription}
                           </p>
+                          <p className="text-white text-sm leading-relaxed mb-2">
+                            {material.contentType}
+                          </p>
+                          {material.fileType && (
+                            <span className="text-xs text-white/60 uppercase">
+                              {material.fileType}
+                            </span>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -1141,15 +1351,16 @@ const Campaigns: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-4">
+                        {/* File Upload Section */}
                         <div>
                           <label className="block text-sm font-medium text-white mb-2">
-                            Upload Image
+                            Upload Image or Video
                           </label>
                           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-yellow-400 transition-colors">
                             <input
                               type="file"
-                              accept="image/*"
+                              accept="image/*,video/*"
                               onChange={(e) =>
                                 handleFileChange(
                                   material.id,
@@ -1165,25 +1376,36 @@ const Campaigns: React.FC = () => {
                             >
                               {material.preview ? (
                                 <div className="space-y-2">
-                                  <Image
-                                    src={material.preview || "/placeholder.svg"}
-                                    width={200}
-                                    height={200}
-                                    alt="Preview"
-                                    className="w-full h-32 object-cover rounded-lg"
-                                  />
+                                  {material.fileType === "video" ? (
+                                    <video
+                                      src={material.preview}
+                                      controls
+                                      className="w-full h-48 object-cover rounded-lg"
+                                    />
+                                  ) : (
+                                    <Image
+                                      src={material.preview}
+                                      alt="Preview"
+                                      className="w-full h-48 object-cover rounded-lg"
+                                      width={30}
+                                      height={30}
+                                    />
+                                  )}
                                   <p className="text-sm text-white">
-                                    Click to change image
+                                    Click to change{" "}
+                                    {material.fileType || "file"}
                                   </p>
                                 </div>
                               ) : (
                                 <div className="space-y-2">
                                   <FaUpload className="w-8 h-8 text-white mx-auto" />
                                   <p className="text-sm text-white">
-                                    Click to upload image
+                                    Click to upload image or video
                                   </p>
                                   <p className="text-xs text-white">
-                                    PNG, JPG, GIF up to 10MB
+                                    Images: PNG, JPG, GIF (up to 10MB)
+                                    <br />
+                                    Videos: MP4, MOV, WebM (up to 50MB)
                                   </p>
                                 </div>
                               )}
@@ -1191,9 +1413,104 @@ const Campaigns: React.FC = () => {
                           </div>
                         </div>
 
+                        {/* Content Type Dropdown */}
                         <div>
                           <label className="block text-sm font-medium text-white mb-2">
-                            Description
+                            What would you like the influencer to do for you?{" "}
+                            <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            value={material.contentType}
+                            onChange={(e) =>
+                              handleContentTypeChange(
+                                material.id,
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-3 py-2 bg-slate-200/20 border border-slate-200/10 text-white rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                          >
+                            <option value="" className="bg-gray-900">
+                              Select content type...
+                            </option>
+                            <option
+                              value="Review a product or service by talking about it
+                              according to your style"
+                              className="bg-gray-900"
+                            >
+                              Review a product or service by talking about it
+                              according to your style
+                            </option>
+                            <option
+                              value="Make a re-post about what the advertiser gives to
+                              you (Campaign Materials)"
+                              className="bg-gray-900"
+                            >
+                              Make a re-post about what the advertiser gives to
+                              you (Campaign Materials)
+                            </option>
+                            <option
+                              value="Become a brand ambassador for my product or
+                              service (Contact support for this option)"
+                              className="bg-gray-900"
+                            >
+                              Become a brand ambassador for my product or
+                              service (Contact support for this option)
+                            </option>
+                            <option
+                              value="Unboxing video, unbox a product or service"
+                              className="bg-gray-900"
+                            >
+                              Unboxing video, unbox a product or service
+                            </option>
+                            <option
+                              value="Integrate what I do in your behind-the-scenes /
+                              “Day in the life” integrations that show natural
+                              product use."
+                              className="bg-gray-900"
+                            >
+                              Integrate what I do in your behind-the-scenes /
+                              “Day in the life” integrations that show natural
+                              product use.
+                            </option>
+                            <option
+                              value="Host giveaways or contests to boost engagement and
+                              reach new audiences."
+                              className="bg-gray-900"
+                            >
+                              Host giveaways or contests to boost engagement and
+                              reach new audiences.
+                            </option>
+                            <option
+                              value="Announce launches, discounts, or events on their
+                              channels."
+                              className="bg-gray-900"
+                            >
+                              Announce launches, discounts, or events on their
+                              channels.
+                            </option>
+                            <option
+                              value="Get an affiliate code and drive traffic to your
+                              website, event, or campaign (contact support)"
+                              className="bg-gray-900"
+                            >
+                              Get an affiliate code and drive traffic to your
+                              website, event, or campaign (contact support)
+                            </option>
+                            <option
+                              value="Feature your brand in their blog, newsletter, or
+                              podcast if they have one."
+                              className="bg-gray-900"
+                            >
+                              Feature your brand in their blog, newsletter, or
+                              podcast if they have one.
+                            </option>
+                          </select>
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                          <label className="block text-sm font-medium text-white mb-2">
+                            Description <span className="text-red-500">*</span>
                           </label>
                           <textarea
                             value={material.description}
@@ -1203,9 +1520,9 @@ const Campaigns: React.FC = () => {
                                 e.target.value
                               )
                             }
-                            placeholder="Describe this campaign material..."
-                            rows={6}
-                            className="w-full px-3 py-2 border text-white border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                            placeholder="Describe this campaign material and provide any specific instructions..."
+                            rows={4}
+                            className="w-full px-3 py-2 bg-slate-200/20 border border-slate-200/10 text-white rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
                           />
                         </div>
                       </div>

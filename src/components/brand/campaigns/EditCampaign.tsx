@@ -21,6 +21,7 @@ import CampaignSummary from "./CampaignSummary";
 import { calculateBrandQuotation, type BrandData } from "@/utils/calculations";
 import { useBrandStore } from "@/stores/brandStore";
 import { useToast } from "@/utils/ToastNotification";
+import { City, Country, State } from "country-state-city";
 
 interface Campaign {
   _id?: string;
@@ -73,11 +74,58 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
   onBack,
   campaignData,
 }) => {
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [states, setStates] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>([]);
   const [newLocation, setNewLocation] = useState("");
   const [submittedData, setSubmittedData] = useState<BrandData | null>(null);
   const [loading, setLoading] = useState(false);
   const { user, fetchCampaignsByEmail } = useBrandStore();
   const { showToast } = useToast();
+  const [additionalLocationCountry, setAdditionalLocationCountry] =
+    useState("");
+  const [additionalLocationState, setAdditionalLocationState] = useState("");
+  const [additionalLocationStates, setAdditionalLocationStates] = useState<
+    any[]
+  >([]);
+  const [additionalLocationCities, setAdditionalLocationCities] = useState<
+    any[]
+  >([]);
+  const [customFrequency, setCustomFrequency] = useState(false);
+  const [customFrequencyValues, setCustomFrequencyValues] = useState<any>({
+    postsPerWeek: 1,
+    weeks: 1,
+  });
+
+  const handleAdditionalCountryChange = (countryCode: string) => {
+    setAdditionalLocationCountry(countryCode);
+    setAdditionalLocationState("");
+
+    if (countryCode) {
+      const countryStates = State.getStatesOfCountry(countryCode);
+      setAdditionalLocationStates(countryStates);
+      setAdditionalLocationCities([]);
+    } else {
+      setAdditionalLocationStates([]);
+      setAdditionalLocationCities([]);
+    }
+  };
+
+  const handleAdditionalStateChange = (stateCode: string) => {
+    setAdditionalLocationState(stateCode);
+
+    if (stateCode && additionalLocationCountry) {
+      const stateCities = City.getCitiesOfState(
+        additionalLocationCountry,
+        stateCode
+      );
+      setAdditionalLocationCities(stateCities);
+    } else {
+      setAdditionalLocationCities([]);
+    }
+  };
 
   const initialValues: BrandData = {
     role: campaignData.role,
@@ -93,17 +141,7 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
     postDuration: campaignData.postDuration || "",
   };
 
-  const platforms = [
-    "Instagram",
-    "X",
-    "TikTok",
-    "Youtube",
-    "Facebook",
-    "Linkedin",
-    "Threads",
-    "Discord",
-    "Snapchat",
-  ];
+  const platforms = ["Instagram", "X", "TikTok", "Youtube", "Facebook"];
   const roles = ["Brand", "Business", "Person", "Movie", "Music", "Other"];
   const followerRanges = [
     "1k-3k",
@@ -116,8 +154,60 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
     "5 times per week for 3 weeks = 15 posts in total",
     "3 times per week for 4 weeks = 12 posts in total",
     "2 times per week for 6 weeks = 12 posts in total",
+    "1 time per week for 4 weeks = 4 posts in total",
+    "3 times per month for 2 months = 6 posts in total",
+    "custom",
   ];
   const postDurations = ["1 day", "1 week", "2 weeks", "1 month"];
+
+  const generateCustomFrequencyString = () => {
+    const { postsPerWeek, weeks } = customFrequencyValues;
+    const totalPosts = postsPerWeek * weeks;
+    return `${postsPerWeek} time${
+      postsPerWeek > 1 ? "s" : ""
+    } per week for ${weeks} week${
+      weeks > 1 ? "s" : ""
+    } = ${totalPosts} posts in total`;
+  };
+
+  const countries = Country.getAllCountries();
+
+  const handleCountryChange = (countryCode: string, setFieldValue: any) => {
+    setSelectedCountry(countryCode);
+    setSelectedState("");
+    setFieldValue("location", "");
+
+    if (countryCode) {
+      const countryStates = State.getStatesOfCountry(countryCode);
+      setStates(countryStates);
+      setCities([]);
+    } else {
+      setStates([]);
+      setCities([]);
+    }
+  };
+
+  const handleStateChange = (stateCode: string, setFieldValue: any) => {
+    setSelectedState(stateCode);
+    setFieldValue("location", "");
+
+    if (stateCode && selectedCountry) {
+      const stateCities = City.getCitiesOfState(selectedCountry, stateCode);
+      setCities(stateCities);
+    } else {
+      setCities([]);
+    }
+  };
+
+  const handleCityChange = (cityName: string, setFieldValue: any) => {
+    const country = countries.find((c) => c.isoCode === selectedCountry);
+    const state = states.find((s) => s.isoCode === selectedState);
+
+    const locationString = `${cityName}, ${state?.name || ""}, ${
+      country?.name || ""
+    }`;
+    setFieldValue("location", locationString);
+  };
 
   const getAuthToken = () => {
     if (typeof window !== "undefined") {
@@ -205,9 +295,15 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
   const onSubmit = async (values: any) => {
     try {
       const quotation = calculateBrandQuotation(values);
+      const dataForBackend = {
+        ...values,
+        postFrequency: customFrequency
+          ? generateCustomFrequencyString()
+          : values.postFrequency,
+      };
 
       const updatedCampaignData = {
-        ...values,
+        ...dataForBackend,
         _id: campaignData._id,
         email: campaignData.email,
         avgInfluencers: quotation.avgInfluencers,
@@ -290,363 +386,642 @@ const EditCampaign: React.FC<EditCampaignProps> = ({
                     onSubmit={onSubmit}
                     enableReinitialize={true}
                   >
-                    {({ values, setFieldValue, errors, touched }) => (
-                      <Form className="space-y-6">
-                        {/* Role Selection */}
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-white flex items-center gap-2">
-                            <User className="w-4 h-4" />I am a:
-                          </label>
-                          <Field
-                            as="select"
-                            name="role"
-                            className={`frm ${
-                              errors.role && touched.role
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            }`}
-                          >
-                            <option value="">Select your role...</option>
-                            {roles.map((role) => (
-                              <option key={role} value={role}>
-                                {role}
-                              </option>
-                            ))}
-                          </Field>
-                          <ErrorMessage
-                            name="role"
-                            component="p"
-                            className="text-sm text-red-600"
-                          />
-                        </div>
+                    {({ values, setFieldValue, errors, touched }) => {
+                      const handleAdditionalCitySelect = (
+                        cityName: string,
+                        push: (value: string) => void
+                      ) => {
+                        const country = countries.find(
+                          (c) => c.isoCode === additionalLocationCountry
+                        );
+                        const state = additionalLocationStates.find(
+                          (s) => s.isoCode === additionalLocationState
+                        );
 
-                        {/* Platform Selection */}
-                        <div className="space-y-3">
-                          <label className="text-sm font-medium text-white">
-                            I want to advertise & promote my brand on:
-                          </label>
-                          <div className="mt-2 flex items-center gap-4 flex-wrap">
-                            {platforms.map((platform) => (
-                              <label
-                                key={platform}
-                                className="flex items-center space-x-3 cursor-pointer"
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={values.platforms.includes(platform)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setFieldValue("platforms", [
-                                        ...values.platforms,
-                                        platform,
-                                      ]);
-                                    } else {
-                                      setFieldValue(
-                                        "platforms",
-                                        values.platforms.filter(
-                                          (p) => p !== platform
-                                        )
-                                      );
-                                    }
-                                  }}
-                                  className="w-4 h-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
+                        const locationString = `${cityName}, ${
+                          state?.name || ""
+                        }, ${country?.name || ""}`;
+
+                        // Check if location already exists
+                        if (
+                          !values.additionalLocations.includes(locationString)
+                        ) {
+                          push(locationString);
+                        }
+
+                        // Reset the additional location form
+                        setAdditionalLocationCountry("");
+                        setAdditionalLocationState("");
+                        setAdditionalLocationStates([]);
+                        setAdditionalLocationCities([]);
+                      };
+                      return (
+                        <Form className="space-y-6">
+                          {/* Role Selection */}
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-white flex items-center gap-2">
+                              <User className="w-4 h-4" />I am a:
+                            </label>
+                            <Field
+                              as="select"
+                              name="role"
+                              className={`frm ${
+                                errors.role && touched.role
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              }`}
+                            >
+                              <option value="">Select your role...</option>
+                              {roles.map((role) => (
+                                <option key={role} value={role}>
+                                  {role}
+                                </option>
+                              ))}
+                            </Field>
+                            <ErrorMessage
+                              name="role"
+                              component="p"
+                              className="text-sm text-red-600"
+                            />
+                          </div>
+
+                          {/* Platform Selection */}
+                          <div className="space-y-3">
+                            <label className="text-sm font-medium text-white">
+                              I want to advertise & promote my brand on:
+                            </label>
+                            <div className="mt-2 flex items-center gap-4 flex-wrap">
+                              {platforms.map((platform) => (
+                                <label
+                                  key={platform}
+                                  className="flex items-center space-x-3 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={values.platforms.includes(
+                                      platform
+                                    )}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setFieldValue("platforms", [
+                                          ...values.platforms,
+                                          platform,
+                                        ]);
+                                      } else {
+                                        setFieldValue(
+                                          "platforms",
+                                          values.platforms.filter(
+                                            (p) => p !== platform
+                                          )
+                                        );
+                                      }
+                                    }}
+                                    className="w-4 h-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
+                                  />
+                                  <span className="text-sm text-white">
+                                    {platform}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                            <ErrorMessage
+                              name="platforms"
+                              component="p"
+                              className="text-sm text-red-600"
+                            />
+                          </div>
+
+                          {/* Number of Influencers */}
+                          <div className="space-y-3">
+                            <label className="text-sm font-medium text-white flex items-center gap-2">
+                              <Users className="w-4 h-4" />
+                              Number of influencers needed:
+                            </label>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm text-white mb-1">
+                                  Minimum
+                                </label>
+                                <Field name="influencersMin">
+                                  {({ field, meta }: any) => (
+                                    <input
+                                      {...field}
+                                      type="number"
+                                      min="1"
+                                      step="1"
+                                      placeholder="Minimum"
+                                      value={field.value || ""}
+                                      onChange={(e) => {
+                                        const value =
+                                          e.target.value === ""
+                                            ? ""
+                                            : Number(e.target.value);
+                                        setFieldValue("influencersMin", value);
+                                      }}
+                                      className={`frm ${
+                                        meta.touched && meta.error
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      }`}
+                                    />
+                                  )}
+                                </Field>
+                                <ErrorMessage
+                                  name="influencersMin"
+                                  component="p"
+                                  className="text-xs text-red-600 mt-1"
                                 />
-                                <span className="text-sm text-white">
-                                  {platform}
-                                </span>
-                              </label>
-                            ))}
-                          </div>
-                          <ErrorMessage
-                            name="platforms"
-                            component="p"
-                            className="text-sm text-red-600"
-                          />
-                        </div>
-
-                        {/* Number of Influencers */}
-                        <div className="space-y-3">
-                          <label className="text-sm font-medium text-white flex items-center gap-2">
-                            <Users className="w-4 h-4" />
-                            Number of influencers needed:
-                          </label>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-sm text-white mb-1">
-                                Minimum
-                              </label>
-                              <Field name="influencersMin">
-                                {({ field, meta }: any) => (
-                                  <input
-                                    {...field}
-                                    type="number"
-                                    min="1"
-                                    step="1"
-                                    placeholder="Minimum"
-                                    value={field.value || ""}
-                                    onChange={(e) => {
-                                      const value =
-                                        e.target.value === ""
-                                          ? ""
-                                          : Number(e.target.value);
-                                      setFieldValue("influencersMin", value);
-                                    }}
-                                    className={`frm ${
-                                      meta.touched && meta.error
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    }`}
-                                  />
-                                )}
-                              </Field>
-                              <ErrorMessage
-                                name="influencersMin"
-                                component="p"
-                                className="text-xs text-red-600 mt-1"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm text-white mb-1">
-                                Maximum
-                              </label>
-                              <Field name="influencersMax">
-                                {({ field, meta }: any) => (
-                                  <input
-                                    {...field}
-                                    type="number"
-                                    min="1"
-                                    step="1"
-                                    placeholder="Maximum"
-                                    value={field.value || ""}
-                                    onChange={(e) => {
-                                      const value =
-                                        e.target.value === ""
-                                          ? ""
-                                          : Number(e.target.value);
-                                      setFieldValue("influencersMax", value);
-                                    }}
-                                    className={`frm ${
-                                      meta.touched && meta.error
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                    }`}
-                                  />
-                                )}
-                              </Field>
-                              <ErrorMessage
-                                name="influencersMax"
-                                component="p"
-                                className="text-xs text-red-600 mt-1"
-                              />
+                              </div>
+                              <div>
+                                <label className="block text-sm text-white mb-1">
+                                  Maximum
+                                </label>
+                                <Field name="influencersMax">
+                                  {({ field, meta }: any) => (
+                                    <input
+                                      {...field}
+                                      type="number"
+                                      min="1"
+                                      step="1"
+                                      placeholder="Maximum"
+                                      value={field.value || ""}
+                                      onChange={(e) => {
+                                        const value =
+                                          e.target.value === ""
+                                            ? ""
+                                            : Number(e.target.value);
+                                        setFieldValue("influencersMax", value);
+                                      }}
+                                      className={`frm ${
+                                        meta.touched && meta.error
+                                          ? "border-red-500"
+                                          : "border-gray-300"
+                                      }`}
+                                    />
+                                  )}
+                                </Field>
+                                <ErrorMessage
+                                  name="influencersMax"
+                                  component="p"
+                                  className="text-xs text-red-600 mt-1"
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Followers Range */}
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-white">
-                            Preferred followers range:
-                          </label>
-                          <Field
-                            as="select"
-                            name="followersRange"
-                            className="frm"
-                          >
-                            <option value="">Select followers range...</option>
-                            {followerRanges.map((range) => (
-                              <option key={range} value={range}>
-                                {range}
+                          {/* Followers Range */}
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-white">
+                              Preferred followers range:
+                            </label>
+                            <Field
+                              as="select"
+                              name="followersRange"
+                              className="frm"
+                            >
+                              <option value="">
+                                Select followers range...
                               </option>
-                            ))}
-                          </Field>
-                        </div>
+                              {followerRanges.map((range) => (
+                                <option key={range} value={range}>
+                                  {range}
+                                </option>
+                              ))}
+                            </Field>
+                          </div>
 
-                        {/* Location */}
-                        <div className="space-y-3">
-                          <label className="text-sm font-medium text-white flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
-                            Target location:
-                          </label>
-                          <Field
-                            name="location"
-                            type="text"
-                            placeholder="e.g., Ikeja, Lagos, Nigeria"
-                            className={`frm ${
-                              errors.location && touched.location
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            }`}
-                          />
-                          <ErrorMessage
-                            name="location"
-                            component="p"
-                            className="text-sm text-red-600"
-                          />
-
-                          {/* Additional Locations */}
-                          <FieldArray name="additionalLocations">
-                            {({ push, remove }) => (
+                          {/* Location */}
+                          <div className="space-y-4">
+                            <label className="text-sm font-medium text-white flex items-center gap-2">
+                              <MapPin className="w-4 h-4" />
+                              Target location: *
+                            </label>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="space-y-2">
-                                {values.additionalLocations &&
-                                  values.additionalLocations.map(
-                                    (loc, index) => (
-                                      <div
-                                        key={`${loc}-${index}`}
-                                        className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg"
-                                      >
-                                        <span className="flex-1 text-sm">
-                                          {loc}
-                                        </span>
-                                        <button
-                                          type="button"
-                                          onClick={() => remove(index)}
-                                          className="text-red-500 hover:text-red-400"
-                                        >
-                                          <X className="w-4 h-4" />
-                                        </button>
-                                      </div>
+                                <label className="text-xs font-medium text-gray-400">
+                                  Country
+                                </label>
+                                <select
+                                  onChange={(e) =>
+                                    handleCountryChange(
+                                      e.target.value,
+                                      setFieldValue
                                     )
+                                  }
+                                  value={selectedCountry}
+                                  className="frm"
+                                >
+                                  <option value="">Select Country</option>
+                                  {countries.map((country) => (
+                                    <option
+                                      key={country.isoCode}
+                                      value={country.isoCode}
+                                    >
+                                      {country.flag} {country.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <label className="text-xs font-medium text-gray-400">
+                                  State/Province
+                                </label>
+                                <select
+                                  onChange={(e) =>
+                                    handleStateChange(
+                                      e.target.value,
+                                      setFieldValue
+                                    )
+                                  }
+                                  value={selectedState}
+                                  disabled={!selectedCountry}
+                                  className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  <option value="">Select State</option>
+                                  {states.map((state) => (
+                                    <option
+                                      key={state.isoCode}
+                                      value={state.isoCode}
+                                    >
+                                      {state.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <label className="text-xs font-medium text-gray-400">
+                                  City
+                                </label>
+                                <select
+                                  onChange={(e) =>
+                                    handleCityChange(
+                                      e.target.value,
+                                      setFieldValue
+                                    )
+                                  }
+                                  disabled={!selectedState}
+                                  className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  <option value="">Select City</option>
+                                  {cities.map((city) => (
+                                    <option key={city.name} value={city.name}>
+                                      {city.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                            <Field name="location" type="hidden" />
+                            {values.location && (
+                              <div className="bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg text-sm">
+                                Selected: {values.location}
+                              </div>
+                            )}
+                            <ErrorMessage
+                              name="location"
+                              component="p"
+                              className="text-sm text-red-600"
+                            />
+                            <FieldArray name="additionalLocations">
+                              {({ push, remove }) => (
+                                <div className="space-y-3">
+                                  <label className="text-sm font-medium text-white">
+                                    Additional Locations (Optional)
+                                  </label>
+
+                                  {/* Display added locations */}
+                                  {values.additionalLocations.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mb-3">
+                                      {values.additionalLocations.map(
+                                        (loc, index) => (
+                                          <div
+                                            key={`${loc}-${index}`}
+                                            className="flex items-center gap-2 bg-yellow-50 text-yellow-700 px-3 py-1 rounded-lg text-sm"
+                                          >
+                                            <span>{loc}</span>
+                                            <button
+                                              type="button"
+                                              onClick={() => remove(index)}
+                                              className="text-yellow-800 hover:text-yellow-900"
+                                            >
+                                              <X className="w-4 h-4" />
+                                            </button>
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
                                   )}
 
-                                <div className="flex gap-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Add additional location"
-                                    value={newLocation}
-                                    onChange={(e) =>
-                                      setNewLocation(e.target.value)
-                                    }
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        e.preventDefault();
-                                        const trimmed = newLocation.trim();
-                                        if (trimmed) {
-                                          push(trimmed);
-                                          setNewLocation("");
+                                  {/* Add new location form */}
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {/* Country Dropdown */}
+                                    <div className="space-y-2">
+                                      <label className="text-xs font-medium text-gray-400">
+                                        Country
+                                      </label>
+                                      <select
+                                        value={additionalLocationCountry}
+                                        onChange={(e) =>
+                                          handleAdditionalCountryChange(
+                                            e.target.value
+                                          )
                                         }
+                                        className="frm"
+                                      >
+                                        <option value="">Select Country</option>
+                                        {countries.map((country) => (
+                                          <option
+                                            key={country.isoCode}
+                                            value={country.isoCode}
+                                          >
+                                            {country.flag} {country.name}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </div>
+
+                                    {/* State Dropdown */}
+                                    <div className="space-y-2">
+                                      <label className="text-xs font-medium text-gray-400">
+                                        State/Province
+                                      </label>
+                                      <select
+                                        value={additionalLocationState}
+                                        onChange={(e) =>
+                                          handleAdditionalStateChange(
+                                            e.target.value
+                                          )
+                                        }
+                                        disabled={!additionalLocationCountry}
+                                        className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        <option value="">Select State</option>
+                                        {additionalLocationStates.map(
+                                          (state) => (
+                                            <option
+                                              key={state.isoCode}
+                                              value={state.isoCode}
+                                            >
+                                              {state.name}
+                                            </option>
+                                          )
+                                        )}
+                                      </select>
+                                    </div>
+
+                                    {/* City Dropdown */}
+                                    <div className="space-y-2">
+                                      <label className="text-xs font-medium text-gray-400">
+                                        City
+                                      </label>
+                                      <select
+                                        onChange={(e) => {
+                                          if (e.target.value) {
+                                            handleAdditionalCitySelect(
+                                              e.target.value,
+                                              push
+                                            );
+                                            e.target.value = "";
+                                          }
+                                        }}
+                                        disabled={!additionalLocationState}
+                                        className="frm disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        <option value="">
+                                          Select & Add City
+                                        </option>
+                                        {additionalLocationCities.map(
+                                          (city) => (
+                                            <option
+                                              key={city.name}
+                                              value={city.name}
+                                            >
+                                              {city.name}
+                                            </option>
+                                          )
+                                        )}
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </FieldArray>
+                          </div>
+
+                          {/* Posting Frequency */}
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-white flex items-center gap-2">
+                              <Calendar className="w-4 h-4" />
+                              Posting frequency:
+                            </label>
+                            <Field
+                              as="select"
+                              name="postFrequency"
+                              className="frm"
+                              onChange={(e: any) => {
+                                const value = e.target.value;
+                                setFieldValue("postFrequency", value);
+                                setCustomFrequency(value === "custom");
+                              }}
+                            >
+                              <option value="">
+                                Select posting frequency...
+                              </option>
+                              {postFrequencies.map((freq) => (
+                                <option key={freq} value={freq}>
+                                  {freq === "custom"
+                                    ? "Custom frequency"
+                                    : freq}
+                                </option>
+                              ))}
+                            </Field>
+
+                            {customFrequency && (
+                              <div className="mt-4 p-4 bg-slate-200/20 rounded-lg border border-slate-200/10">
+                                <h4 className="text-sm font-medium text-white mb-3">
+                                  Customize your posting schedule:
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <label className="text-xs text-gray-400 mb-1 block">
+                                      Posts per week
+                                    </label>
+                                    <input
+                                      type="number"
+                                      min="1"
+                                      max="7"
+                                      value={
+                                        customFrequencyValues.postsPerWeek ?? ""
                                       }
-                                    }}
-                                    className="frm"
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const trimmed = newLocation.trim();
-                                      if (trimmed) {
-                                        push(trimmed);
-                                        setNewLocation("");
-                                      }
-                                    }}
-                                    className="px-3 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-600 rounded-xl border border-gray-300 transition-colors"
-                                    aria-label="Add location"
-                                    title="Add location"
-                                  >
-                                    <Plus className="w-4 h-4" />
-                                  </button>
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+                                        const newValue =
+                                          value === ""
+                                            ? ""
+                                            : Number.parseInt(value, 10);
+                                        setCustomFrequencyValues({
+                                          ...customFrequencyValues,
+                                          postsPerWeek: newValue,
+                                        });
+                                        if (
+                                          newValue !== "" &&
+                                          customFrequencyValues.weeks !== ""
+                                        ) {
+                                          const updatedFrequency = `${newValue} time${
+                                            newValue > 1 ? "s" : ""
+                                          } per week for ${
+                                            customFrequencyValues.weeks
+                                          } week${
+                                            customFrequencyValues.weeks > 1
+                                              ? "s"
+                                              : ""
+                                          } = ${
+                                            newValue *
+                                            customFrequencyValues.weeks
+                                          } posts in total`;
+                                          setFieldValue(
+                                            "postFrequency",
+                                            updatedFrequency
+                                          );
+                                        }
+                                      }}
+                                      className="w-full px-2 py-1 text-sm bg-slate-200/20 text-white rounded border border-slate-200/10 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-xs text-gray-400 mb-1 block">
+                                      Number of weeks
+                                    </label>
+                                    <input
+                                      type="number"
+                                      min="1"
+                                      max="52"
+                                      value={customFrequencyValues.weeks ?? ""}
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+                                        const newValue =
+                                          value === ""
+                                            ? ""
+                                            : Number.parseInt(value, 10);
+                                        setCustomFrequencyValues({
+                                          ...customFrequencyValues,
+                                          weeks: newValue,
+                                        });
+                                        if (
+                                          newValue !== "" &&
+                                          customFrequencyValues.postsPerWeek !==
+                                            ""
+                                        ) {
+                                          const updatedFrequency = `${
+                                            customFrequencyValues.postsPerWeek
+                                          } time${
+                                            customFrequencyValues.postsPerWeek >
+                                            1
+                                              ? "s"
+                                              : ""
+                                          } per week for ${newValue} week${
+                                            newValue > 1 ? "s" : ""
+                                          } = ${
+                                            customFrequencyValues.postsPerWeek *
+                                            newValue
+                                          } posts in total`;
+                                          setFieldValue(
+                                            "postFrequency",
+                                            updatedFrequency
+                                          );
+                                        }
+                                      }}
+                                      className="w-full px-2 py-1 text-sm bg-slate-200/20 text-white rounded border border-slate-200/10 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="mt-3 text-sm text-gray-400 bg-slate-200/20 p-2 rounded border border-slate-200/10">
+                                  <strong>Preview:</strong>{" "}
+                                  {generateCustomFrequencyString()}
                                 </div>
                               </div>
                             )}
-                          </FieldArray>
-                        </div>
-
-                        {/* Posting Frequency */}
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-white flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            Posting frequency:
-                          </label>
-                          <Field
-                            as="select"
-                            name="postFrequency"
-                            className="frm"
-                          >
-                            <option value="">
-                              Select posting frequency...
-                            </option>
-                            {postFrequencies.map((freq) => (
-                              <option key={freq} value={freq}>
-                                {freq}
-                              </option>
-                            ))}
-                          </Field>
-                        </div>
-
-                        {/* Post Duration */}
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-white flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
-                            Post stays on page for:
-                          </label>
-                          <Field
-                            as="select"
-                            name="postDuration"
-                            className="frm"
-                          >
-                            <option value="">Select duration...</option>
-                            {postDurations.map((duration) => (
-                              <option key={duration} value={duration}>
-                                {duration}
-                              </option>
-                            ))}
-                          </Field>
-                        </div>
-
-                        {/* Brand Information - Read Only */}
-                        <div className="space-y-4 pt-4 border-t border-gray-200">
-                          <h3 className="text-lg font-semibold text-white">
-                            Brand Information
-                          </h3>
-                          <p className="text-sm text-white">
-                            Brand information cannot be changed during campaign
-                            editing.
-                          </p>
-
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-white">
-                              Brand name
-                            </label>
-                            <Field
-                              name="brandName"
-                              type="text"
-                              disabled
-                              className="frm cursor-not-allowed"
-                            />
                           </div>
 
+                          {/* Post Duration */}
                           <div className="space-y-2">
                             <label className="text-sm font-medium text-white flex items-center gap-2">
-                              <Phone className="w-4 h-4" />
-                              Brand phone number
+                              <Clock className="w-4 h-4" />
+                              Post stays on page for:
                             </label>
                             <Field
-                              name="brandPhone"
-                              type="tel"
-                              disabled
-                              className="frm cursor-not-allowed"
-                            />
+                              as="select"
+                              name="postDuration"
+                              className="frm"
+                            >
+                              <option value="">Select duration...</option>
+                              {postDurations.map((duration) => (
+                                <option key={duration} value={duration}>
+                                  {duration}
+                                </option>
+                              ))}
+                            </Field>
                           </div>
-                        </div>
 
-                        <button
-                          type="submit"
-                          disabled={loading}
-                          className={`w-full px-4 py-3 rounded-lg font-medium transition-colors ${
-                            loading
-                              ? "bg-yellow-400 cursor-not-allowed"
-                              : "bg-yellow-600 hover:bg-yellow-400"
-                          } text-white`}
-                        >
-                          {loading ? (
-                            <div className="flex items-center justify-center gap-2">
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              Updating Campaign...
+                          {/* Brand Information - Read Only */}
+                          <div className="space-y-4 pt-4 border-t border-gray-200">
+                            <h3 className="text-lg font-semibold text-white">
+                              Brand Information
+                            </h3>
+                            <p className="text-sm text-white">
+                              Brand information cannot be changed during
+                              campaign editing.
+                            </p>
+
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium text-white">
+                                Brand name
+                              </label>
+                              <Field
+                                name="brandName"
+                                type="text"
+                                disabled
+                                className="frm cursor-not-allowed"
+                              />
                             </div>
-                          ) : (
-                            "Update Campaign & Recalculate Quotation"
-                          )}
-                        </button>
-                      </Form>
-                    )}
+
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium text-white flex items-center gap-2">
+                                <Phone className="w-4 h-4" />
+                                Brand phone number
+                              </label>
+                              <Field
+                                name="brandPhone"
+                                type="tel"
+                                disabled
+                                className="frm cursor-not-allowed"
+                              />
+                            </div>
+                          </div>
+
+                          <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full px-4 py-3 rounded-lg font-medium transition-colors ${
+                              loading
+                                ? "bg-yellow-400 cursor-not-allowed"
+                                : "bg-yellow-600 hover:bg-yellow-400"
+                            } text-white`}
+                          >
+                            {loading ? (
+                              <div className="flex items-center justify-center gap-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                Updating Campaign...
+                              </div>
+                            ) : (
+                              "Update Campaign & Recalculate Quotation"
+                            )}
+                          </button>
+                        </Form>
+                      );
+                    }}
                   </Formik>
                 </div>
               </>

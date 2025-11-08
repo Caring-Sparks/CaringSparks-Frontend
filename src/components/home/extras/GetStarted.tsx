@@ -32,14 +32,15 @@ const GetStarted: React.FC<GetStartedProps> = ({ onClose, login }) => {
     {
       label: "Register as an Influencer",
       img: "/icons/rocket.png",
-      description: "Grow your audience and connect with brands.",
+      description:
+        "(Start Influencing now, check what you would EARN when you Create Contents To Promote Brands, Businesses, People, Events, Products or Services)",
       color: "from-purple-500 to-pink-500",
       endpoint: "/api/register/influencer",
     },
     {
-      label: "Register as a Brand",
+      label: "Advertiser Registration",
       img: "/icons/organization.png",
-      description: "Find the perfect influencers to promote your business.",
+      description: "(Register now, let our Influencers create contents to promote you)",
       color: "from-blue-500 to-cyan-500",
       endpoint: "/api/register/brand",
     },
@@ -114,7 +115,7 @@ const GetStarted: React.FC<GetStartedProps> = ({ onClose, login }) => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
             >
-              {selected === "Register as a Brand" ? (
+              {selected === "Advertiser Registration" ? (
                 <BrandForm onBack={() => setSelected(null)} login={login} />
               ) : (
                 <InfluencerForm
