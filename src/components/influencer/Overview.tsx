@@ -468,9 +468,7 @@ const Overview: React.FC = () => {
           <div className="bg-slate-200/20 rounded-xl shadow-sm p-6 border border-slate-200/10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-white">
-                  Max Monthly Earnings
-                </p>
+                <p className="text-sm font-medium text-white">Total Earnings</p>
                 <p className="text-3xl font-bold text-white">
                   ₦{user?.maxMonthlyEarningsNaira?.toLocaleString() || "0"}
                 </p>

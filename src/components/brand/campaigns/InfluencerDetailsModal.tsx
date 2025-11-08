@@ -1,7 +1,6 @@
 "use client";
 
-import type React from "react";
-
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   FaTimes,
@@ -22,8 +21,21 @@ import {
   FaShare,
   FaChartLine,
   FaUsers,
+  FaPaperPlane,
+  FaUserTie,
+  FaStar,
 } from "react-icons/fa";
 import { SiThreads, SiDiscord } from "react-icons/si";
+
+interface ReviewComment {
+  _id: string;
+  authorType: "brand" | "influencer";
+  authorId: string;
+  authorName: string;
+  comment: string;
+  createdAt: string;
+  updatedAt?: string;
+}
 
 interface PlatformData {
   followers: string;
@@ -36,6 +48,7 @@ interface SubmittedJob {
   _id: string;
   description: string;
   submittedAt: string;
+  reviews: ReviewComment[];
 }
 
 interface Influencer {
@@ -50,8 +63,6 @@ interface Influencer {
   malePercentage?: string;
   femalePercentage?: string;
   audienceProofUrl?: string;
-
-  // Platform data
   instagram?: PlatformData;
   twitter?: PlatformData;
   tiktok?: PlatformData;
@@ -61,8 +72,6 @@ interface Influencer {
   discord?: PlatformData;
   threads?: PlatformData;
   snapchat?: PlatformData;
-
-  // Calculated earnings
   followerFee?: number;
   impressionFee?: number;
   locationFee?: number;
@@ -72,12 +81,8 @@ interface Influencer {
   maxMonthlyEarnings?: number;
   maxMonthlyEarningsNaira?: number;
   followersCount?: number;
-
-  // Legacy fields
   amountPerPost?: string;
   amountPerMonth?: string;
-
-  // Metadata
   status: "pending" | "approved" | "rejected";
   emailSent: boolean;
   isValidated: boolean;
@@ -89,7 +94,13 @@ interface InfluencerDetailsModalProps {
   influencer: Influencer | null;
   isOpen: boolean;
   onClose: () => void;
-  submittedJobs?: SubmittedJob[];
+  submittedJobs?: any;
+  currentUser?: {
+    id: any;
+    name: any;
+    type: "brand" | "influencer";
+  };
+  onAddReview?: (jobId: string, comment: string) => Promise<void>;
 }
 
 const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
@@ -97,8 +108,32 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
   isOpen,
   onClose,
   submittedJobs = [],
+  currentUser,
+  onAddReview,
 }) => {
+  const [reviewComments, setReviewComments] = useState<{
+    [key: string]: string;
+  }>({});
+  const [submittingReview, setSubmittingReview] = useState<{
+    [key: string]: boolean;
+  }>({});
+
   if (!influencer) return null;
+
+  const handleSubmitReview = async (jobId: string) => {
+    const comment = reviewComments[jobId]?.trim();
+    if (!comment || !onAddReview) return;
+
+    setSubmittingReview({ ...submittingReview, [jobId]: true });
+    try {
+      await onAddReview(jobId, comment);
+      setReviewComments({ ...reviewComments, [jobId]: "" });
+    } catch (error) {
+      console.error("Failed to submit review:", error);
+    } finally {
+      setSubmittingReview({ ...submittingReview, [jobId]: false });
+    }
+  };
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
@@ -126,7 +161,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
   };
 
   const formatNumber = (num: string | number) => {
-    const value = typeof num === "string" ? Number.parseInt(num) : num;
+    const value = typeof num === "string" ? parseInt(num) : num;
     if (isNaN(value)) return "0";
 
     if (value >= 1000000) {
@@ -147,6 +182,17 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const getPlatformsWithData = () => {
@@ -435,7 +481,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                     {influencer.maxMonthlyEarningsNaira && (
                       <div className="p-4 bg-blue-50/10 border border-slate-200/10 rounded-lg">
                         <h5 className="font-medium text-blue-700 mb-1">
-                          Max Monthly Earnings
+                          Total Earnings
                         </h5>
                         <p className="text-2xl font-bold text-blue-600">
                           {formatCurrency(influencer.maxMonthlyEarningsNaira)}
@@ -491,7 +537,7 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                   </div>
 
                   <div className="space-y-4">
-                    {submittedJobs.map((job, index) => {
+                    {submittedJobs.map((job: any, index: any) => {
                       const parseJobDescription = (description: string) => {
                         const lines = description
                           .split("\n")
@@ -677,13 +723,9 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                               const cleaned = val
                                                 .replace(/,/g, "")
                                                 .trim();
-                                              const numValue =
-                                                Number.parseFloat(
-                                                  cleaned.replace(
-                                                    /[^\d.-]/g,
-                                                    ""
-                                                  )
-                                                );
+                                              const numValue = parseFloat(
+                                                cleaned.replace(/[^\d.-]/g, "")
+                                              );
                                               if (!isNaN(numValue)) {
                                                 if (numValue >= 1_000_000)
                                                   return (
@@ -784,7 +826,6 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                 </div>
                               </div>
                             ) : (
-                              /* Fallback for unstructured descriptions */
                               <div className="bg-gray-50 rounded-lg p-4">
                                 <div className="text-sm font-medium text-white mb-2">
                                   Job Description
@@ -794,11 +835,143 @@ const InfluencerDetailsModal: React.FC<InfluencerDetailsModalProps> = ({
                                 </div>
                               </div>
                             )}
+
+                            {/* Reviews Section */}
+                            <div className="mt-6 bg-slate-200/10 border border-slate-200/10 rounded-lg p-4">
+                              <h5 className="text-white font-bold mb-4 flex items-center gap-2">
+                                <FaComment className="text-yellow-600" />
+                                Discussion Thread
+                              </h5>
+
+                              {/* Existing Reviews */}
+                              {job.reviews && job.reviews.length > 0 ? (
+                                <div className="space-y-3 mb-4">
+                                  {job.reviews.map((review: any) => (
+                                    <div
+                                      key={review._id}
+                                      className={`p-3 rounded-lg ${
+                                        review.authorType === "brand"
+                                          ? "bg-blue-50/10 border-l-4 border-blue-500"
+                                          : "bg-purple-50/10 border-l-4 border-purple-500"
+                                      }`}
+                                    >
+                                      <div className="flex items-start gap-3">
+                                        <div
+                                          className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${
+                                            review.authorType === "brand"
+                                              ? "bg-blue-600"
+                                              : "bg-purple-600"
+                                          }`}
+                                        >
+                                          {review.authorType === "brand" ? (
+                                            <FaUserTie />
+                                          ) : (
+                                            <FaStar />
+                                          )}
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="flex flex-col items-start gap-2 mb-1">
+                                            <span className="font-semibold truncate max-w-30 md:max-w-full text-white text-sm">
+                                              {review.authorName}
+                                            </span>
+                                            <span
+                                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                review.authorType === "brand"
+                                                  ? "bg-blue-100 text-blue-800"
+                                                  : "bg-purple-100 text-purple-800"
+                                              }`}
+                                            >
+                                              {review.authorType === "brand"
+                                                ? "Brand"
+                                                : "Influencer"}
+                                            </span>
+                                          </div>
+                                          <p className="text-white text-sm leading-relaxed">
+                                            {review.comment}
+                                          </p>
+                                          <span className="text-xs text-gray-400">
+                                            {formatDateTime(review.createdAt)}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="text-center py-4 text-gray-400 text-sm mb-4">
+                                  No comments yet. Be the first to start the
+                                  discussion!
+                                </div>
+                              )}
+
+                              {/* Add Review Form */}
+                              {currentUser && onAddReview && (
+                                <div className="border-t border-slate-200/10 pt-4">
+                                  <div className="flex gap-3">
+                                    <div
+                                      className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 ${
+                                        currentUser.type === "brand"
+                                          ? "bg-blue-600"
+                                          : "bg-purple-600"
+                                      }`}
+                                    >
+                                      {currentUser.type === "brand" ? (
+                                        <FaUserTie />
+                                      ) : (
+                                        <FaStar />
+                                      )}
+                                    </div>
+                                    <div className="flex-1">
+                                      <textarea
+                                        value={reviewComments[job._id] || ""}
+                                        onChange={(e) =>
+                                          setReviewComments({
+                                            ...reviewComments,
+                                            [job._id]: e.target.value,
+                                          })
+                                        }
+                                        placeholder={
+                                          currentUser.type === "brand"
+                                            ? "Leave feedback for the influencer..."
+                                            : "Respond to the brand's feedback..."
+                                        }
+                                        className="w-full px-4 py-3 bg-slate-200/20 border border-slate-200/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent resize-none"
+                                        rows={3}
+                                      />
+                                      <div className="flex justify-end mt-2">
+                                        <button
+                                          onClick={() =>
+                                            handleSubmitReview(job._id)
+                                          }
+                                          disabled={
+                                            !reviewComments[job._id]?.trim() ||
+                                            submittingReview[job._id]
+                                          }
+                                          className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                                        >
+                                          {submittingReview[job._id] ? (
+                                            <>
+                                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                              Posting...
+                                            </>
+                                          ) : (
+                                            <>
+                                              <FaPaperPlane />
+                                              Post Comment
+                                            </>
+                                          )}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
 
                           {/* Job Footer */}
                           <div className="px-6 py-3 bg-slate-200/20 border-t border-slate-200/10 rounded-b-xl">
-                            <div className="flex items-center justify-between text-xs text-gray-900">
+                            <div className="flex items-center justify-between text-xs text-gray-400">
                               <span>Job ID: {job._id}</span>
                               <span className="flex items-center gap-1">
                                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>

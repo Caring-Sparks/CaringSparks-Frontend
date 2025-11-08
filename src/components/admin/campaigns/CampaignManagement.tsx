@@ -18,7 +18,7 @@ interface SubmittedJob {
 
 interface AssignedInfluencer {
   influencerId: string;
-  isCompleted: boolean;
+  isCompleted: string;
   submittedJobs: SubmittedJob[];
   acceptanceStatus: string;
   completedAt?: string;
@@ -911,7 +911,8 @@ const CampaignManagement: React.FC = () => {
                                       (ai: any) => ai.influencerId === inf._id
                                     );
                                   const isCompleted =
-                                    assignedInfluencer?.isCompleted || false;
+                                    assignedInfluencer?.isCompleted ===
+                                    "Completed";
 
                                   return (
                                     <div
