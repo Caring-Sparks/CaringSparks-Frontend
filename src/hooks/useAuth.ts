@@ -164,7 +164,10 @@ export function useAuth() {
     }
   };
 
-  const forgotPassword = async (email: string, role: string): Promise<boolean> => {
+  const forgotPassword = async (
+    email: string,
+    role: string
+  ): Promise<boolean> => {
     try {
       setLoading(true);
       const response = await axios.post<ForgotPasswordResponse>(
@@ -219,7 +222,7 @@ export function useAuth() {
         showToast({
           type: "success",
           title: "Success!",
-          message: data.message || "your password has been reset successfully",
+          message: data.message || "Your password has been reset successfully",
         });
         return true;
       } else {
@@ -231,12 +234,31 @@ export function useAuth() {
         return false;
       }
     } catch (error: any) {
-      const errorMessage = "Network error. Please try again.";
-      showToast({
-        type: "error",
-        title: "Sorry!",
-        message: error.message || errorMessage,
-      });
+      // Handle 400 errors specifically
+      if (error.response?.status === 400) {
+        showToast({
+          type: "error",
+          title: "Link Expired",
+          message:
+            error.response?.data?.message ||
+            "Your reset link has expired. Please request a new one.",
+        });
+      } else if (error.response) {
+        showToast({
+          type: "error",
+          title: "Error",
+          message:
+            error.response?.data?.message ||
+            "An error occurred. Please try again.",
+        });
+      } else {
+        showToast({
+          type: "error",
+          title: "Network Error",
+          message:
+            "Unable to connect to the server. Please check your connection.",
+        });
+      }
       return false;
     } finally {
       setLoading(false);

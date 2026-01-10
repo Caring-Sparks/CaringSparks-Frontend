@@ -207,7 +207,7 @@ export default function ForgotPassword({
                     className="text-green-600"
                   />
                 </div>
-                <h2 className="text-3xl font-extrabold mb-3 tracking-tight text-gray-900">
+                <h2 className="text-3xl font-extrabold mb-3 tracking-tight text-white">
                   Check Your Email
                 </h2>
                 <p className="text-white text-sm mb-6">
