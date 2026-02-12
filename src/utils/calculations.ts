@@ -115,7 +115,6 @@ export const calculateBrandQuotation = (
 export const calculateInfluencerEarnings = (
   influencerData: InfluencerData
 ): InfluencerEarnings => {
-  // Get platform data for calculations
   const allPlatforms = [
     { name: "Instagram", key: "instagram" },
     { name: "Twitter / X", key: "twitter" },
