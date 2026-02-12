@@ -36,14 +36,14 @@ export default function CaseStudiesPage() {
             Success <span className="txt">Stories</span>
           </h1>
           <p className="text-lg sm:text-xl text-gray-400 max-w-3xl">
-            Real insights from real campaigns. Explore how ThePrGod's micro-influencer
+            Real insights from real campaigns. Explore how ThePrGod&apos;s micro-influencer
             network delivers authentic results across different industries and use cases.
           </p>
         </div>
       </header>
 
       {/* Category filter */}
-      <div className="bg-black border-b border-gray-800 sticky top-0 z-40 backdrop-blur-lg bg-black/80">
+      <div className="bg-black border-b border-gray-800 sticky top-0 z-40 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             {categories.map((category) => (
