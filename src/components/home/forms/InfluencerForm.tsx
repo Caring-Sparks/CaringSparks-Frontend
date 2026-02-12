@@ -29,6 +29,7 @@ import CampaignSummary from "../extras/CampaignSummary";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateInfluencerEarnings } from "@/utils/calculations";
 import { Country, State, City } from "country-state-city";
+import { BsTwitterX } from "react-icons/bs";
 
 const countryCodes = [
   { code: "+1", country: "US/Canada", flag: "🇺🇸" },
@@ -236,8 +237,8 @@ const PhoneNumberInput: React.FC<{
               (isTouched || touched[name]) && !isValid && localNumber
                 ? "border-red-500 focus:ring-red-500"
                 : (isTouched || touched[name]) && isValid
-                ? "border-green-500 focus:ring-green-500"
-                : "border-gray-300"
+                  ? "border-green-500 focus:ring-green-500"
+                  : "border-gray-300"
             }`}
           />
           {(isTouched || touched[name]) && isValid && (
@@ -267,7 +268,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
   const { registerInfluencer, loading } = useAuth();
 
   const [submittedData, setSubmittedData] = useState<InfluencerFormData | null>(
-    null
+    null,
   );
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [formValues, setFormValues] = useState<InfluencerFormData | null>(null);
@@ -288,10 +289,8 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
   const allPlatforms = [
     { name: "Instagram", icon: InstagramLogo, key: "instagram" },
-    { name: "Facebook", icon: FacebookLogo, key: "facebook" },
-    { name: "Twitter / X", icon: TwitterLogo, key: "twitter" },
+    { name: "X", icon: BsTwitterX, key: "twitter" },
     { name: "TikTok", icon: TiktokLogo, key: "tiktok" },
-    { name: "YouTube", icon: YoutubeLogo, key: "youtube" },
   ];
 
   const countries = Country.getAllCountries();
@@ -363,7 +362,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
   const handleAudienceCityAdd = (
     cityName: string,
     setFieldValue: any,
-    currentLocations: string[]
+    currentLocations: string[],
   ) => {
     const country = countries.find((c) => c.isoCode === audienceCountry);
     const state = audienceStates.find((s) => s.isoCode === audienceState);
@@ -447,10 +446,10 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
       setSelectedPlatforms((prev) =>
         prev.includes(platformKey)
           ? prev.filter((p) => p !== platformKey)
-          : [...prev, platformKey]
+          : [...prev, platformKey],
       );
     },
-    []
+    [],
   );
 
   const niches = [
@@ -499,7 +498,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
   const calculateProgress = (values: InfluencerFormData) => {
     const requiredFields = ["name", "email", "phone", "whatsapp", "location"];
     const filledFields = requiredFields.filter(
-      (field) => values[field as keyof InfluencerFormData]
+      (field) => values[field as keyof InfluencerFormData],
     );
 
     const filledPlatformFields = selectedPlatforms.filter((key) => {
@@ -520,8 +519,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
   const getFollowersLabel = (platformKey: string) => {
     switch (platformKey) {
-      case "facebook":
-        return "Followers/Likes count *";
       case "discord":
         return "Server members count *";
       case "linkedin":
@@ -533,8 +530,6 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
   const getUrlPlaceholder = (platformKey: string) => {
     switch (platformKey) {
-      case "facebook":
-        return "https://facebook.com/username";
       case "linkedin":
         return "https://linkedin.com/in/username";
       case "discord":
@@ -574,45 +569,45 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
               formData.append("phone", `${phoneCountryCode}${values.phone}`);
               formData.append(
                 "whatsapp",
-                `${whatsappCountryCode}${values.whatsapp}`
+                `${whatsappCountryCode}${values.whatsapp}`,
               );
               formData.append("location", values.location);
               formData.append("audienceLocation", values.audienceLocation);
               formData.append(
                 "malePercentage",
-                values.malePercentage.toString()
+                values.malePercentage.toString(),
               );
               formData.append(
                 "femalePercentage",
-                values.femalePercentage.toString()
+                values.femalePercentage.toString(),
               );
 
               formData.append("followerFee", earnings.followerFee.toString());
               formData.append(
                 "impressionFee",
-                earnings.impressionFee.toString()
+                earnings.impressionFee.toString(),
               );
               formData.append("locationFee", earnings.locationFee.toString());
               formData.append("nicheFee", earnings.nicheFee.toString());
               formData.append(
                 "earningsPerPost",
-                earnings.earningsPerPost.toString()
+                earnings.earningsPerPost.toString(),
               );
               formData.append(
                 "earningsPerPostNaira",
-                earnings.earningsPerPostNaira.toString()
+                earnings.earningsPerPostNaira.toString(),
               );
               formData.append(
                 "maxMonthlyEarnings",
-                earnings.maxMonthlyEarnings.toString()
+                earnings.maxMonthlyEarnings.toString(),
               );
               formData.append(
                 "maxMonthlyEarningsNaira",
-                earnings.maxMonthlyEarningsNaira.toString()
+                earnings.maxMonthlyEarningsNaira.toString(),
               );
               formData.append(
                 "followersCount",
-                earnings.followersCount.toString()
+                earnings.followersCount.toString(),
               );
 
               values.niches.forEach((niche) => {
@@ -621,27 +616,17 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
               if (values.audienceProof) {
                 formData.append("audienceProof", values.audienceProof);
               }
-              [
-                "instagram",
-                "facebook",
-                "twitter",
-                "tiktok",
-                "youtube",
-                "linkedin",
-                "discord",
-                "snapchat",
-                "threads",
-              ].forEach((platform) => {
+              ["instagram", "twitter", "tiktok"].forEach((platform) => {
                 if (values[platform]) {
                   const platformData = values[platform] as PlatformData;
                   formData.append(
                     `${platform}[followers]`,
-                    platformData.followers
+                    platformData.followers,
                   );
                   formData.append(`${platform}[url]`, platformData.url);
                   formData.append(
                     `${platform}[impressions]`,
-                    platformData.impressions
+                    platformData.impressions,
                   );
                   if (platformData.proof) {
                     formData.append(`${platform}[proof]`, platformData.proof);
@@ -707,7 +692,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                         <p className="text-white text-sm">
                           Which social media accounts do you have?
                         </p>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {allPlatforms.map(({ name, icon: Icon, key }) => (
                             <button
                               key={key}
@@ -730,7 +715,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
 
                       {selectedPlatforms.map((platformKey) => {
                         const platform = allPlatforms.find(
-                          (p) => p.key === platformKey
+                          (p) => p.key === platformKey,
                         );
                         if (!platform) return null;
                         const Icon = platform.icon;
@@ -818,7 +803,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                   onChange={(e) =>
                                     setFieldValue(
                                       `${platformKey}.proof`,
-                                      e.target.files?.[0] || null
+                                      e.target.files?.[0] || null,
                                     )
                                   }
                                 />
@@ -867,11 +852,11 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                           multiple
                           className="w-full h-[500px] px-4 py-2 rounded-xl border border-slate-200/10 text-gray-400 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors bg-slate-200/20 hover:border-yellow-400"
                           onChange={(
-                            e: React.ChangeEvent<HTMLSelectElement>
+                            e: React.ChangeEvent<HTMLSelectElement>,
                           ) => {
                             const selectedOptions = Array.from(
                               e.target.selectedOptions,
-                              (option) => option.value
+                              (option) => option.value,
                             );
                             setFieldValue("niches", selectedOptions);
                           }}
@@ -921,7 +906,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               onChange={(e) =>
                                 handleCountryChange(
                                   e.target.value,
-                                  setFieldValue
+                                  setFieldValue,
                                 )
                               }
                               value={selectedCountry}
@@ -1069,7 +1054,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                       handleAudienceCityAdd(
                                         e.target.value,
                                         setFieldValue,
-                                        values.audienceLocations
+                                        values.audienceLocations,
                                       );
                                       e.target.value = "";
                                     }
@@ -1107,15 +1092,15 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                           onClick={() => {
                                             const newLocations =
                                               values.audienceLocations.filter(
-                                                (_, i) => i !== index
+                                                (_, i) => i !== index,
                                               );
                                             setFieldValue(
                                               "audienceLocations",
-                                              newLocations
+                                              newLocations,
                                             );
                                             setFieldValue(
                                               "audienceLocation",
-                                              newLocations.join("; ")
+                                              newLocations.join("; "),
                                             );
                                           }}
                                           className="text-yellow-800 hover:text-yellow-900"
@@ -1123,7 +1108,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                                           <X className="w-4 h-4" />
                                         </button>
                                       </div>
-                                    )
+                                    ),
                                   )}
                                 </div>
                               </div>
@@ -1180,7 +1165,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                               onChange={(e) =>
                                 setFieldValue(
                                   "audienceProof",
-                                  e.target.files?.[0] || null
+                                  e.target.files?.[0] || null,
                                 )
                               }
                             />

@@ -5,7 +5,6 @@ import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { PaperPlaneTilt } from "phosphor-react";
 
-// Define the shape of your form data
 interface ContactFormValues {
   name: string;
   email: string;
@@ -29,7 +28,7 @@ const ContactUs: React.FC = () => {
 
   const handleSubmit = (
     values: ContactFormValues,
-    { resetForm }: FormikHelpers<ContactFormValues>
+    { resetForm }: FormikHelpers<ContactFormValues>,
   ) => {
     console.log("Form submitted with values:", values);
     alert("Thank you for your message! We'll get back to you soon.");
@@ -37,75 +36,75 @@ const ContactUs: React.FC = () => {
   };
 
   return (
-    <section className="bg-gray-50 py-24 px-4 sm:px-6 lg:px-8" id="contact">
+    <section className="bg-gradient-to-b from-black via-gray-900 to-black py-24 px-4 sm:px-6 lg:px-8" id="contact">
       <div className="max-w-7xl mx-auto">
         <div className="lg:grid lg:grid-cols-2 lg:gap-24 lg:items-center">
           {/* Text Content */}
-          <div className="text-gray-900 mb-16 lg:mb-0">
-            <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+          <div className="mb-16 lg:mb-0">
+            <div className="inline-flex items-center px-4 py-2 bg-yellow-400/10 text-yellow-400 rounded-full text-sm font-semibold mb-6 border border-yellow-400/20">
+              <span className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse"></span>
               Contact Us
             </div>
-            <h2 className="text-5xl font-extrabold tracking-tight sm:text-6xl">
-              We’d love to hear from you
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl text-white font-black tracking-tight mb-6">
+              We'd love to hear from <span className="txt">you</span>
             </h2>
-            <p className="mt-6 text-xl text-gray-600">
-              Whether you’re a creator, brand, or just curious — reach out! Our
+            <p className="text-lg sm:text-xl text-gray-400 leading-relaxed mb-8">
+              Whether you're a creator, brand, or just curious — reach out! Our
               team is ready to help you with anything you need.
             </p>
-            <div className="mt-8 flex flex-col space-y-4 text-gray-500">
-              <div className="flex items-center space-x-3">
-                <PaperPlaneTilt className="text-green-600" size={24} />
-                <span>support@caringsparks.com</span>
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center space-x-3 text-gray-300">
+                <PaperPlaneTilt className="text-yellow-400" size={24} weight="fill" />
+                <span className="text-lg">support@theprgod.com</span>
               </div>
             </div>
           </div>
 
           {/* Contact Form */}
-          <div className="w-full">
+          <div className="w-full bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 sm:p-10 border border-gray-700 shadow-2xl">
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
               {({ isSubmitting }) => (
-                <Form className="space-y-8">
+                <Form className="space-y-6">
                   <div>
-                    <label htmlFor="name" className="sr-only">
+                    <label htmlFor="name" className="block text-sm font-semibold text-gray-300 mb-2">
                       Full Name
                     </label>
                     <Field
                       name="name"
                       type="text"
-                      placeholder="Full Name"
-                      className="w-full px-0 py-3 rounded-none bg-transparent text-gray-900 placeholder-gray-500 border-b-2 border-gray-300 focus:border-blue-500 focus:ring-0 focus:outline-none transition-colors"
+                      placeholder="John Doe"
+                      className="w-full px-4 py-3 rounded-lg bg-gray-900 text-white placeholder-gray-500 border border-gray-700 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 focus:outline-none transition-all"
                     />
                     <ErrorMessage
                       name="name"
                       component="div"
-                      className="mt-2 text-sm text-red-600"
+                      className="mt-2 text-sm text-red-400"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="sr-only">
+                    <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-2">
                       Email Address
                     </label>
                     <Field
                       name="email"
                       type="email"
-                      placeholder="Email Address"
-                      className="w-full px-0 py-3 rounded-none bg-transparent text-gray-900 placeholder-gray-500 border-b-2 border-gray-300 focus:border-blue-500 focus:ring-0 focus:outline-none transition-colors"
+                      placeholder="john@example.com"
+                      className="w-full px-4 py-3 rounded-lg bg-gray-900 text-white placeholder-gray-500 border border-gray-700 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 focus:outline-none transition-all"
                     />
                     <ErrorMessage
                       name="email"
                       component="div"
-                      className="mt-2 text-sm text-red-600"
+                      className="mt-2 text-sm text-red-400"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="sr-only">
+                    <label htmlFor="message" className="block text-sm font-semibold text-gray-300 mb-2">
                       Message
                     </label>
                     <Field
@@ -113,21 +112,21 @@ const ContactUs: React.FC = () => {
                       as="textarea"
                       rows={4}
                       placeholder="Tell us about your project or inquiry..."
-                      className="w-full px-0 py-3 rounded-none bg-transparent text-gray-900 placeholder-gray-500 border-b-2 border-gray-300 focus:border-blue-500 focus:ring-0 focus:outline-none transition-colors resize-none"
+                      className="w-full px-4 py-3 rounded-lg bg-gray-900 text-white placeholder-gray-500 border border-gray-700 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 focus:outline-none transition-all resize-none"
                     />
                     <ErrorMessage
                       name="message"
                       component="div"
-                      className="mt-2 text-sm text-red-600"
+                      className="mt-2 text-sm text-red-400"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full sm:w-auto flex items-center justify-center px-8 py-4 text-base font-bold rounded-full text-white bg-green-600 hover:bg-green-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 px-8 py-4 text-base font-bold rounded-full text-black bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 transition-all duration-300 shadow-lg shadow-yellow-500/30 hover:shadow-xl hover:shadow-yellow-500/50 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
                     disabled={isSubmitting}
                   >
-                    <PaperPlaneTilt className="mr-3" size={24} />
+                    <PaperPlaneTilt size={20} weight="fill" />
                     Send Message
                   </button>
                 </Form>
