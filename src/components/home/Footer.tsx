@@ -8,103 +8,117 @@ import {
 } from "phosphor-react";
 import React from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
+import { FaInstagram, FaXTwitter } from "react-icons/fa6";
 
-const Footer = () => {
+interface footerProps {
+  setShowLegalDocs: any;
+  setInitialDoc: any;
+}
+
+const Footer = ({ setShowLegalDocs, setInitialDoc }: footerProps) => {
   return (
-    <footer className="bg-gray-900 text-gray-200 py-12 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-        {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-start"
-        >
-          <div className="relative">
-            <div className="w-10 h-10 bg-gradient-to-r from-green-300 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">C</span>
-            </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-full animate-pulse"></div>
-          </div>
-          <span
-            className={`ml-3 text-xl sm:text-2xl font-bold transition-all duration-300`}
+    <motion.footer
+      className="bg-black text-white py-12 px-6"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+    >
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col text-center items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
           >
-            CaringSparks
-          </span>
-        </motion.div>
+            <span className="flex items-center justify-center">
+              <Image src="/Logo.svg" width={100} height={50} alt="Logo" />
+            </span>
+            <p className="text-gray-100">
+              Making brands trend overnight with our network of 1000+ micro
+              influencers.
+            </p>
 
-        {/* CONTACT INFO */}
-        <div>
-          <h4 className="text-lg font-semibold text-white mb-3">Contact Us</h4>
-          <ul className="space-y-2 text-sm text-gray-400">
-            <li>Email: support@caringsparks.com</li>
-            <li>Phone: +(234) 901 2345 678</li>
-            <li>Mon–Fri: 9AM–6PM</li>
-          </ul>
-        </div>
-
-        {/* LEGAL LINKS */}
-        <div>
-          <h4 className="text-lg font-semibold text-white mb-3">Legal</h4>
-          <ul className="space-y-2 text-sm text-gray-400">
-            <li>
-              <a href="/privacy-policy" className="hover:text-white transition">
-                Privacy Policy
-              </a>
-            </li>
-            <li>
-              <a
-                href="/terms-of-service"
-                className="hover:text-white transition"
+            <div className="flex justify-center space-x-6 mt-4 mb-4">
+              <motion.a
+                href="https://x.com/The_Pr_God?t=rXHCtH71y3i1nbFcsuAtSQ&s=09"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                whileHover={{ scale: 1.2, y: -2 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Twitter"
               >
-                Terms of Service
-              </a>
-            </li>
-            <li>
-              <a href="/refund-policy" className="hover:text-white transition">
-                Refund Policy
-              </a>
-            </li>
-          </ul>
+                <FaXTwitter size={24} />
+              </motion.a>
+              <motion.a
+                href="https://www.instagram.com/thepr_god/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                whileHover={{ scale: 1.2, y: -2 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Instagram"
+              >
+                <FaInstagram size={24} />
+              </motion.a>
+              <motion.a
+                href="https://www.linkedin.com/company/theprgod/?viewAsMember=true"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                whileHover={{ scale: 1.2, y: -2 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="LinkedIn"
+              >
+                <LinkedinLogo size={24} />
+              </motion.a>
+            </div>
+          </motion.div>
         </div>
 
-        {/* SOCIAL LINKS */}
-        <div>
-          <h4 className="text-lg font-semibold text-white mb-3">Follow Us</h4>
-          <div className="flex space-x-4">
-            <a
-              href="#"
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-blue-600 transition"
+        <motion.div
+          className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-100"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex flex-wrap justify-center gap-4 mb-4 text-sm">
+            <button
+              onClick={() => {
+                setInitialDoc("privacy");
+                setShowLegalDocs(true);
+              }}
+              className="hover:text-white transition-colors underline focus:outline-none"
             >
-              <FacebookLogo size={20} weight="fill" />
-            </a>
-            <a
-              href="#"
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-sky-500 transition"
+              Privacy Policy
+            </button>
+            <span className="text-gray-600">•</span>
+            <button
+              onClick={() => {
+                setInitialDoc("terms");
+                setShowLegalDocs(true);
+              }}
+              className="hover:text-white transition-colors underline focus:outline-none"
             >
-              <TwitterLogo size={20} weight="fill" />
-            </a>
-            <a
-              href="#"
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-pink-500 transition"
+              Terms of Service
+            </button>
+            <span className="text-gray-600">•</span>
+            <button
+              onClick={() => {
+                setInitialDoc("partnership");
+                setShowLegalDocs(true);
+              }}
+              className="hover:text-white transition-colors underline focus:outline-none"
             >
-              <InstagramLogo size={20} weight="fill" />
-            </a>
-            <a
-              href="#"
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-blue-700 transition"
-            >
-              <LinkedinLogo size={20} weight="fill" />
-            </a>
+              Partnership Agreement
+            </button>
           </div>
-        </div>
+          <p>&copy; 2025 The•PR•God. All rights reserved.</p>
+        </motion.div>
       </div>
-
-      {/* BOTTOM COPYRIGHT */}
-      <div className="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} CaringSparks. All rights reserved.
-      </div>
-    </footer>
+    </motion.footer>
   );
 };
 

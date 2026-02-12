@@ -299,10 +299,9 @@ const BrandForm: React.FC<formProps> = ({ onBack, login }) => {
     postDuration: "",
   };
 
-  const platforms = ["Instagram", "X", "TikTok", "Youtube", "Facebook"];
+  const platforms = ["Instagram", "X", "TikTok",];
   const roles = ["Brand", "Business", "Person", "Movie", "Music", "Other"];
   const followerRanges = [
-    "1k-3k",
     "3k-10k",
     "10k-20k",
     "20k-50k",
