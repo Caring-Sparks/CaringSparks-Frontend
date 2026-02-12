@@ -201,14 +201,14 @@ const Jobs: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const result = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          result.message || "Failed to fetch stashed deliverables"
+          result.message || "Failed to fetch stashed deliverables",
         );
       }
 
@@ -231,7 +231,7 @@ const Jobs: React.FC = () => {
     }
 
     const hasInvalidDeliverable = deliverables.some(
-      (d) => !d.platform || !d.url || !d.description
+      (d) => !d.platform || !d.url || !d.description,
     );
 
     if (hasInvalidDeliverable) {
@@ -260,7 +260,7 @@ const Jobs: React.FC = () => {
             deliverables: deliverables,
             stashName: stashName || undefined,
           }),
-        }
+        },
       );
 
       const result = await response.json();
@@ -329,7 +329,7 @@ const Jobs: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const result = await response.json();
@@ -367,7 +367,7 @@ const Jobs: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const result = await response.json();
@@ -423,12 +423,11 @@ const Jobs: React.FC = () => {
         setJobsWithReviews(jobsWithReviewsData);
       }
     }
-  }, [
-  ]);
+  }, []);
 
   const calculateDueDate = (
     assignedAt: string,
-    postFrequency: string
+    postFrequency: string,
   ): Date => {
     const dueDate = new Date(assignedAt);
     const frequencyMatch = postFrequency.match(/for (\d+) (day|week|month)s?/i);
@@ -467,7 +466,7 @@ const Jobs: React.FC = () => {
 
     const dueDate = calculateDueDate(
       influencerStatus.assignedAt,
-      campaign.postFrequency || "1 time per week for 1 week"
+      campaign.postFrequency || "1 time per week for 1 week",
     );
     return new Date() > dueDate;
   };
@@ -484,7 +483,7 @@ const Jobs: React.FC = () => {
 
     const dueDate: any = calculateDueDate(
       influencerStatus.assignedAt,
-      campaign.postFrequency || "1 time per week for 1 week"
+      campaign.postFrequency || "1 time per week for 1 week",
     );
     const isOverdueStatus =
       influencerStatus.isCompleted === "in-progress" && new Date() > dueDate;
@@ -496,19 +495,20 @@ const Jobs: React.FC = () => {
         influencerStatus.isCompleted === "in-progress"
           ? 0
           : Math.ceil(
-              (dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+              (dueDate.getTime() - new Date().getTime()) /
+                (1000 * 60 * 60 * 24),
             ),
     };
   };
 
   const getInfluencerStatus = (campaign: any) => {
     return campaign.assignedInfluencers.find(
-      (assigned: any) => assigned.influencerId._id === user?._id
+      (assigned: any) => assigned.influencerId._id === user?._id,
     );
   };
 
   const parseSubmittedJobs = (
-    submittedJobs: any[]
+    submittedJobs: any[],
   ): DeliverableSubmission[] => {
     return submittedJobs.map((job) => {
       const lines = job.description.split("\n");
@@ -523,10 +523,10 @@ const Jobs: React.FC = () => {
           ?.replace("Description:", "")
           .trim() || "";
       const metricsLine = lines.find((line: string) =>
-        line.startsWith("Metrics:")
+        line.startsWith("Metrics:"),
       );
       const urlLine = lines.find((line: string) =>
-        line.startsWith("Post URL:")
+        line.startsWith("Post URL:"),
       );
 
       let metrics = {};
@@ -556,7 +556,7 @@ const Jobs: React.FC = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       if (response.ok) {
@@ -674,7 +674,7 @@ const Jobs: React.FC = () => {
       await respondToCampaignAssignment(
         selectedCampaign._id,
         response,
-        responseMessage
+        responseMessage,
       );
 
       showToast({
@@ -807,7 +807,7 @@ const Jobs: React.FC = () => {
         return availableCampaigns;
       case "history":
         return assignedCampaigns.filter(
-          (c: any) => getInfluencerStatus(c)?.isCompleted === "Completed"
+          (c: any) => getInfluencerStatus(c)?.isCompleted === "Completed",
         );
       default:
         return [];
@@ -844,15 +844,14 @@ const Jobs: React.FC = () => {
       const matchesPlatform =
         platformFilter === "all" ||
         campaign.platforms.some(
-          (p: any) => p.toLowerCase() === platformFilter.toLowerCase()
+          (p: any) => p.toLowerCase() === platformFilter.toLowerCase(),
         );
 
       const matchesRole = roleFilter === "all" || campaign.role === roleFilter;
 
       return matchesFilter && matchesSearch && matchesPlatform && matchesRole;
     });
-  }, [
-  ]);
+  }, []);
 
   const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -979,7 +978,7 @@ const Jobs: React.FC = () => {
   const generateFilename = (
     index: number,
     url: string,
-    contentType?: string
+    contentType?: string,
   ): string => {
     const extension = getFileExtension(url);
     const typeSlug = contentType
@@ -992,7 +991,7 @@ const Jobs: React.FC = () => {
     campaignId: string,
     influencerId: string,
     jobId: string,
-    comment: string
+    comment: string,
   ) => {
     try {
       const response = await fetch(
@@ -1007,7 +1006,7 @@ const Jobs: React.FC = () => {
             comment,
             influencerId,
           }),
-        }
+        },
       );
 
       const result = await response.json();
@@ -1058,8 +1057,8 @@ const Jobs: React.FC = () => {
                 ...job,
                 reviews: [...(job.reviews || []), optimisticReview],
               }
-            : job
-        )
+            : job,
+        ),
       );
 
       setReviewComments({ ...reviewComments, [jobId]: "" });
@@ -1068,7 +1067,7 @@ const Jobs: React.FC = () => {
         selectedCampaign._id,
         user._id,
         jobId,
-        comment
+        comment,
       );
 
       if (result) {
@@ -1079,13 +1078,13 @@ const Jobs: React.FC = () => {
                   ...job,
                   reviews: [
                     ...(job.reviews || []).filter(
-                      (r) => r._id !== optimisticReview._id
+                      (r) => r._id !== optimisticReview._id,
                     ),
                     result,
                   ],
                 }
-              : job
-          )
+              : job,
+          ),
         );
 
         showToast({
@@ -1108,11 +1107,11 @@ const Jobs: React.FC = () => {
             ? {
                 ...job,
                 reviews: (job.reviews || []).filter(
-                  (r) => !r._id.startsWith("temp-")
+                  (r) => !r._id.startsWith("temp-"),
                 ),
               }
-            : job
-        )
+            : job,
+        ),
       );
 
       setReviewComments({ ...reviewComments, [jobId]: comment });
@@ -1229,14 +1228,14 @@ const Jobs: React.FC = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const result = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          result.message || "Failed to mark campaign as complete"
+          result.message || "Failed to mark campaign as complete",
         );
       }
 
@@ -1407,14 +1406,14 @@ const Jobs: React.FC = () => {
                                       dueDateInfo.isOverdue
                                         ? "text-red-600"
                                         : dueDateInfo.daysRemaining <= 2
-                                        ? "text-orange-600"
-                                        : "text-white"
+                                          ? "text-orange-600"
+                                          : "text-white"
                                     }`}
                                   >
                                     (
                                     {dueDateInfo.isOverdue
                                       ? `${Math.abs(
-                                          dueDateInfo.daysRemaining
+                                          dueDateInfo.daysRemaining,
                                         )} days overdue`
                                       : `${dueDateInfo.daysRemaining} days left`}
                                     )
@@ -1490,8 +1489,8 @@ const Jobs: React.FC = () => {
                                       generateFilename(
                                         index,
                                         material.imageUrl,
-                                        material.contentType
-                                      )
+                                        material.contentType,
+                                      ),
                                     )
                                   }
                                   className="absolute top-2 right-2 bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
@@ -1526,7 +1525,7 @@ const Jobs: React.FC = () => {
                                 <div className="text-xs text-white/60">
                                   Uploaded:{" "}
                                   {new Date(
-                                    material.uploadedAt
+                                    material.uploadedAt,
                                   ).toLocaleDateString()}
                                 </div>
                               )}
@@ -1539,8 +1538,8 @@ const Jobs: React.FC = () => {
                                     generateFilename(
                                       index,
                                       material.imageUrl,
-                                      material.contentType
-                                    )
+                                      material.contentType,
+                                    ),
                                   )
                                 }
                                 className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition-colors"
@@ -1576,8 +1575,8 @@ const Jobs: React.FC = () => {
                                   generateFilename(
                                     index,
                                     material.imageUrl,
-                                    material.contentType
-                                  )
+                                    material.contentType,
+                                  ),
                                 );
                               }, index * 500);
                             });
@@ -1788,7 +1787,7 @@ const Jobs: React.FC = () => {
                                   updateDeliverable(
                                     index,
                                     "platform",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 className="frm"
@@ -1799,7 +1798,7 @@ const Jobs: React.FC = () => {
                                     <option key={platform} value={platform}>
                                       {platform}
                                     </option>
-                                  )
+                                  ),
                                 )}
                               </select>
                             </div>
@@ -1815,7 +1814,7 @@ const Jobs: React.FC = () => {
                                   updateDeliverable(
                                     index,
                                     "url",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 placeholder="https://..."
@@ -1833,7 +1832,7 @@ const Jobs: React.FC = () => {
                                   updateDeliverable(
                                     index,
                                     "description",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 placeholder="Describe your deliverable..."
@@ -1855,7 +1854,7 @@ const Jobs: React.FC = () => {
                                     updateDeliverable(
                                       index,
                                       "metrics.views",
-                                      Number(e.target.value) || 0
+                                      Number(e.target.value) || 0,
                                     )
                                   }
                                   className="frm"
@@ -1868,7 +1867,7 @@ const Jobs: React.FC = () => {
                                     updateDeliverable(
                                       index,
                                       "metrics.likes",
-                                      Number(e.target.value) || 0
+                                      Number(e.target.value) || 0,
                                     )
                                   }
                                   className="frm"
@@ -1881,7 +1880,7 @@ const Jobs: React.FC = () => {
                                     updateDeliverable(
                                       index,
                                       "metrics.comments",
-                                      Number(e.target.value) || 0
+                                      Number(e.target.value) || 0,
                                     )
                                   }
                                   className="frm"
@@ -1894,7 +1893,7 @@ const Jobs: React.FC = () => {
                                     updateDeliverable(
                                       index,
                                       "metrics.shares",
-                                      Number(e.target.value) || 0
+                                      Number(e.target.value) || 0,
                                     )
                                   }
                                   className="frm"
@@ -1964,7 +1963,7 @@ const Jobs: React.FC = () => {
                           <div className="p-6">
                             {(() => {
                               const parsedData = parseJobDescription(
-                                job.description
+                                job.description,
                               );
 
                               return (
@@ -2207,7 +2206,7 @@ const Jobs: React.FC = () => {
                     <div className="text-sm text-black bg-green-50 p-3 rounded-lg">
                       Work submitted on{" "}
                       {formatDate(
-                        getInfluencerStatus(selectedCampaign)?.completedAt
+                        getInfluencerStatus(selectedCampaign)?.completedAt,
                       )}
                     </div>
                   </>
@@ -2373,7 +2372,7 @@ const Jobs: React.FC = () => {
                               updateDeliverable(
                                 index,
                                 "platform",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             className="frm"
@@ -2384,7 +2383,7 @@ const Jobs: React.FC = () => {
                                 <option key={platform} value={platform}>
                                   {platform}
                                 </option>
-                              )
+                              ),
                             )}
                           </select>
                         </div>
@@ -2414,7 +2413,7 @@ const Jobs: React.FC = () => {
                               updateDeliverable(
                                 index,
                                 "description",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             placeholder="Describe your deliverable..."
@@ -2436,7 +2435,7 @@ const Jobs: React.FC = () => {
                                 updateDeliverable(
                                   index,
                                   "metrics.views",
-                                  Number(e.target.value) || 0
+                                  Number(e.target.value) || 0,
                                 )
                               }
                               className="frm"
@@ -2449,7 +2448,7 @@ const Jobs: React.FC = () => {
                                 updateDeliverable(
                                   index,
                                   "metrics.likes",
-                                  Number(e.target.value) || 0
+                                  Number(e.target.value) || 0,
                                 )
                               }
                               className="frm"
@@ -2462,7 +2461,7 @@ const Jobs: React.FC = () => {
                                 updateDeliverable(
                                   index,
                                   "metrics.comments",
-                                  Number(e.target.value) || 0
+                                  Number(e.target.value) || 0,
                                 )
                               }
                               className="frm"
@@ -2475,7 +2474,7 @@ const Jobs: React.FC = () => {
                                 updateDeliverable(
                                   index,
                                   "metrics.shares",
-                                  Number(e.target.value) || 0
+                                  Number(e.target.value) || 0,
                                 )
                               }
                               className="frm"
@@ -2626,7 +2625,7 @@ const Jobs: React.FC = () => {
                                   {
                                     hour: "2-digit",
                                     minute: "2-digit",
-                                  }
+                                  },
                                 )}
                               </span>
                             </div>
@@ -2791,7 +2790,7 @@ const Jobs: React.FC = () => {
                       {status.charAt(0).toUpperCase() +
                         status.slice(1).replace("_", " ")}
                     </button>
-                  )
+                  ),
                 )}
               </div>
 
@@ -2843,7 +2842,7 @@ const Jobs: React.FC = () => {
                   {
                     assignedCampaigns.filter(
                       (c: any) =>
-                        getInfluencerStatus(c)?.isCompleted === "Completed"
+                        getInfluencerStatus(c)?.isCompleted === "Completed",
                     ).length
                   }
                 </div>
@@ -2854,7 +2853,7 @@ const Jobs: React.FC = () => {
                   {
                     assignedCampaigns.filter(
                       (c: any) =>
-                        getInfluencerStatus(c)?.acceptanceStatus === "pending"
+                        getInfluencerStatus(c)?.acceptanceStatus === "pending",
                     ).length
                   }
                 </div>
@@ -2887,8 +2886,8 @@ const Jobs: React.FC = () => {
                   {searchTerm || filter !== "all"
                     ? "Try adjusting your search or filters"
                     : activeTab === "available"
-                    ? "No new campaigns available at the moment"
-                    : `No ${activeTab} campaigns found`}
+                      ? "No new campaigns available at the moment"
+                      : `No ${activeTab} campaigns found`}
                 </p>
                 {activeTab === "available" && (
                   <button
@@ -2918,7 +2917,7 @@ const Jobs: React.FC = () => {
                             </h3>
                             <span
                               className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                                campaign
+                                campaign,
                               )}`}
                             >
                               {getStatusText(campaign)}
@@ -2977,13 +2976,13 @@ const Jobs: React.FC = () => {
                                         dueDateInfo.isOverdue
                                           ? "text-red-600"
                                           : dueDateInfo.daysRemaining <= 2
-                                          ? "text-orange-600"
-                                          : "text-white"
+                                            ? "text-orange-600"
+                                            : "text-white"
                                       }`}
                                     >
                                       {dueDateInfo.isOverdue
                                         ? `${Math.abs(
-                                            dueDateInfo.daysRemaining
+                                            dueDateInfo.daysRemaining,
                                           )} days overdue`
                                         : `${dueDateInfo.daysRemaining} days left`}
                                     </span>
@@ -3124,8 +3123,8 @@ const Jobs: React.FC = () => {
                           page === currentPage
                             ? "bg-yellow-600 text-white"
                             : page === "..."
-                            ? "cursor-default text-white"
-                            : "border border-gray-300 hover:bg-gray-50 text-white"
+                              ? "cursor-default text-white"
+                              : "border border-gray-300 hover:bg-gray-50 text-white"
                         }`}
                       >
                         {page}

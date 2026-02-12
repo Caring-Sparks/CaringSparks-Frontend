@@ -4,6 +4,8 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { PaperPlaneTilt } from "phosphor-react";
+import { useToast } from "@/utils/ToastNotification";
+import axios from "axios";
 
 interface ContactFormValues {
   name: string;
@@ -12,6 +14,7 @@ interface ContactFormValues {
 }
 
 const ContactUs: React.FC = () => {
+  const { showToast } = useToast();
   const initialValues: ContactFormValues = {
     name: "",
     email: "",
@@ -26,17 +29,41 @@ const ContactUs: React.FC = () => {
     message: Yup.string().required("A message is required."),
   });
 
-  const handleSubmit = (
+  const handleSubmit = async (
     values: ContactFormValues,
     { resetForm }: FormikHelpers<ContactFormValues>,
   ) => {
-    console.log("Form submitted with values:", values);
-    alert("Thank you for your message! We'll get back to you soon.");
-    resetForm();
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/smtp/send`,
+        values,
+      );
+      showToast({
+        type: "success",
+        title: "Submission Successful!",
+        message: "Thank you for your message, We&apos;ll get back to you soon.",
+        duration: 6000,
+      });
+    } catch (error: any) {
+      showToast({
+        type: "error",
+        title: "Sorry!",
+        message:
+          error.message ||
+          "Your message could not be submitted at this time, Please try again.",
+        duration: 6000,
+      });
+      resetForm();
+    } finally {
+      resetForm();
+    }
   };
 
   return (
-    <section className="bg-gradient-to-b from-black via-gray-900 to-black py-24 px-4 sm:px-6 lg:px-8" id="contact">
+    <section
+      className="bg-gradient-to-b from-black via-gray-900 to-black py-24 px-4 sm:px-6 lg:px-8"
+      id="contact"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="lg:grid lg:grid-cols-2 lg:gap-24 lg:items-center">
           {/* Text Content */}
@@ -46,15 +73,19 @@ const ContactUs: React.FC = () => {
               Contact Us
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl text-white font-black tracking-tight mb-6">
-              We'd love to hear from <span className="txt">you</span>
+              We&apos;d love to hear from <span className="txt">you</span>
             </h2>
             <p className="text-lg sm:text-xl text-gray-400 leading-relaxed mb-8">
-              Whether you're a creator, brand, or just curious — reach out! Our
+              Whether you&apos;re a creator, brand, or just curious — reach out! Our
               team is ready to help you with anything you need.
             </p>
             <div className="flex flex-col space-y-4">
               <div className="flex items-center space-x-3 text-gray-300">
-                <PaperPlaneTilt className="text-yellow-400" size={24} weight="fill" />
+                <PaperPlaneTilt
+                  className="text-yellow-400"
+                  size={24}
+                  weight="fill"
+                />
                 <span className="text-lg">support@theprgod.com</span>
               </div>
             </div>
@@ -70,13 +101,16 @@ const ContactUs: React.FC = () => {
               {({ isSubmitting }) => (
                 <Form className="space-y-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-semibold text-gray-300 mb-2">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-semibold text-gray-300 mb-2"
+                    >
                       Full Name
                     </label>
                     <Field
                       name="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Full Name"
                       className="w-full px-4 py-3 rounded-lg bg-gray-900 text-white placeholder-gray-500 border border-gray-700 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 focus:outline-none transition-all"
                     />
                     <ErrorMessage
@@ -87,13 +121,16 @@ const ContactUs: React.FC = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-semibold text-gray-300 mb-2"
+                    >
                       Email Address
                     </label>
                     <Field
                       name="email"
                       type="email"
-                      placeholder="john@example.com"
+                      placeholder="Email Address"
                       className="w-full px-4 py-3 rounded-lg bg-gray-900 text-white placeholder-gray-500 border border-gray-700 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 focus:outline-none transition-all"
                     />
                     <ErrorMessage
@@ -104,7 +141,10 @@ const ContactUs: React.FC = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-semibold text-gray-300 mb-2">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-semibold text-gray-300 mb-2"
+                    >
                       Message
                     </label>
                     <Field

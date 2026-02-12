@@ -12,7 +12,7 @@ export default function NotFound() {
           Case Study Not Found
         </h2>
         <p className="text-gray-400 mb-8">
-          The case study you're looking for doesn't exist or has been removed.
+          The case study you&apos;re looking for doesn&apos;t exist or has been removed.
         </p>
         <Link
           href="/case-studies"
