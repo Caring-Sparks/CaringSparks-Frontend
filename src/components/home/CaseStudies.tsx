@@ -7,7 +7,7 @@ import { caseStudies } from "../../../constants";
 
 const CaseStudies = () => {
   return (
-    <section id="case-studies" className="bg-gradient-to-b from-black via-gray-900 to-black">
+    <section id="case-studies" className="bg-black">
       <div className="max-w-7xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-12 sm:mb-16">

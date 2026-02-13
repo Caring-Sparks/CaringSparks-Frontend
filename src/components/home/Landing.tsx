@@ -24,6 +24,7 @@ import Footer from "./Footer";
 import ContactUs from "./ContactUs";
 import CTA from "./CTA";
 import CaseStudies from "./CaseStudies";
+import AboutUs from "./AboutUs";
 
 export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -102,6 +103,7 @@ export default function LandingPage() {
 
       <Navbar openLogin={openLogin} openPopup={openPopup} />
       <Hero openPopup={openPopup} />
+      <AboutUs />
       <HowItWorks />
       <CaseStudies />
       <CTA openPopup={openPopup} />

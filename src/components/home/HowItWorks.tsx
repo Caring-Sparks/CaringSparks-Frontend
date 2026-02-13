@@ -18,9 +18,9 @@ const HowItWorks = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [visibleSteps, setVisibleSteps] = useState<Set<number>>(new Set());
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<"influencer" | "advertiser">(
-    "influencer",
-  );
+  const [selectedFilter, setSelectedFilter] = useState<
+    "influencer" | "advertiser"
+  >("influencer");
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -66,7 +66,7 @@ const HowItWorks = () => {
   const steps: Step[] = allSteps[selectedFilter];
 
   return (
-    <section id="how-it-works" className="bg-gradient-to-b from-black via-gray-900 to-black">
+    <section id="how-it-works" className="bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 sm:mb-20">
@@ -145,9 +145,7 @@ const HowItWorks = () => {
 
                   {/* Pulse animation for active step */}
                   {activeStep === index && (
-                    <div
-                      className="absolute inset-0 rounded-full bg-yellow-400 animate-ping opacity-30"
-                    ></div>
+                    <div className="absolute inset-0 rounded-full bg-yellow-400 animate-ping opacity-30"></div>
                   )}
                 </div>
 
@@ -170,9 +168,7 @@ const HowItWorks = () => {
                         index % 2 === 0 ? "right-4" : "left-4"
                       } px-3 py-1 bg-yellow-400 text-black rounded-full shadow-md`}
                     >
-                      <span className="text-xs font-bold">
-                        {step.time}
-                      </span>
+                      <span className="text-xs font-bold">{step.time}</span>
                     </div>
 
                     {/* Icon */}

@@ -7,7 +7,7 @@ interface CtaProps {
 
 const CTA = ({openPopup}: CtaProps) => {
   return (
-    <section className="bg-gradient-to-b from-black via-gray-900 to-black">
+    <section className="bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl shadow-2xl shadow-yellow-600/20 border border-yellow-500/30 overflow-hidden grid md:grid-cols-2 gap-10 items-center p-10 md:p-16">
           {/* TEXT SECTION */}
