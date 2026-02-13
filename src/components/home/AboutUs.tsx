@@ -39,7 +39,7 @@ const AboutUs = () => {
             Empowering Every <span className="txt">Business Type</span>
           </h2>
           <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto px-4">
-            Whether you're launching a product, building a brand, or growing
+            Whether you&apos;re launching a product, building a brand, or growing
             your business, our micro-influencer network helps you reach the
             right audience authentically.
           </p>
