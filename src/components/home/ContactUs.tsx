@@ -61,7 +61,7 @@ const ContactUs: React.FC = () => {
 
   return (
     <section
-      className="bg-gradient-to-b from-black via-gray-900 to-black py-24 px-4 sm:px-6 lg:px-8"
+      className="bg-black py-24 px-4 sm:px-6 lg:px-8"
       id="contact"
     >
       <div className="max-w-7xl mx-auto">
