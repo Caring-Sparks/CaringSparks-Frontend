@@ -21,6 +21,7 @@ import {
 import Image from "next/image";
 import InfluencerDetails from "./InfluencerDetails";
 import { useToast } from "@/utils/ToastNotification";
+import { Handshake } from "phosphor-react";
 interface SocialMedia {
   impressions?: number;
   followers?: number;
@@ -65,6 +66,7 @@ interface ProcessedInfluencer {
   category: string;
   joinDate: string;
   avatar?: string;
+  referral?: string;
   [key: string]: any;
 }
 
@@ -85,6 +87,7 @@ const InfluencersManagement: React.FC = () => {
   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
   const [customDateFrom, setCustomDateFrom] = useState<string>("");
   const [customDateTo, setCustomDateTo] = useState<string>("");
+  const [referralFilter, setReferralFilter] = useState<string>("");
   const [selectedInfluencer, setSelectedInfluencer] =
     useState<ProcessedInfluencer | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
@@ -101,7 +104,7 @@ const InfluencersManagement: React.FC = () => {
   const [loader, setLoader] = useState<boolean>(false);
   const { fetchData } = useInitializeAdminData();
   const updateInfluencerStatus = useAdminStore(
-    (state) => state.updateInfluencerStatus
+    (state) => state.updateInfluencerStatus,
   );
 
   useEffect(() => {
@@ -112,7 +115,14 @@ const InfluencersManagement: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter, dateFilter, customDateFrom, customDateTo]);
+  }, [
+    searchTerm,
+    statusFilter,
+    dateFilter,
+    customDateFrom,
+    customDateTo,
+    referralFilter,
+  ]);
 
   const processedInfluencers = useMemo<ProcessedInfluencer[]>(() => {
     return influencers.map((influencer) => ({
@@ -148,6 +158,7 @@ const InfluencersManagement: React.FC = () => {
       maxMonthlyEarningsNaira:
         (influencer as any)?.maxMonthlyEarningsNaira || 0,
       followersCount: (influencer as any)?.followersCount || 0,
+      referral: (influencer as any)?.referral || "",
       status: (influencer as any)?.status || "pending",
       emailSent: (influencer as any)?.emailSent || false,
       createdAt: (influencer as any)?.createdAt || new Date().toISOString(),
@@ -211,7 +222,13 @@ const InfluencersManagement: React.FC = () => {
 
       const matchesDate = filterByDate(influencer.joinDate);
 
-      return matchesSearch && matchesStatus && matchesDate;
+      const matchesReferral =
+        referralFilter === "" ||
+        (influencer.referral || "")
+          .toLowerCase()
+          .includes(referralFilter.toLowerCase());
+
+      return matchesSearch && matchesStatus && matchesDate && matchesReferral;
     });
   }, [
     processedInfluencers,
@@ -220,6 +237,7 @@ const InfluencersManagement: React.FC = () => {
     customDateFrom,
     customDateTo,
     dateFilter,
+    referralFilter,
   ]);
 
   // Pagination calculations
@@ -346,13 +364,13 @@ const InfluencersManagement: React.FC = () => {
   // Calculate status counts
   const statusCounts = useMemo<StatusCounts>(() => {
     const approved = processedInfluencers.filter(
-      (i) => i.status === "approved"
+      (i) => i.status === "approved",
     ).length;
     const pending = processedInfluencers.filter(
-      (i) => i.status === "pending"
+      (i) => i.status === "pending",
     ).length;
     const rejected = processedInfluencers.filter(
-      (i) => i.status === "rejected"
+      (i) => i.status === "rejected",
     ).length;
 
     return { approved, pending, rejected };
@@ -475,6 +493,19 @@ const InfluencersManagement: React.FC = () => {
               <option value="month">Last Month</option>
               <option value="custom">Custom Range</option>
             </select>
+            <div className="relative">
+              <Handshake
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
+                size={18}
+              />
+              <input
+                type="text"
+                placeholder="Filter by referral..."
+                value={referralFilter}
+                onChange={(e) => setReferralFilter(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-200/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-slate-200/20"
+              />
+            </div>
           </div>
         </div>
 

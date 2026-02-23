@@ -14,6 +14,11 @@ body {
   font-family: var(--roboto), sans-serif;
 }
 
+select option:checked {
+  background-color: #ca8a04; /* yellow-600 */
+  color: white;
+}
+
 @keyframes infinite-scroll {
   from {
     transform: translateX(0);

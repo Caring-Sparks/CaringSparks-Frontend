@@ -46,7 +46,7 @@ export function useAuth() {
   const login = async (
     email: string,
     password: string,
-    role: string
+    role: string,
   ): Promise<LoginResponse | null> => {
     setLoading(true);
     try {
@@ -103,7 +103,7 @@ export function useAuth() {
     try {
       const res = await axios.post<RegisterBrand>(
         `${apiUrl}/api/brands/register`,
-        values
+        values,
       );
 
       showToast({
@@ -128,7 +128,7 @@ export function useAuth() {
   };
 
   const registerInfluencer = async (
-    formData: FormData
+    formData: FormData,
   ): Promise<registerInfluencer | null> => {
     setLoading(true);
     try {
@@ -139,7 +139,7 @@ export function useAuth() {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       showToast({
@@ -166,13 +166,13 @@ export function useAuth() {
 
   const forgotPassword = async (
     email: string,
-    role: string
+    role: string,
   ): Promise<boolean> => {
     try {
       setLoading(true);
       const response = await axios.post<ForgotPasswordResponse>(
         `${apiUrl}/api/auth/forgot-password`,
-        { email, role }
+        { email, role },
       );
       const data = response.data;
       if (data.success) {
@@ -207,7 +207,7 @@ export function useAuth() {
   const resetPassword = async (
     token: string,
     newPassword: string,
-    role: string
+    role: string,
   ): Promise<boolean> => {
     try {
       setLoading(true);
