@@ -30,7 +30,7 @@ const Navbar = ({ openLogin, openPopup }: navbarProps) => {
           >
             <button
               onClick={openLogin}
-              className={`px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 hover:scale-105 text-gray-300 hover:text-white hover:bg-gray-800`}
+              className={`px-5 py-2.5 text-sm font-semibold rounded-full transition-all duration-300 hover:scale-105 text-gray-300 hover:text-white hover:bg-gray-800`}
             >
               Login
             </button>

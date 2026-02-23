@@ -23,6 +23,7 @@ import {
   Check,
   Plus,
   X,
+  Handshake,
 } from "phosphor-react";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import CampaignSummary from "../extras/CampaignSummary";
@@ -68,6 +69,7 @@ interface InfluencerFormData {
   malePercentage: string;
   femalePercentage: string;
   audienceProof: File | null;
+  referral: string;
   [key: string]: string | string[] | File | null | PlatformData;
 }
 
@@ -399,6 +401,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
       malePercentage: formValues?.malePercentage || "",
       femalePercentage: formValues?.femalePercentage || "",
       audienceProof: formValues?.audienceProof || null,
+      referral: formValues?.referral || "",
     };
 
     const coreSchemaFields: Record<string, Yup.AnySchema> = {
@@ -410,6 +413,7 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
       whatsapp: Yup.string().required("WhatsApp number is required"),
       location: Yup.string().required("Location is required"),
       niches: Yup.array().min(1, "Select at least one niche"),
+      referral: Yup.string(),
     };
 
     const dynamicInitialValues = { ...coreInitialValues };
@@ -616,6 +620,8 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
               if (values.audienceProof) {
                 formData.append("audienceProof", values.audienceProof);
               }
+              formData.append("referral", values.referral || "");
+
               ["instagram", "twitter", "tiktok"].forEach((platform) => {
                 if (values[platform]) {
                   const platformData = values[platform] as PlatformData;
@@ -1262,6 +1268,27 @@ const Influencerform: React.FC<influencerProps> = ({ onBack, login }) => {
                             value={values.whatsapp}
                             errors={errors}
                             touched={touched}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-white flex items-center gap-2">
+                            <Handshake className="w-4 h-4" />
+                            Referral (optional)
+                          </label>
+                          <Field
+                            name="referral"
+                            type="text"
+                            placeholder="Enter your referral"
+                            className={`frm ${
+                              errors.referral && touched.referral
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            }`}
+                          />
+                          <ErrorMessage
+                            name="referral"
+                            component="p"
+                            className="text-sm text-red-600"
                           />
                         </div>
                       </div>
