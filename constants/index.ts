@@ -44,7 +44,7 @@ interface Step {
   icon: string;
   color: string;
   bgColor: string;
-  time: string;
+  time?: string;
 }
 
 export const allSteps: Record<"influencer" | "advertiser", Step[]> = {
@@ -62,8 +62,7 @@ export const allSteps: Record<"influencer" | "advertiser", Step[]> = {
     {
       id: 2,
       title: "Match with Brands",
-      description:
-        "Review brand campaigns that align with your profile.",
+      description: "Review brand campaigns that align with your profile.",
       icon: "/icons/target.png",
       color: "from-purple-500 to-pink-600",
       bgColor: "bg-purple-50",
@@ -99,11 +98,21 @@ export const allSteps: Record<"influencer" | "advertiser", Step[]> = {
       bgColor: "bg-teal-50",
       time: "Ongoing",
     },
+    {
+      id: 6,
+      title: "Get Paid",
+      description:
+        "Receive timely, secure payments and track your performance and growth.",
+      icon: "/icons/money.png",
+      color: "from-teal-500 to-cyan-600",
+      bgColor: "bg-teal-50",
+      time: "Ongoing",
+    },
   ],
   advertiser: [
     {
       id: 1,
-      title: "Create a Campaign",
+      title: "Sign Up & Create your Campaign",
       description:
         "Outline your goals, target audience, and deliverables for your marketing campaign.",
       icon: "/icons/campaign.png",
@@ -113,39 +122,48 @@ export const allSteps: Record<"influencer" | "advertiser", Step[]> = {
     },
     {
       id: 2,
-      title: "Browse Influencers",
+      title: "Await Approval.",
       description:
-        "Get matched with relevant influencers who align with your brand values.",
+        "Wait for Account Approval, and if Approved, Proceed to make Payment.",
       icon: "/icons/search.png",
       color: "from-pink-500 to-red-600",
       bgColor: "bg-pink-50",
-      time: "5 mins",
+      time: "6 hours",
     },
     {
       id: 3,
-      title: "Get Influencers",
+      title: "Make Payment",
       description:
-        "Get matched with influencers to carry out your tasks directly from your dashboard.",
+        "Once payment is confirmed, upload your campaign materials from dashboard.",
       icon: "/icons/sendmail.png",
       color: "from-green-500 to-lime-600",
       bgColor: "bg-green-50",
-      time: "10 mins",
+      // time: "10 mins",
     },
     {
       id: 4,
-      title: "Review and Approve",
+      title: "Get Influencers",
       description:
-        "Collaborate with creators and approve their content before it goes live.",
+        "we match you with Influencers and you monitor progress on job done by influencers from your dashboard.",
       icon: "/icons/checkmark.png",
       color: "from-yellow-500 to-orange-500",
       bgColor: "bg-yellow-50",
-      time: "2-4 days",
+      time: "3 hours",
     },
     {
       id: 5,
+      title: "Close Job",
+      description: "Once Job is completed, close job",
+      icon: "/icons/agree.png",
+      color: "from-indigo-500 to-purple-600",
+      bgColor: "bg-indigo-50",
+      time: "2 mins",
+    },
+    {
+      id: 6,
       title: "Measure Impact",
       description:
-        "Track performance metrics, campaign success, and influencer ROI in one place.",
+        "Track performance metrics, campaign success and repeat process by creating another campaign as advertising is continuous.",
       icon: "/icons/chart.png",
       color: "from-indigo-500 to-purple-600",
       bgColor: "bg-indigo-50",

@@ -36,12 +36,13 @@ const AboutUs = () => {
             What We Do
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-6">
-            Empowering Every <span className="txt">Business Type</span>
+            We Make Sure You Improve Your Sales,{" "}
+            <span className="txt">Create Awareness and Grow</span>
           </h2>
           <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto px-4">
-            Whether you&apos;re launching a product, building a brand, or growing
-            your business, our micro-influencer network helps you reach the
-            right audience authentically.
+            Whether you are launching a product, building a brand, or growing a
+            business, our micro influencers network helps you reach that goal to
+            the right audience.
           </p>
         </div>
 

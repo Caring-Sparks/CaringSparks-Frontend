@@ -11,7 +11,7 @@ interface Step {
   icon: string;
   color: string;
   bgColor: string;
-  time: string;
+  time?: string;
 }
 
 const HowItWorks = () => {
@@ -20,7 +20,7 @@ const HowItWorks = () => {
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<
     "influencer" | "advertiser"
-  >("influencer");
+  >("advertiser");
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -75,7 +75,7 @@ const HowItWorks = () => {
             How It Works
           </div>
           {/* TABS */}
-          <div className="flex gap-4 justify-center py-8">
+          {/* <div className="flex gap-4 justify-center py-8">
             {["influencer", "advertiser"].map((filter) => (
               <button
                 key={filter}
@@ -91,7 +91,7 @@ const HowItWorks = () => {
                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
               </button>
             ))}
-          </div>
+          </div> */}
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-6">
             Your Journey to{" "}
@@ -100,8 +100,8 @@ const HowItWorks = () => {
             </span>
           </h2>
           <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto">
-            From profile creation to getting paid, we&apos;ve streamlined every
-            step of the influencer-brand collaboration process
+            If you are a brand, business, Product, Service, Person or Event,
+            Then Sign up as an Advertiser
           </p>
         </div>
 

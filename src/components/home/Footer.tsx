@@ -4,6 +4,7 @@ import {
   FacebookLogo,
   InstagramLogo,
   LinkedinLogo,
+  TiktokLogo,
   TwitterLogo,
 } from "phosphor-react";
 import React from "react";
@@ -72,6 +73,17 @@ const Footer = ({ setShowLegalDocs, setInitialDoc }: footerProps) => {
                 aria-label="LinkedIn"
               >
                 <LinkedinLogo size={24} />
+              </motion.a>
+              <motion.a
+                href="https://www.tiktok.com/@theprgod?_r=1&_t=ZS-94NTnpAd5gD"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                whileHover={{ scale: 1.2, y: -2 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="LinkedIn"
+              >
+                <TiktokLogo size={24} />
               </motion.a>
             </div>
           </motion.div>
