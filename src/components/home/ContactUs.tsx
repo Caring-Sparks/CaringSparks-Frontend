@@ -60,10 +60,7 @@ const ContactUs: React.FC = () => {
   };
 
   return (
-    <section
-      className="bg-black py-24 px-4 sm:px-6 lg:px-8"
-      id="contact"
-    >
+    <section className="bg-black py-24 px-4 sm:px-6 lg:px-8" id="contact">
       <div className="max-w-7xl mx-auto">
         <div className="lg:grid lg:grid-cols-2 lg:gap-24 lg:items-center">
           {/* Text Content */}
@@ -76,8 +73,8 @@ const ContactUs: React.FC = () => {
               We&apos;d love to hear from <span className="txt">you</span>
             </h2>
             <p className="text-lg sm:text-xl text-gray-400 leading-relaxed mb-8">
-              Whether you&apos;re a creator, brand, or just curious — reach out! Our
-              team is ready to help you with anything you need.
+              Whether you&apos;re a creator, brand, or just curious — reach out!
+              Our team is ready to help you with anything you need.
             </p>
             <div className="flex flex-col space-y-4">
               <div className="flex items-center space-x-3 text-gray-300">
@@ -86,7 +83,7 @@ const ContactUs: React.FC = () => {
                   size={24}
                   weight="fill"
                 />
-                <span className="text-lg">support@theprgod.com</span>
+                <span className="text-lg">theprcompanydigital@gmail.com</span>
               </div>
             </div>
           </div>

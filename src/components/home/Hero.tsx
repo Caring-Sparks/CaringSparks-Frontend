@@ -12,12 +12,7 @@ interface heroProps {
 const Hero = ({ openPopup }: heroProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const textArray = [
-    "Real Influencers",
-    "Real Creators",
-    "Brand Partners",
-    "Success Stories",
-  ];
+  const textArray = ["Trend", "Blow", "Popular", "Win"];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -53,7 +48,8 @@ const Hero = ({ openPopup }: heroProps) => {
           {/* Main heading with animated text */}
           <div className="mb-6 sm:mb-8">
             <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight">
-              Connect Brands with{" "}
+              Wanna Trend? <br />
+              Then Let&apos;s Make You <br />
               <span className="relative inline-block min-h-[1.2em] align-bottom">
                 <span className="block sm:inline-block mt-2 sm:mt-0">
                   {textArray.map((text, index) => (
@@ -68,7 +64,9 @@ const Hero = ({ openPopup }: heroProps) => {
                       {text}
                     </span>
                   ))}
-                  <span className="invisible whitespace-nowrap">{textArray[0]}</span>
+                  <span className="invisible whitespace-nowrap">
+                    {textArray[0]}
+                  </span>
                 </span>
               </span>
             </h1>
@@ -77,10 +75,12 @@ const Hero = ({ openPopup }: heroProps) => {
           {/* Subtitle with stagger animation */}
           <div className="mb-8 sm:mb-10 lg:mb-12 space-y-2">
             <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-300 animate-fade-in-up delay-300 px-2 sm:px-4 lg:px-0">
-              The revolutionary platform that transforms
+              Sign up now to advertise your startup, your business, your event,
+              your brand, or even yourself.
             </p>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-300 animate-fade-in-up delay-500 px-2 sm:px-4 lg:px-0">
-              how brands discover and collaborate with creators
+              If you want thousands of our micro
+              influencers to talk about it on their social media pages.
             </p>
           </div>
 
