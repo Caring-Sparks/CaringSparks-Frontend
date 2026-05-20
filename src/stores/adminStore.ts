@@ -259,10 +259,10 @@ export const useAdminStore = create<AdminState>()(
         try {
           const [influencerRes, brandRes, adminRes, campaignRes] =
             await Promise.all([
-              api.get("/api/influencers/all-influencers"),
-              api.get("/api/brands/all-brands"),
-              api.get("/api/admins/all-admins"),
-              api.get("/api/campaigns/"),
+              api.get("/api/influencers/all-influencers?limit=10000"),
+              api.get("/api/brands/all-brands?limit=10000"),
+              api.get("/api/admins/all-admins?limit=10000"),
+              api.get("/api/campaigns/?limit=10000"),
             ]);
 
           set({
